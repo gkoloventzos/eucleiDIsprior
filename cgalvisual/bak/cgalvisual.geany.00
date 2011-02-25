@@ -1,0 +1,6 @@
+
+[project]
+name=cgalvisual
+base_path=/home/chfrag/development/cgalvisual
+description=CGAL-Python and VPYTHON
+run_cmd=ipython cgalvisual.py

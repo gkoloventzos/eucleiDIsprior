@@ -1,0 +1,113 @@
+from sys import path
+path.append("/home/chfrag/src/cgal-python-0.9.1/cgal_package")
+
+import CGAL
+import visual
+
+def prepareScene():
+	visual.scene.range = 10
+	visual.scene.width = 800
+	visual.scene.height = 600
+
+class mouseClick(object):
+	"""
+	click = mouseClick(which_button=None)
+	"""
+	def __init__(self, which_button=None):
+		self.button = None
+		self.pos = None
+		self.pick = None
+		self.get(which_button)
+		
+	def getEvent(self):
+		if visual.scene.mouse.events:
+			event = visual.scene.mouse.getevent()
+			if event.press:
+				self.button = event.button
+				self.pos = CGAL.Vector_2(event.pos.x, event.pos.y)
+				self.pick = event.pick
+		
+	def get(self, which_button):
+		if which_button is not None:
+			while self.button <> which_button:
+				self.getEvent()
+		else:
+			while self.button is None:
+				self.getEvent()
+		
+	def __str__(self):
+		return "%s button pressed at position %s" % (self.button, self.pos)
+
+
+class VPoint_2(CGAL.Point_2):
+	def __init__(self, vector=CGAL.Vector_2(0.0,0.0)):
+		self.__label = None
+		self.__color = None
+		self.__radius = None
+		self.__repr = None
+		super(VPoint_2, self).__init__(vector.x(),vector.y())
+		self.pos = vector
+		self.repr = 'sphere'
+		
+	def color():
+		doc = 'color property of VPoint_2: is visual.color'
+		def fget(self):
+			return self.__color
+		def fset(self, color):
+			self.__color = color
+			self.__repr.color = color
+			if self.__repr.__class__ is visual.label:
+				self.__repr.linecolor = color
+		return locals()
+	color = property(**color())
+		
+	def pos():
+		doc = 'pos property: is CGAL.Vector_2(x,y)'
+		def fget(self):
+			if self.__repr is not None:
+				return CGAL.Vector_2(self.__repr.pos.x, self.__repr.pos.y)
+			else:
+				return CGAL.Vector_2(0.0, 0.0)
+		def fset(self, pos):
+			self.__pos = pos
+			if self.__repr is not None:
+				# parameter pos is CGAL.Vector_2(x,y)
+				# TOCHECK: CGAL.Point_2 has no setter ?!
+				super(VPoint_2, self).__init__(pos.x(), pos.y())
+				# self.__repr.pos is visual.vector(x,y)
+				self.__repr.pos = visual.vector(pos.x(), pos.y())
+
+		return locals()		
+	pos = property(**pos())
+	
+	def repr():
+		doc = 'repr property: is visual.sphere() or visual.label()'
+		def fget(self):
+			if self.__repr.__class__ is visual.sphere:
+				return 'sphere'
+			else:
+				return 'label'
+		def fset(self, repr):
+			if self.__repr is not None:
+				self.__repr.visible = False
+			pos = visual.vector(self.__pos.x(), self.__pos.y())
+			color = self.__color or visual.color.white
+			if repr == 'sphere':
+				#TODO: Check if 1/scene.range.x is always suitable
+				radius = self.__radius or 1/visual.scene.range.x
+				self.__repr = visual.sphere(pos=pos, radius=radius, color=color)
+			else:
+				text = self.__label or 'X'
+				self.__repr = visual.label(pos=pos, text=text, color=color)
+				self.__repr.linecolor = color
+		return locals()
+	repr = property(**repr())
+
+def getVisualPoints():
+	points = []
+	click = mouseClick()
+	while click.button <> 'right':
+		point = VPoint_2(click.pos)
+		points.append(point)
+		click = mouseClick()
+	return points

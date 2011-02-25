@@ -1,0 +1,242 @@
+from sys import path
+path.append("/home/chfrag/src/cgal-python-0.9.1/cgal_package")
+
+import CGAL
+import visual
+
+def prepareScene():
+	visual.scene.range = 10
+	visual.scene.width = 400
+	visual.scene.height = 300
+	visual.scene.exit_on_close(1)
+
+# Default values for visual representations of CGAL objects
+#TODO: Check if this is always suitable for sphere radius
+RADIUS = visual.scene.range.x/100.0
+COLOR = visual.color.white
+# Default value for an unspecified visual point label
+DEF_POINT_LABEL = 'X'
+DEF_POINT_REPR = 'sphere'
+# Default value for an unspecified visual segment label
+DEF_SEGMENT_LABEL = 'XY'
+
+VisualPoints = None
+VisualSegments = None
+
+class mouseClick(object):
+	"""
+	click = mouseClick(which_button=None)
+	"""
+	def __init__(self, which_button=None):
+		self.button = None
+		self.pos = None
+		self.pick = None
+		self.get(which_button)
+		
+	def getEvent(self):
+		if visual.scene.mouse.events:
+			event = visual.scene.mouse.getevent()
+			if event.press:
+				self.button = event.button
+				self.pos = CGAL.Vector_2(event.pos.x, event.pos.y)
+				self.pick = event.pick
+		
+	def get(self, which_button):
+		if which_button is not None:
+			while self.button <> which_button:
+				self.getEvent()
+		else:
+			while self.button is None:
+				self.getEvent()
+		
+	def __str__(self):
+		return "%s button pressed at position %s" % (self.button, self.pos)
+
+
+class VPoint_2(CGAL.Point_2):
+	def __init__(self, x=0.0, y=0.0, label=None):
+		self.__repr = None
+		super(VPoint_2, self).__init__(x, y)
+		self.pos = (x,y)
+		self.color = COLOR
+		if label is not None:
+			self.label = label
+		else:
+			self.__label = DEF_POINT_LABEL
+			self.repr = DEF_POINT_REPR
+			
+		global VisualPoints
+		if VisualPoints is not None:
+			VisualPoints[self]=self
+		else:
+			VisualPoints = {}
+			VisualPoints[self]=self
+		
+	def label():
+		doc = 'label property of VPoint_2: string'
+		def fget(self):
+			return self.__label
+		def fset(self, label):
+			self.__label = label
+			self.repr = 'label'
+		return locals()
+	label = property(**label())
+	
+	def color():
+		doc = 'color property of VPoint_2: is visual.color'
+		def fget(self):
+			return self.__color
+		def fset(self, color):
+			self.__color = color
+			if self.__repr is not None:
+				self.__repr.color = color
+				if self.__reprstr == 'label':
+					self.__repr.linecolor = color
+		return locals()
+	color = property(**color())
+		
+	def pos():
+		doc = 'pos property: is CGAL.Vector_2(x,y)'
+		def fget(self):
+			return self.__pos
+		def fset(self, pos):
+			# parameter pos is a (x,y) tuple
+			x, y = pos[0], pos[1]
+			# self.__pos is a CGAL.Vector_2()
+			self.__pos = CGAL.Vector_2(x, y)
+			# self.__vpos is a visual.vector(). Used for visual representation
+			self.__vpos = visual.vector(x, y)
+			# TOCHECK: CGAL.Point_2 has no setter ?!
+			super(VPoint_2, self).__init__(x, y)
+			# self.__repr.pos is visual.vector(x,y)
+			if self.__repr is not None:
+				self.__repr.pos = visual.vector(x, y)
+				
+			global VisualPoints
+			global VisualSegments
+			
+			try:
+				existingPoint = VisualPoints[self]
+			except:
+				existingPoint = None
+				
+			if existingPoint:
+				
+				affectedSegments = []
+				if VisualSegments:
+					for segment, endpoints in VisualSegments.iteritems():
+						for endpoint, value in endpoints.iteritems():
+							if value is existingPoint:
+								affectedSegments.append(segment)
+					
+				del VisualPoints[existingPoint]
+				VisualPoints[self]=self
+				
+				for segment in affectedSegments:
+					segment.hide()
+					VisualSegments[VSegment_2(VisualSegments[segment]['start'], \
+						VisualSegments[segment]['end'])] = VisualSegments[segment]
+					del VisualSegments[segment]
+					
+					
+				
+		return locals()		
+	pos = property(**pos())
+	
+	def repr():
+		doc = 'repr property: is visual.sphere() or visual.label()'
+		def fget(self):
+			return self.__reprstr
+		def fset(self, repr):
+			self.__reprstr = repr
+			if self.__repr is not None:
+				self.__repr.visible = False
+			if repr == 'sphere':
+				self.__repr = visual.sphere(pos=self.__vpos, radius=RADIUS, color=self.__color)
+			else:
+				self.__repr = visual.label(pos=self.__vpos, text=self.__label, color=self.__color)
+				self.__repr.linecolor = self.__color
+		return locals()
+	repr = property(**repr())
+
+class VSegment_2(CGAL.Segment_2):
+	def __init__(self, start=CGAL.Point_2(), end=CGAL.Point_2(), label=None):
+		super(VSegment_2, self).__init__(start, end)
+		self.__repr = None
+		self.__line = visual.curve(pos=[(start.x(), start.y()), (end.x(), end.y())])
+		#self.color = visual.color.white
+		#if label is not None:
+		#	self.label = label
+		#else:
+		#	self.__label = DEF_SEGMENT_LABEL
+		
+		global VisualSegments
+		if VisualSegments is not None:
+			VisualSegments[self]={'start' : start, 'end' : end}
+		else:
+			VisualSegments = {}
+			VisualSegments[self]={'start' : start, 'end' : end}
+			
+	def label():
+		doc = 'label property of VSegment_2: a tuple with the endpoints'' labels'
+		def fget(self):
+			return self.__label
+		def fset(self, label):
+			# label is a tuple with the endpoint's labels
+			self.__label = label[0]  + label[1]
+			self.__start.label = label[0]
+			self.__end.label = label[1]
+		return locals()
+	label = property(**label())
+	
+	def color():
+		doc = 'color property of VSegment_2: visual.color'
+		def fget(self):
+			return self.__color
+		def fset(self, color):
+			self.__color = color
+			self.__start.color = color
+			self.__end.color = color
+			self.__line.color = color
+		return locals()
+	color = property(**color())
+	
+	def repr():
+		doc = ''
+		def fget(self):
+			return self.__repr
+		def fset(self, repr):
+			if repr == 'plain':
+				self.__start.repr = 'sphere'
+				self.__end.repr = 'sphere'
+			elif repr == 'labeled':
+				self.__start.label
+		return locals()
+	repr = property(**repr())
+	
+	def hide(self):
+		self.__line.visible = False
+			
+			
+			
+def getVisualPoints():
+	points = []
+	click = mouseClick()
+	while click.button <> 'right':
+		point = VPoint_2(click.pos)
+		points.append(point)
+		click = mouseClick()
+	return points
+	
+def getVisualPointsLabeled():
+	points = []
+	label = 0
+	click = mouseClick()
+	while click.button <> 'right':
+		point = VPoint_2(click.pos, label=str(label))
+		points.append(point)
+		click = mouseClick()
+		label += 1
+	return points
+	
+prepareScene()

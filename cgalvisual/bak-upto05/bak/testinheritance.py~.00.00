@@ -1,0 +1,29 @@
+from sys import path
+path.append("/home/chfrag/src/cgal-python-0.9.1/cgal_package")
+
+from CGAL import Point_2
+from visual import *
+
+def prepareScene():
+	scene.range = 10
+	scene.width = 800
+	scene.height = 600
+
+class VPoint_2(Point_2):
+	def __init__(self,x=0, y=0):
+		super(VPoint_2, self).__init__(x,y)
+		self.repr = sphere(pos=(x,y), radius=0.1)
+		
+	def pos():
+		doc = 'pos property'
+		def fget(self):
+			return self.repr.pos
+		def fset(self, value):
+			self.repr.pos = value
+		return locals()
+		
+	pos = property (**pos())
+	
+prepareScene()	
+a=VPoint_2()
+a.pos=(1,1)

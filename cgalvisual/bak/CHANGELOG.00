@@ -1,0 +1,8 @@
+v04
+
+Added global dictionaries that hold points and segments. Each point and
+segment creation fills the corresponding dictionary. The use of dictionaries
+eliminates duplicate points.
+
+TODO:
+	Guaantee point general position
