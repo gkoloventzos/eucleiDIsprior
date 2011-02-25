@@ -1,6 +1,5 @@
 from __future__ import division
 from visual import *
-from numbers import Number
 from visual.controls import *
 from time import sleep
 
@@ -59,15 +58,18 @@ def getVisualPoints():
 		if scene.mouse.clicked:
 			click =	scene.mouse.getclick()
 			point = Point_2(click.pos.x,click.pos.y)
+#			stri = str(click.pos.x) + "," + str(click.pos.y)
+#			point.label(stri)
 			points.append(point)
 	return points
 	
 def movePoints():
 	pick = None # no object picked out of the scene yet
 	global VisualSegments
-	f = VisualSegments.keys()
-	for ke in f:
-		VisualSegments[ke]._segment.visible=False
+	if VisualSegments:
+		f = VisualSegments.keys()
+		for ke in f:
+			VisualSegments[ke]._segment.visible=False
 	while True:
 		if scene.kb.keys:
 			s = scene.kb.getkey()
@@ -96,11 +98,15 @@ def movePoints():
 			del VisualPoints[ke]
 
 def prepareControls():
-	w = 350
+	w = 380
 	global control
+	global VisualPoints
 	control = controls(title='Controlling eukleiDIs',x=800, y=0, width=w, height=w, range=60)
-	mv = button(pos=(-30,30), height=20, width=50, text='Move Points', action=lambda: movePoints())
-	gp = button(pos=(30,30), height=20, width=50, text='Insert Points', action=lambda: getVisualPoints())
+	mv = button(pos=(-30,40), height=20, width=50, text='Move Points', action=lambda: movePoints())
+	gp = button(pos=(30,40), height=20, width=50, text='Insert Points', action=lambda: getVisualPoints())
+	dap = button(pos=(-30,10), height=20, width=50, text='Del Points', action=lambda: getVisualPoints())
+	das = button(pos=(30,10), height=20, width=50, text='Del Segments', action=lambda: getVisualPoints())
+	ru = button(pos=(0,-20), height=20, width=50, color = (1,0,0), text='Run', action=lambda: run(VisualPoints))
 	while 1:
 		control.interact()
 
@@ -125,7 +131,7 @@ class Point_2(object):
 	def pos(self):
 		return self._point
 	def label(self,string):
-		self._label=label(pos=self._point.pos,text=string,xoffset=0,yoffset=0,space=self._point.radius,height=10,border=1,font='sans')
+		self._label=label(pos=self._point.pos,text=string,xoffset=0,yoffset=5,space=self._point.radius,height=10,border=1,font='sans')
 	def color(self,x=0,y=0,z=0):
 		if(x==0 and y==0 and z==0):
 			print self._point.color
@@ -150,16 +156,28 @@ class Point_2(object):
 				return Vector_2(self,other)
 			return Point_2(self.x()-other.x(),self.y()-other.y())
 	def __eq__(self,other):
+		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
+			return True
 		return (self.x()==other.x()) and (self.y()==other.y())
 	def __ne__(self,other):
+		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
+			return True
 		return (self.x()!=other.x()) or (self.y()!=other.y())
 	def __gt__(self,other):
+		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
+			return True
 		return self.x() < other.x() or ( self.x() == other.x() and self.y() < other.y() )
 	def __lt__(self,other):
+		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
+			return True
 		return self.x() > other.x() or ( self.x() == other.x() and self.y() > other.y() )
 	def __ge__(self,other):
+		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
+			return True
 		return self.x() >= other.x()
 	def __le__(self,other):
+		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
+			return True
 		return self.x() <= other.x()
 	def __getitem__(self,i):
 		if i>=0 and i<=1:
@@ -203,9 +221,9 @@ class Vector_2(object):
 	def direction(self):
 		return Direction_2(self)
 	def __eq__(self,other):
-		return self == other
+		return self._vector == other._vector
 	def __ne__(self,other):
-		return self != other
+		return self._vector != other._vector
 	def cartesian(self,i):
 		if i>=0 and i<=1:
 			return self._vector[i]
@@ -340,7 +358,7 @@ class Line_2(object):
 				self._b=-1
 				self._a=(y.y() - x.y())/(y.x() - x.x())
 				self._c=y.y() - (self._a*y.x())				
-		if isinstance(a,Number) and isinstance(b,Number) and isinstance(c,Number):
+		if (isinstance(a,float) or isinstance(a,int)) and (isinstance(b,float) or isinstance(b,int)) and (isinstance(c,float) or isinstance(c,int)):
 			if b == 0:
 				self._b = None
 			self._b=-1
@@ -366,7 +384,7 @@ class Segment_2(object):
 		self._segment=curve(pos=[(start1.x(), start1.y()),(end1.x(), end1.y())])
 		self._point_start=start1
 		self._point_end=end1
-		self._middle = Point_2((self._point_start.x()+self._point_end.x())/2,(self._point_start.y()+self._point_end.y())/2,visible=False)
+		self._middle = None
 		global VisualSegments
 		if VisualSegments is not None:
 			VisualSegments[self]=self
@@ -392,6 +410,8 @@ class Segment_2(object):
 	def squared_length(self):
 		return pow((fabs(self._point_start.x()-self._point_end.x())),2)+pow((fabs(self._point_start.y()-self._point_end.y())),2)
 	def middle(self):
+		if self._middle == None:
+			self._middle = Point_2((self._point_start.x()+self._point_end.x())/2,(self._point_start.y()+self._point_end.y())/2,visible=False)
 		return self._middle
 	def label(self,string):
 		self._label=label(pos=self._middle._point.pos,text=string,xoffset=0,yoffset=-6,space=3,height=10,border=1,font='sans')        
@@ -435,18 +455,58 @@ class Segment_2(object):
 #class Triangle_2(object):
 #class Iso_rectangle_2(object):
 #class Circle_2(object):
-			
+def orientation(a,b,c):
+		orie = ((a.x()-c.x())*(b.y()-c.y()))-((a.y()-c.y())*(b.x()-c.x()))
+		if orie == 0:
+			return COLLINEAR
+		elif orie < 0:
+			return CLOCKWISE
+		else:
+			return COUNTERCLOCKWISE
+
+def run(Vpoints):
+      """
+      Jarvis Convex Hull algorithm.
+      points is a list of CGAL.Point_2 points
+      """
+      points = Vpoints.values()
+      import random
+      r0 = min(points)
+      hull = [r0]
+      r,u = r0,None
+      remainingPoints = [x for x in points if x not in hull]
+      while (u != r0) and remainingPoints:
+            u = random.choice(remainingPoints)
+            for t in points:
+                  if t != u and \
+                     (orientation(r,u,t) == CLOCKWISE or \
+                     (orientation(r,u,t) == COLLINEAR and \
+                     (u-r).direction() == (t-u).direction())):
+                        u = t
+            r = u
+            if r != r0:
+				points.remove(r)
+				hull.append(r)
+				remainingPoints.remove(r)
+      print hull
+      return hull
 
 prepareScene()
-#prepareControls()
-m=[]
-m=getVisualPoints()
-print VisualPoints
-a = Segment_2(VisualPoints[m[0]],VisualPoints[m[1]])
-b = Segment_2(VisualPoints[m[0]],VisualPoints[m[2]])
-sleep(5)
-movePoints()
-print VisualPoints
+prepareControls()
+#m=[]
+#m=getVisualPoints()
+#print m
+#t = jarvis(m)
+#print t 
+#print VisualPoints
+#a = Segment_2(VisualPoints[m[0]],VisualPoints[m[1]])
+#b = Segment_2(VisualPoints[m[0]],VisualPoints[m[2]])
+#sleep(5)
+#movePoints()
+#print VisualPoints
+#if orientation(VisualPoints[m[0]],VisualPoints[m[1]],VisualPoints[m[2]]) == CLOCKWISE:
+#if orientation(Point_2(1,1),Point_2(2,2),Point_2(3,3)) == COLLINEAR:
+#	print "NiCe"
 """
 a = Point_2(1,1)
 b = Point_2(3,3)
