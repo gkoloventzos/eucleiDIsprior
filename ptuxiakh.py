@@ -488,7 +488,11 @@ def run(Vpoints):
 				points.remove(r)
 				hull.append(r)
 				remainingPoints.remove(r)
-      print hull
+      for t in range(len(hull)):
+       if t != len(hull)-1:
+        Segment_2(hull[t],hull[t+1])
+       else:
+		Segment_2(hull[-1],hull[0])
       return hull
 
 prepareScene()
