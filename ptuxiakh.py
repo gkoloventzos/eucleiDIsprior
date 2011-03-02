@@ -92,10 +92,6 @@ def movePoints():
 				pick.pos += new_pos - drag_pos
 				drag_pos = new_pos # update drag position
 
-	f = VisualPoints.keys()
-	for ke in f:
-		if VisualPoints[ke]._point.visible == False:
-			del VisualPoints[ke]
 
 def prepareControls():
 	w = 380
@@ -110,7 +106,7 @@ def prepareControls():
 	while 1:
 		control.interact()
 
-class Point_2(object):
+class Point_2(object):#all clear
 	"""
 	Point in 2d
 	"""
@@ -253,12 +249,15 @@ class Vector_2(object):
 			return angle
 		
 		
-class Direction_2(object):
+class Direction_2(object):#all clear
 	def __init__(self,x,y=None):
 		self._d=[]
 		if type(y).__name__=='NoneType':
 			if type(x).__name__=='Vector_2':
-				self._direction=x.y()/x.x()
+				if x.x() == 0:
+					self._direction = None
+				else:
+					self._direction=x.y()/x.x()
 				self._d.append(x.x())
 				self._d.append(x.y())				
 			if type(x).__name__=='Line_2':
@@ -270,9 +269,15 @@ class Direction_2(object):
 				t=x.target()
 				self._d.append(t.x()-s.x())
 				self._d.append(t.y()-s.y())
-				self._direction= self._d[1]/self._d[0]
+				if self._d[0]:
+					self._direction = None
+				else:
+					self._direction= self._d[1]/self._d[0]
 		else:
-			self._direction=x/y
+			if x == 0:
+				self._direction = None
+			else:
+				self._direction=y/x
 			self._d.append(x)
 			self._d.append(y)
 	def delta(self,i):
@@ -334,36 +339,36 @@ class Line_2(object):
 			if type(a).__name__ == 'Segment_2':
 				x=a.source()
 				y=a.target()
-				self._b=-1
-				self._a=(y.y() - x.y())/(y.x() - x.x())
-				self._c=y.y() - (self._a*y.x())
+				if a.is_degenerate():
+					raise Degenetate_Segment
+				self._b=(y.x() - x.x())
+				self._a=-(y.y() - x.y())
+				self._c=-(self._b*x.y()+self._a*x.x())
 			if type(a).__name__ == 'Ray_2':
 				pass
 		if c == None:
 			if type(a).__name__ == 'Point_2' and type(b).__name__ =='Vector_2':
-				x=a
-				y=b.directio()
-				self._b=-1
-				self._a=b.direction()
-				self._c=x.y() - (self._a*x.x())
+				y=b.direction()
+				self._b=y[0]
+				self._a=y[1]
+				self._c=-(self._b*a.y()+self._a*a.x())
 			if type(a).__name__ == 'Point_2' and type(b).__name__ =='Direction_2':
-				x=a
-				y=b
-				self._b=-1
-				self._a=b.direction()
-				self._c=x.y() - (self._a*x.x())
+				self._b=b[0]
+				self._a=b[1]
+				self._c=-(self._b*a.y()+self._a*a.x())
 			if type(a).__name__ == 'Point_2' and type(b).__name__ =='Point_2':
-				x=a
-				y=b
-				self._b=-1
-				self._a=(y.y() - x.y())/(y.x() - x.x())
-				self._c=y.y() - (self._a*y.x())				
+				p=Segment_2(a,b)
+				x=s.source()
+				y=s.target()
+				if a.is_degenerate():
+					raise Degenetate_Segment
+				self._b=(y.x() - x.x())
+				self._a=-(y.y() - x.y())
+				self._c=-(self._b*s.y()+self._a*s.x())				
 		if (isinstance(a,float) or isinstance(a,int)) and (isinstance(b,float) or isinstance(b,int)) and (isinstance(c,float) or isinstance(c,int)):
-			if b == 0:
-				self._b = None
-			self._b=-1
-			self._a=-(a/b)
-			self._c=-(c/b)
+				self._b=b
+				self._c=c
+				self._a=a				
 	def a(self):
 		return self._a			
 	def b(self):
@@ -372,11 +377,19 @@ class Line_2(object):
 		return self._c
 	def is_degenerate(self):
 		return a == b == 0
-	def is_horizontal():
-		return self._a ==0
+	def is_horizontal(self):
+		return self._a == 0
+	def is_vertical(self):
+		return self._b == 0
+	def direction(self):
+		return Direction_2(-self._a,self._b)
+	def opposite(self):
+		return Line_2(-self._a,self._b,self._c)
+	def to_vector(self):
+		return Vector_2(self.direction())
 	
 #class Ray_2(object):
-class Segment_2(object):
+class Segment_2(object):#all clear
 	"""
 	Segment in 2d
 	"""
@@ -495,8 +508,8 @@ def run(Vpoints):
 		Segment_2(hull[-1],hull[0])
       return hull
 
-prepareScene()
-prepareControls()
+#prepareScene()
+#prepareControls()
 #m=[]
 #m=getVisualPoints()
 #print m
