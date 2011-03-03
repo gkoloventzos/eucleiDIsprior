@@ -387,6 +387,14 @@ class Line_2(object):
 		return Line_2(-self._a,self._b,self._c)
 	def to_vector(self):
 		return Vector_2(self.direction())
+	def x_at_y(self,y):
+		if !self.is_horizontal():
+			return ((-self._b*y)-self._c)/self._a
+		raise IS_HORIZONTAL
+	def y_at_x(self,x):
+		if !self.is_vertical():
+			return ((-self._a*x)-self._c)/self._b
+		raise IS_VERTICAL
 	
 #class Ray_2(object):
 class Segment_2(object):#all clear
