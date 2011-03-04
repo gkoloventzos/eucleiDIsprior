@@ -202,7 +202,7 @@ class Vector_2(object):
 			elif type(x).__name__=='Ray_2':
 				pass
 			elif type(x).__name__=='Line_2':
-				pass
+				self._vector=vector(x.b(),-x.a())
 	def __repr__(self):
 		return 'Vector_2({self._vector[0]},{self._vector[1]})' .format(self=self)
 	def x(self):
@@ -379,6 +379,9 @@ class Line_2(object):
 		return self._b
 	def c(self):
 		return self._c
+	def perpendicular(self,x):
+		p = self.direction()
+		return Line_2(x,Direction_2(-p.dy(),p.dx()))
 	def is_degenerate(self):
 		return a == b == 0
 	def is_horizontal(self):
@@ -400,7 +403,7 @@ class Line_2(object):
 			return ((-self._a*x)-self._c)/self._b
 		raise IS_VERTICAL
 	def __repr__(self):
-		return 'Line_2({self._a}*x + {self._b}*y + {self._c} = 0)' .format(self=self)
+		return 'Line_2({self._a} x + {self._b} y + {self._c} = 0)' .format(self=self)
 #class Ray_2(object):
 class Segment_2(object):#all clear
 	"""
