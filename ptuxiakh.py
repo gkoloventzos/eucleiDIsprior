@@ -189,7 +189,7 @@ class Point_2(object):#all clear
 """
 
 class Vector_2(object):
-	def __init__(self,x=None,y=None):
+	def __init__(self,x=None,y=None,visible=True):
 		if type(x).__name__==type(y).__name__=='NoneType':
 			self._vector=None
 		if type(x).__name__==type(y).__name__== 'Point_2':
@@ -292,7 +292,7 @@ class Direction_2(object):#all clear
 	def __neg__(self):
 		return Direction_2(-self._d[0],self._d[1])
 	def vector(self):
-		return Vector_2(self._d[0],self._d[1])
+		return Vector_2(self._d[0],self._d[1],visible=False)
 	def __eq__(self,other):
 		return self.vector() == other.vector()
 	def __ne__(self,other):
@@ -325,13 +325,16 @@ class Direction_2(object):#all clear
 		if dd1a == sa:
 			return False
 		return False
+	def __repr__(self):
+		return 'Direction_2({self._d[0]},{self._d[1]})' .format(self=self)
 				
 			
 class Line_2(object):
 	"""
 	Line in 2d
 	"""
-	def __init__(self,a,b=None,c=None):
+	def __init__(self,a,b=None,c=None,visible=True):
+		self._line=None
 		self._a=None
 		self._b=None
 		self._c=None
@@ -368,7 +371,8 @@ class Line_2(object):
 		if (isinstance(a,float) or isinstance(a,int)) and (isinstance(b,float) or isinstance(b,int)) and (isinstance(c,float) or isinstance(c,int)):
 				self._b=b
 				self._c=c
-				self._a=a				
+				self._a=a
+		self._line=curve(pos=[(0, self.y_at_x(0)),(12,self.y_at_x(12)),(self.x_at_y(0),0),(self.x_at_y(12),12)],visible=visible)
 	def a(self):
 		return self._a			
 	def b(self):
@@ -382,27 +386,28 @@ class Line_2(object):
 	def is_vertical(self):
 		return self._b == 0
 	def direction(self):
-		return Direction_2(-self._a,self._b)
+		return Direction_2(self._b,-self._a)
 	def opposite(self):
-		return Line_2(-self._a,self._b,self._c)
+		return Line_2(-self._a,-self._b,-self._c,visible=False)
 	def to_vector(self):
-		return Vector_2(self.direction())
+		return Vector_2(self.direction(),visible=False)
 	def x_at_y(self,y):
-		if !self.is_horizontal():
+		if not self.is_horizontal():
 			return ((-self._b*y)-self._c)/self._a
 		raise IS_HORIZONTAL
 	def y_at_x(self,x):
-		if !self.is_vertical():
+		if not self.is_vertical():
 			return ((-self._a*x)-self._c)/self._b
 		raise IS_VERTICAL
-	
+	def __repr__(self):
+		return 'Line_2({self._a}*x + {self._b}*y + {self._c} = 0)' .format(self=self)
 #class Ray_2(object):
 class Segment_2(object):#all clear
 	"""
 	Segment in 2d
 	"""
-	def __init__(self,start1,end1):
-		self._segment=curve(pos=[(start1.x(), start1.y()),(end1.x(), end1.y())])
+	def __init__(self,start1,end1,visible=True):
+		self._segment=curve(pos=[(start1.x(), start1.y()),(end1.x(), end1.y())],visible=visible)
 		self._point_start=start1
 		self._point_end=end1
 		self._middle = None
@@ -427,7 +432,7 @@ class Segment_2(object):#all clear
 	def target(self):
 		return self._point_end
 	def opposite(self):
-		return Segment_2(self.target(),self.source())
+		return Segment_2(self.target(),self.source(),visible=False)
 	def squared_length(self):
 		return pow((fabs(self._point_start.x()-self._point_end.x())),2)+pow((fabs(self._point_start.y()-self._point_end.y())),2)
 	def middle(self):
@@ -466,11 +471,13 @@ class Segment_2(object):#all clear
 		else:
 			return self._point_end
 	def to_vector(self):
-		return Vector_2(self._point_end,self._point_start)
+		return Vector_2(self._point_end,self._point_start,visible=False)
 	def has_on(self,other):
 		if type(other).__name__== 'Point_2':
 			if ((self._point_start.x()-other.x())*(self._point_end.y()-other.y()))-((self._point_start.y()-other.y())*(self._point_end.x()-other.x())) == 0:
 				return self.min() <= other <= self.max()
+	def supporting_line(self):
+		return Line_2(self._point_start,self._point_end,visible=False)
 
 	
 #class Triangle_2(object):
@@ -516,7 +523,7 @@ def run(Vpoints):
 		Segment_2(hull[-1],hull[0])
       return hull
 
-#prepareScene()
+prepareScene()
 #prepareControls()
 #m=[]
 #m=getVisualPoints()
