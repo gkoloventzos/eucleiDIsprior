@@ -7,9 +7,9 @@ VisualPoints = None
 VisualSegments = None
 control = None
 
-CLOCKWISE = -1
-COUNTERCLOCKWISE = 1
-COLLINEAR = 0
+CLOCKWISE = ON_NEGATIVE_SIDE = -1
+COUNTERCLOCKWISE = ON_POSITIVE_SIDE = 1
+COLLINEAR = ON_ORIENTED_BOUNDARY = 0
 
 def prepareScene():
 	#scene.userspin = False #Gia na exoume k deksi koumpi sto pontiki
@@ -178,6 +178,13 @@ class Point_2(object):#all clear
 	def __getitem__(self,i):
 		if i>=0 and i<=1:
 			return self._point.pos[i]
+	def visual(self,visible=None): #argue how will work
+		if visible == None:
+			self._point.visible = not self._point.visible
+		else:
+			self._point.visible = visible
+		return self._point.visible
+
 
 """
 	kanei swsta thn anathesi omws dn allazei to xrwma :'(
@@ -203,6 +210,7 @@ class Vector_2(object):
 				pass
 			elif type(x).__name__=='Line_2':
 				self._vector=vector(x.b(),-x.a())
+		self._vvector=arrow(pos=(0,0,0),axis=(self._vector[0],self._vector[1],0),visible=visible,shaftwidth = 0)
 	def __repr__(self):
 		return 'Vector_2({self._vector[0]},{self._vector[1]})' .format(self=self)
 	def x(self):
@@ -247,6 +255,12 @@ class Vector_2(object):
 			return 360 + angle
 		else:
 			return angle
+	def visual(self,visible=None): #argue how will work
+		if visible == None:
+			self._vector.visible = not self._vector.visible
+		else:
+			self._vector.visible = visible
+		return self._vector.visible
 		
 		
 class Direction_2(object):#all clear
@@ -404,6 +418,26 @@ class Line_2(object):
 		raise IS_VERTICAL
 	def __repr__(self):
 		return 'Line_2({self._a} x + {self._b} y + {self._c} = 0)' .format(self=self)
+	def visual(self,visible=None): #argue how will work
+		if visible == None:
+			self._line.visible = not self._line.visible
+		else:
+			self._line.visible = visible
+		return self._line.visible
+	def oriented_side(self,c): #needs debug
+		x1 = self.x_at_y(0)
+		y1 = self.y_at_x(0)
+		a = Point_2(x1,0,visible=False)
+		b = Point_2(0,y1,visible=False)
+		orie = ((a.x()-c.x())*(b.y()-c.y()))-((a.y()-c.y())*(b.x()-c.x()))
+		print orie
+		if orie == 0:
+			return ON_ORIENTED_BOUNDARY
+		elif orie < 0:
+			return ON_NEGATIVE_SIDE
+		else:
+			return ON_POSITIVE_SIDE
+			
 #class Ray_2(object):
 class Segment_2(object):#all clear
 	"""
@@ -481,6 +515,13 @@ class Segment_2(object):#all clear
 				return self.min() <= other <= self.max()
 	def supporting_line(self):
 		return Line_2(self._point_start,self._point_end,visible=False)
+	def visual(self,visible=None): #argue how will work
+		if visible == None:
+			self._segment.visible = not self._segment.visible
+		else:
+			self._segment.visible = visible
+		return self._segment.visible
+
 
 	
 #class Triangle_2(object):
@@ -542,6 +583,10 @@ prepareScene()
 #if orientation(VisualPoints[m[0]],VisualPoints[m[1]],VisualPoints[m[2]]) == CLOCKWISE:
 #if orientation(Point_2(1,1),Point_2(2,2),Point_2(3,3)) == COLLINEAR:
 #	print "NiCe"
+l=Line_2(3,4,29)
+x=l.x_at_y(0)
+c = Point_2(l.x_at_y(0),0,visible=True,color=(1,0,0))
+print l.oriented_side(c)
 """
 a = Point_2(1,1)
 b = Point_2(3,3)
