@@ -393,9 +393,6 @@ class Line_2(object):
 		return self._b
 	def c(self):
 		return self._c
-	def perpendicular(self,x):
-		p = self.direction()
-		return Line_2(x,Direction_2(-p.dy(),p.dx()))
 	def is_degenerate(self):
 		return a == b == 0
 	def is_horizontal(self):
@@ -437,6 +434,29 @@ class Line_2(object):
 			return ON_NEGATIVE_SIDE
 		else:
 			return ON_POSITIVE_SIDE
+	def point(self,i):
+		x=1+self._b*i
+		y=self.y_at_x(x)
+		return Point_2(x,y,visible=False)
+	def perpendicular(self,p):
+		d = self.direction()
+		x=d.dx()
+		y=d.dy()
+		if (x >=0 and y>=0) or (x <=0 and y<=0):
+			d1=Direction_2(y,-x)
+		else:
+			d1=Direction_2(-y,x)
+		return Line_2(p,d1,visible=False)
+	def has_on(self,p):
+		return self.oriented_side(p) == 0
+	def has_on_positive_side(self,p):
+		return self.oriented_side(p) == 1
+	def has_on_negative_side(self,p):
+		return self.oriented_side(p) == -1
+	def __eq__(self,other):
+		return (self._a == other.a()) and (self._b == other.b()) and (self._c==other.c())
+	def __ne__(self,other):
+		return (self._a != other.a()) or (self._b != other.b()) or (self._c != other.c())
 			
 #class Ray_2(object):
 class Segment_2(object):#all clear
