@@ -458,7 +458,28 @@ class Line_2(object):
 	def __ne__(self,other):
 		return (self._a != other.a()) or (self._b != other.b()) or (self._c != other.c())
 			
-#class Ray_2(object):
+class Ray_2(object):
+	def __init__(self,x,y,visible=True):
+		if type(y).__name__ == 'Point_2':
+			self._direction = Direction_2(x,y)
+		if type(y).__name__ == 'Direction_2':
+			self._direction = y
+		if type(y).__name__ == 'vector_2':
+			self._direction = y.direction()
+		if type(y).__name__ == 'Line_2':
+			self._direction = y.direction()
+		d = self._direction
+		if d.dx() > 0 and d.dy() >0:
+			p = Point_2(12,12,visible=False)
+		if d.dx() < 0 and d.dy() >0:
+			p = Point_2(-12,12,visible=False)
+		if d.dx() > 0 and d.dy() <0:
+			p = Point_2(12,-12,visible=False)
+		if d.dx() < 0 and d.dy() <0:
+			p = Point_2(-12,-12,visible=False)
+		if d.dx() == d.dy() == 0:
+			pass
+		self._ray=curve(pos=[(x.x(), x.y()),(p.x(), p.y())],visible=visible)
 class Segment_2(object):#all clear
 	"""
 	Segment in 2d
