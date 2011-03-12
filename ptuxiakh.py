@@ -197,6 +197,9 @@ class Point_2(object):#all clear
 """
 
 class Vector_2(object):
+	"""
+	Vector in 2d
+	"""
 	def __init__(self,x=None,y=None,visible=True):
 		if type(x).__name__==type(y).__name__=='NoneType':
 			self._vector=None
@@ -265,6 +268,9 @@ class Vector_2(object):
 		
 		
 class Direction_2(object):#all clear
+	"""
+	Direction in 2d
+	"""
 	def __init__(self,x,y=None):
 		self._d=[]
 		if type(y).__name__=='NoneType':
@@ -348,7 +354,7 @@ class Line_2(object):
 	"""
 	Line in 2d
 	"""
-	def __init__(self,a,b=None,c=None,visible=True):
+	def __init__(self,a,b=None,c=None,color=(1,1,1),visible=True):
 		self._line=None
 		self._a=None
 		self._b=None
@@ -387,7 +393,7 @@ class Line_2(object):
 				self._b=b
 				self._c=c
 				self._a=a
-		self._line=curve(pos=[(0, self.y_at_x(0)),(EP,self.y_at_x(EP)),(self.x_at_y(0),0),(self.x_at_y(EP),EP)],visible=visible)
+		self._line=curve(pos=[(0, self.y_at_x(0)),(EP,self.y_at_x(EP)),(self.x_at_y(0),0),(self.x_at_y(EP),EP)],color=color,visible=visible)
 	def a(self):
 		return self._a			
 	def b(self):
@@ -458,9 +464,20 @@ class Line_2(object):
 		return (self._a == other.a()) and (self._b == other.b()) and (self._c==other.c())
 	def __ne__(self,other):
 		return (self._a != other.a()) or (self._b != other.b()) or (self._c != other.c())
+	def color(self,x=0,y=0,z=0):
+		if(x==0 and y==0 and z==0):
+			print self._line.color
+			return
+		if type(x).__name__=='tuple':
+			self._line.color=x
+			return
+		self._line.color=(x,y,z)
 			
 class Ray_2(object):
-	def __init__(self,x,y,visible=True):
+	"""
+	Ray in 2d
+	"""
+	def __init__(self,x,y,color=(1,1,1),visible=True):
 		if type(y).__name__ == 'Point_2':
 			y.visual()
 			a=y.x()-x.x()
@@ -483,13 +500,47 @@ class Ray_2(object):
 			p = Point_2(-EP,-EP,visible=False)
 		if d.dx() == d.dy() == 0:
 			pass
-		self._ray=curve(pos=[(x.x(), x.y()),(p.x(), p.y())],visible=visible)
+		self._source=x
+		self._ray=curve(pos=[(x.x(), x.y()),(p.x(), p.y())],color=color,visible=visible)
+	def color(self,x=0,y=0,z=0):
+		if(x==0 and y==0 and z==0):
+			print self._ray.color
+			return
+		if type(x).__name__=='tuple':
+			self._ray.color=x
+			return
+		self._ray.color=(x,y,z)
+	def source():
+		return self._source
+	def __eq__(self,other):
+		return self._source == other.source() and self._direction == other.direction()
+	def __ne__(self,other):
+		return self._source != other.source() or self._direction != other.direction()
+	def direction(self):
+		return self._direction
+	def supporting_line(self):
+		return Line_2(self._source,self._direction,visible=False)
+	def to_vector(self):
+		return Vector_2(self.supporting_line())
+	def opposite(self):
+		l=self.supporting_line()
+		p=l.point(-1)
+		return Ray_2(self._source,p,visible=False)
+	def point(self,i):
+		if i>0:
+			l=self.supporting_line()
+			l.point(i)
+		if i==0:
+			return self._source
+		
+		
+
 class Segment_2(object):#all clear
 	"""
 	Segment in 2d
 	"""
-	def __init__(self,start1,end1,visible=True):
-		self._segment=curve(pos=[(start1.x(), start1.y()),(end1.x(), end1.y())],visible=visible)
+	def __init__(self,start1,end1,color=(1,1,1),visible=True):
+		self._segment=curve(pos=[(start1.x(), start1.y()),(end1.x(), end1.y())],color=color,visible=visible)
 		self._point_start=start1
 		self._point_end=end1
 		self._middle = None
@@ -566,7 +617,14 @@ class Segment_2(object):#all clear
 		else:
 			self._segment.visible = visible
 		return self._segment.visible
-
+	def color(self,x=0,y=0,z=0):
+		if(x==0 and y==0 and z==0):
+			print self._segment.color
+			return
+		if type(x).__name__=='tuple':
+			self._segment.color=x
+			return
+		self._segment.color=(x,y,z)
 
 	
 #class Triangle_2(object):
@@ -637,6 +695,7 @@ prepareScene()
 a = Point_2(1,1)
 b = Point_2(3,3)
 r = Ray_2(b,a)
+r.color(color.red)
 """
 a = Point_2(1,1)
 b = Point_2(3,3)
