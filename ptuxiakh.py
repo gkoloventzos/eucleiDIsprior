@@ -10,6 +10,7 @@ control = None
 CLOCKWISE = ON_NEGATIVE_SIDE = -1
 COUNTERCLOCKWISE = ON_POSITIVE_SIDE = 1
 COLLINEAR = ON_ORIENTED_BOUNDARY = 0
+EP = 15	#Extreme Point for creating lines and rays which does not have a particulary end
 
 def prepareScene():
 	#scene.userspin = False #Gia na exoume k deksi koumpi sto pontiki
@@ -386,7 +387,7 @@ class Line_2(object):
 				self._b=b
 				self._c=c
 				self._a=a
-		self._line=curve(pos=[(0, self.y_at_x(0)),(12,self.y_at_x(12)),(self.x_at_y(0),0),(self.x_at_y(12),12)],visible=visible)
+		self._line=curve(pos=[(0, self.y_at_x(0)),(EP,self.y_at_x(EP)),(self.x_at_y(0),0),(self.x_at_y(EP),EP)],visible=visible)
 	def a(self):
 		return self._a			
 	def b(self):
@@ -461,7 +462,10 @@ class Line_2(object):
 class Ray_2(object):
 	def __init__(self,x,y,visible=True):
 		if type(y).__name__ == 'Point_2':
-			self._direction = Direction_2(x,y)
+			y.visual()
+			a=y.x()-x.x()
+			b=y.y()-x.y()
+			self._direction = Direction_2(a,b)
 		if type(y).__name__ == 'Direction_2':
 			self._direction = y
 		if type(y).__name__ == 'vector_2':
@@ -470,13 +474,13 @@ class Ray_2(object):
 			self._direction = y.direction()
 		d = self._direction
 		if d.dx() > 0 and d.dy() >0:
-			p = Point_2(12,12,visible=False)
+			p = Point_2(EP,EP,visible=False)
 		if d.dx() < 0 and d.dy() >0:
-			p = Point_2(-12,12,visible=False)
+			p = Point_2(-EP,EP,visible=False)
 		if d.dx() > 0 and d.dy() <0:
-			p = Point_2(12,-12,visible=False)
+			p = Point_2(EP,-EP,visible=False)
 		if d.dx() < 0 and d.dy() <0:
-			p = Point_2(-12,-12,visible=False)
+			p = Point_2(-EP,-EP,visible=False)
 		if d.dx() == d.dy() == 0:
 			pass
 		self._ray=curve(pos=[(x.x(), x.y()),(p.x(), p.y())],visible=visible)
@@ -624,10 +628,15 @@ prepareScene()
 #if orientation(VisualPoints[m[0]],VisualPoints[m[1]],VisualPoints[m[2]]) == CLOCKWISE:
 #if orientation(Point_2(1,1),Point_2(2,2),Point_2(3,3)) == COLLINEAR:
 #	print "NiCe"
-l=Line_2(3,4,29)
-x=l.x_at_y(0)
-c = Point_2(l.x_at_y(0),0,visible=True,color=(1,0,0))
-print l.oriented_side(c)
+#################Line_2##################
+#l=Line_2(3,4,29)
+#x=l.x_at_y(0)
+#c = Point_2(l.x_at_y(0),0,visible=True,color=(1,0,0))
+#print l.oriented_side(c)
+################Ray_2######################
+a = Point_2(1,1)
+b = Point_2(3,3)
+r = Ray_2(b,a)
 """
 a = Point_2(1,1)
 b = Point_2(3,3)
