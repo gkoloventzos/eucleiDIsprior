@@ -106,7 +106,19 @@ def prepareControls():
 	ru = button(pos=(0,-20), height=20, width=50, color = (1,0,0), text='Run', action=lambda: run(VisualPoints))
 	while 1:
 		control.interact()
-
+def is_permute(l1,l2):
+	"""
+	Returning True if l2 is a cyclic permutation of l1
+	"""
+	if l1 == l2:
+		return true
+	for i in range(0,len(l1)-1):
+		list1 = l1[1:len(l1)]
+		list1.append(l1[0])
+		if list1 == l2:
+			return True
+		l1 = list1
+	return False
 class Point_2(object):#all clear
 	"""
 	Point in 2d
