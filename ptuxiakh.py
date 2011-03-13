@@ -639,7 +639,53 @@ class Segment_2(object):#all clear
 		self._segment.color=(x,y,z)
 
 	
-#class Triangle_2(object):
+class Triangle_2(object):
+	def __init__(self,x,y,z):
+		if type(x).__name__ == type(y).__name__ == type(z).__name__ == 'Point_2':
+			self._vertex=[]
+			self._segments=[]
+			self._vertex.extend([x,y,z])
+			self._segments.extend([Segment_2(x,y),Segment_2(y,z),Segment_2(z,x)])
+			self._orientation = orientation(x,y,z)
+		else:
+			raise INCOMPATIBLE_TYPES
+	def __eq__(self,other):
+		return is_permute(self._vertex,other.vertexs()) and self._orientation == other.orientation()
+	def __ne__(self,other):
+		return not is_permute(self._vertex,other.vertexs()) or self._orientation != other.orientation()
+	def vertex(self,i):
+		return self._vertex[i%3]
+	def __getitem__(self,i):
+		return self.vertex(i)
+	def is_degenerate(self):
+		return self.orientation() == COLLINEAR
+	def orientation(self):
+		return self._orientation
+	def oriented_side(self,p):############################not cool
+		if self.is_degenerate():
+			raise IS_DEGENERATE
+		x =[]
+		for i in range(3):
+			x.append(orientation(self._segments[i].source(),self._segments[i].target(),p))
+			if x[-1] == COLLINEAR:
+				return ON_ORIENTED_BOUNDARY
+		if x[0] == x[1] == x[2]:
+			return x[0]
+		else:
+			return ON_POSITIVE_SIDE
+	def opposite(self):
+		return Triangle_2(self._vertex[2],self._vertex[1],self._vertex[0])
+	def area(self):
+		"""
+		From Heron formula
+		"""
+		a = self._vertex[0].squared_length()
+		b = self._vertex[1].squared_length()
+		c = self._vertex[2].squared_length()
+		s = (a+b+c)/2
+		return sqrt(s*(s-a)*(s-b)*(s-c))
+		
+	
 #class Iso_rectangle_2(object):
 #class Circle_2(object):
 def orientation(a,b,c):
