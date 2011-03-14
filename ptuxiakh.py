@@ -223,10 +223,11 @@ class Vector_2(object):
 			if type(x).__name__=='Segment_2':
 				self._vector=vector(x._point_end.pos[0] - x._point_start.pos[0],x._point_end.pos[1] - x._point_start.pos[1])
 			elif type(x).__name__=='Ray_2':
-				pass
+				s = x.direction()
+				self._vector=vector(s.dx(),s.dy())
 			elif type(x).__name__=='Line_2':
 				self._vector=vector(x.b(),-x.a())
-		self._vvector=arrow(pos=(0,0,0),axis=(self._vector[0],self._vector[1],0),visible=visible,shaftwidth = 0)
+		#self._vvector=arrow(pos=(0,0,0),axis=(self._vector[0],self._vector[1],0),visible=visible,shaftwidth = 0)
 	def __repr__(self):
 		return 'Vector_2({self._vector[0]},{self._vector[1]})' .format(self=self)
 	def x(self):
@@ -291,17 +292,17 @@ class Direction_2(object):#all clear
 					self._direction = None
 				else:
 					self._direction=x.y()/x.x()
-				self._d.append(x.x())
-				self._d.append(x.y())				
+				self._d.extend([x.x(),x.y()])				
 			if type(x).__name__=='Line_2':
-				pass
+				self._direction=x.direction()
+				self._d.extend[-x.a(),x.b()]
 			if type(x).__name__=='Ray_2':
-				pass
+				f = x.to_vector()
+				self = Direction_2(f)
 			if type(x).__name__=='Segment_2':
 				s=x.source()
 				t=x.target()
-				self._d.append(t.x()-s.x())
-				self._d.append(t.y()-s.y())
+				self._d.extend([t.x()-s.x(),t.y()-s.y()])
 				if self._d[0]:
 					self._direction = None
 				else:
@@ -311,8 +312,7 @@ class Direction_2(object):#all clear
 				self._direction = None
 			else:
 				self._direction=y/x
-			self._d.append(x)
-			self._d.append(y)
+			self._d.extend([x,y])
 	def delta(self,i):
 		if i>=0 and i<=1:
 			self._d[i]
@@ -381,7 +381,7 @@ class Line_2(object):
 				self._a=-(y.y() - x.y())
 				self._c=-(self._b*x.y()+self._a*x.x())
 			if type(a).__name__ == 'Ray_2':
-				pass
+				self = Line_2(a.source(),a.direction())
 		if c == None:
 			if type(a).__name__ == 'Point_2' and type(b).__name__ =='Vector_2':
 				y=b.direction()
@@ -510,8 +510,16 @@ class Ray_2(object):
 			p = Point_2(EP,-EP,visible=False)
 		if d.dx() < 0 and d.dy() <0:
 			p = Point_2(-EP,-EP,visible=False)
-		if d.dx() == d.dy() == 0:
-			pass
+		if d.dx() == 0:
+			if d.dy() <0:
+				p = Point_2(-EP,x.y(),visible=False)
+			elif d.dy()>0:
+				p = Point_2(EP,x.y(),visible=False)
+		if d.dy() == 0:
+			if d.dx() <0:
+				p = Point_2(x.x(),-EP,visible=False)
+			elif d.dx()>0:
+				p = Point_2(x.x(),EP,visible=False)
 		self._source=x
 		self._ray=curve(pos=[(x.x(), x.y()),(p.x(), p.y())],color=color,visible=visible)
 	def color(self,x=0,y=0,z=0):
