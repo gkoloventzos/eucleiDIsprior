@@ -166,27 +166,27 @@ class Point_2(object):#all clear
 			return Point_2(self.x()-other.x(),self.y()-other.y())
 	def __eq__(self,other):
 		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
-			return True
+			return False
 		return (self.x()==other.x()) and (self.y()==other.y())
 	def __ne__(self,other):
 		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
-			return True
+			return False
 		return (self.x()!=other.x()) or (self.y()!=other.y())
 	def __gt__(self,other):
 		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
-			return True
+			return False
 		return self.x() < other.x() or ( self.x() == other.x() and self.y() < other.y() )
 	def __lt__(self,other):
 		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
-			return True
+			return False
 		return self.x() > other.x() or ( self.x() == other.x() and self.y() > other.y() )
 	def __ge__(self,other):
 		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
-			return True
+			return False
 		return self.x() >= other.x()
 	def __le__(self,other):
 		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
-			return True
+			return False
 		return self.x() <= other.x()
 	def __getitem__(self,i):
 		if i>=0 and i<=1:
@@ -214,14 +214,16 @@ class Vector_2(object):
 	"""
 	def __init__(self,x=None,y=None,visible=True):
 		if type(x).__name__==type(y).__name__=='NoneType':
-			self._vector=None
+			raise ASHOL
 		if type(x).__name__==type(y).__name__== 'Point_2':
 			self._vector=vector(y.x()-x.x(),y.y()-x.y())
 		if (type(x).__name__==type(y).__name__=='int') or(type(x).__name__==type(y).__name__=='float'):
 			self._vector=(x,y)
 		if type(y).__name__ == 'NoneType':
 			if type(x).__name__=='Segment_2':
-				self._vector=vector(x._point_end.pos[0] - x._point_start.pos[0],x._point_end.pos[1] - x._point_start.pos[1])
+				a = x.source()
+				b = x.target()
+				self._vector=vector(b.x() - a.x(),b.y() - a.y())
 			elif type(x).__name__=='Ray_2':
 				s = x.direction()
 				self._vector=vector(s.dx(),s.dy())
@@ -242,8 +244,12 @@ class Vector_2(object):
 	def direction(self):
 		return Direction_2(self)
 	def __eq__(self,other):
+		if other == None:
+			return False
 		return self._vector == other._vector
 	def __ne__(self,other):
+		if other == None:
+			return False
 		return self._vector != other._vector
 	def cartesian(self,i):
 		if i>=0 and i<=1:
@@ -303,19 +309,21 @@ class Direction_2(object):#all clear
 				s=x.source()
 				t=x.target()
 				self._d.extend([t.x()-s.x(),t.y()-s.y()])
-				if self._d[0]:
+				if self._d[0] == 0:
 					self._direction = None
 				else:
 					self._direction= self._d[1]/self._d[0]
-		else:
+		elif (isinstance(x,float) or isinstance(x,int)) and (isinstance(y,float) or isinstance(y,int)):
 			if x == 0:
 				self._direction = None
 			else:
 				self._direction=y/x
 			self._d.extend([x,y])
+		else:
+			raise No_Constructor
 	def delta(self,i):
 		if i>=0 and i<=1:
-			self._d[i]
+			return self._d[i]
 	def direction(self):
 		return self._direction
 	def dx(self):
@@ -327,8 +335,12 @@ class Direction_2(object):#all clear
 	def vector(self):
 		return Vector_2(self._d[0],self._d[1],visible=False)
 	def __eq__(self,other):
+		if other == None:
+			return False
 		return self.vector() == other.vector()
 	def __ne__(self,other):
+		if other == None:
+			return False
 		return self.vector() != other.vector()
 	def __gt__(self,other):
 		s = self.vector()
@@ -384,28 +396,30 @@ class Line_2(object):
 				self = Line_2(a.source(),a.direction())
 		if c == None:
 			if type(a).__name__ == 'Point_2' and type(b).__name__ =='Vector_2':
-				y=b.direction()
-				self._b=y[0]
-				self._a=y[1]
-				self._c=-(self._b*a.y()+self._a*a.x())
-			if type(a).__name__ == 'Point_2' and type(b).__name__ =='Direction_2':
 				self._b=b[0]
 				self._a=b[1]
 				self._c=-(self._b*a.y()+self._a*a.x())
+			if type(a).__name__ == 'Point_2' and type(b).__name__ =='Direction_2':
+				self._b=b.delta(0)
+				self._a=b.delta(1)
+				if a.y() != None and a.x() != None:
+					self._c=-(self._b*a.y()+self._a*a.x())
+				else:
+					self._c=0
 			if type(a).__name__ == 'Point_2' and type(b).__name__ =='Point_2':
 				p=Segment_2(a,b)
-				x=s.source()
-				y=s.target()
-				if a.is_degenerate():
+				x=p.source()
+				y=p.target()
+				if p.is_degenerate():
 					raise Degenetate_Segment
 				self._b=(y.x() - x.x())
 				self._a=-(y.y() - x.y())
-				self._c=-(self._b*s.y()+self._a*s.x())				
+				self._c=-(self._b*y.y()+self._a*y.x())				
 		if (isinstance(a,float) or isinstance(a,int)) and (isinstance(b,float) or isinstance(b,int)) and (isinstance(c,float) or isinstance(c,int)):
 				self._b=b
 				self._c=c
 				self._a=a
-		self._line=curve(pos=[(0, self.y_at_x(0)),(EP,self.y_at_x(EP)),(self.x_at_y(0),0),(self.x_at_y(EP),EP)],color=color,visible=visible)
+		self._line=curve(pos=[(-EP, self.y_at_x(-EP)),(EP,self.y_at_x(EP)),(self.x_at_y(-EP),-EP),(self.x_at_y(EP),EP)],color=color,visible=visible)
 	def a(self):
 		return self._a			
 	def b(self):
@@ -427,11 +441,11 @@ class Line_2(object):
 	def x_at_y(self,y):
 		if not self.is_horizontal():
 			return ((-self._b*y)-self._c)/self._a
-		raise IS_HORIZONTAL
+		return y#raise IS_HORIZONTAL
 	def y_at_x(self,x):
 		if not self.is_vertical():
 			return ((-self._a*x)-self._c)/self._b
-		raise IS_VERTICAL
+		return x#raise IS_VERTICAL
 	def __repr__(self):
 		return 'Line_2({self._a} x + {self._b} y + {self._c} = 0)' .format(self=self)
 	def visual(self,visible=None): #argue how will work
@@ -473,8 +487,12 @@ class Line_2(object):
 	def has_on_negative_side(self,p):
 		return self.oriented_side(p) == -1
 	def __eq__(self,other):
+		if other == None:
+			return False
 		return (self._a == other.a()) and (self._b == other.b()) and (self._c==other.c())
 	def __ne__(self,other):
+		if other == None:
+			return False
 		return (self._a != other.a()) or (self._b != other.b()) or (self._c != other.c())
 	def color(self,x=0,y=0,z=0):
 		if(x==0 and y==0 and z==0):
@@ -533,8 +551,12 @@ class Ray_2(object):
 	def source():
 		return self._source
 	def __eq__(self,other):
+		if other == None:
+			return False
 		return self._source == other.source() and self._direction == other.direction()
 	def __ne__(self,other):
+		if other == None:
+			return False
 		return self._source != other.source() or self._direction != other.direction()
 	def direction(self):
 		return self._direction
@@ -601,8 +623,12 @@ class Segment_2(object):#all clear
 	def is_vertical(self):
 		return self._point_start.x() == self._point_end.x()
 	def __eq__(self,other):
+		if other == None:
+			return False
 		return (self.source() == other.source()) and (self.target() == other.target())
 	def __ne__(self,other):
+		if other == None:
+			return False
 		return (self.source() != other.source()) or (self.target() != other.target())
 	def vertex(self,i):
 		if i>=0 and i<=1:
@@ -658,8 +684,12 @@ class Triangle_2(object):
 		else:
 			raise INCOMPATIBLE_TYPES
 	def __eq__(self,other):
+		if other == None:
+			return False
 		return is_permute(self._vertex,other.vertexs()) and self._orientation == other.orientation()
 	def __ne__(self,other):
+		if other == None:
+			return False
 		return not is_permute(self._vertex,other.vertexs()) or self._orientation != other.orientation()
 	def vertex(self,i):
 		return self._vertex[i%3]
@@ -760,8 +790,39 @@ prepareScene()
 ################Ray_2######################
 a = Point_2(1,1)
 b = Point_2(3,3)
+c = Point_2(3,8)
+d = Point_2(1,4)
+s1 = Segment_2(b,c)
+s2 = Segment_2(a,d)
+s3 = Segment_2(a,b)
+s4 = Segment_2(c,a)
+
+v1 = Vector_2(0,5)
+v2 = Vector_2(3,0)
+v3 = Vector_2(s3)
+v4 = Vector_2(s4)
+
+d1 = Direction_2(1,2)
+d2 = Direction_2(0,5)
+d3 = Direction_2(s1)
+d4 = Direction_2(7,0)
+d5 = Direction_2(0,0)
+d6 = Direction_2(s2)
+
+l1 = Line_2(s2)
+l2 = Line_2(s3)
+l3 = Line_2(s1)
+l4 = Line_2(d,v2)
+l5 = Line_2(b,v1)
+l6 = Line_2(c,d2)
+l7 = Line_2(a,d4)
+l8 = Line_2(a,c)
+l9 = Line_2(b,d)
+
+
+
 r = Ray_2(b,a)
-r.color(color.red)
+
 """
 a = Point_2(1,1)
 b = Point_2(3,3)
