@@ -228,7 +228,7 @@ class Vector_2(object):
 				s = x.direction()
 				self._vector=vector(s.dx(),s.dy())
 			elif type(x).__name__=='Line_2':
-				self._vector=vector(x.b(),-x.a())
+				self._vector=vector(x.a(),x.b())
 		#self._vvector=arrow(pos=(0,0,0),axis=(self._vector[0],self._vector[1],0),visible=visible,shaftwidth = 0)
 	def __repr__(self):
 		return 'Vector_2({self._vector[0]},{self._vector[1]})' .format(self=self)
@@ -389,7 +389,7 @@ class Line_2(object):
 				y=a.target()
 				if a.is_degenerate():
 					raise Degenetate_Segment
-				self._b=(y.x() - x.x())
+				self._b=(y.x() - x.x()) # y = -(y2-y1)/(x2-x1)*x +c
 				self._a=-(y.y() - x.y())
 				self._c=-(self._b*x.y()+self._a*x.x())
 			if type(a).__name__ == 'Ray_2':
@@ -400,8 +400,8 @@ class Line_2(object):
 				self._a=b[1]
 				self._c=-(self._b*a.y()+self._a*a.x())
 			if type(a).__name__ == 'Point_2' and type(b).__name__ =='Direction_2':
-				self._b=b.delta(0)
-				self._a=b.delta(1)
+				self._b=b.delta(1)
+				self._a=b.delta(0)
 				if a.y() != None and a.x() != None:
 					self._c=-(self._b*a.y()+self._a*a.x())
 				else:
@@ -419,7 +419,16 @@ class Line_2(object):
 				self._b=b
 				self._c=c
 				self._a=a
-		self._line=curve(pos=[(-EP, self.y_at_x(-EP)),(EP,self.y_at_x(EP)),(self.x_at_y(-EP),-EP),(self.x_at_y(EP),EP)],color=color,visible=visible)
+		print self._a,self._b,self._c
+		print self.y_at_x(-EP),self.y_at_x(EP),"\n"
+		if self.is_vertical():
+			f = self._c/self._a
+			self._line=curve(pos=[(-f, -EP),(-f,EP)],color=color,visible=visible)
+		elif self.is_horizontal():
+			f = self._c/self._b
+			self._line=curve(pos=[(-EP,-f),(EP,-f)],color=color,visible=visible)
+		else:
+			self._line=curve(pos=[(-EP, self.y_at_x(-EP)),(EP,self.y_at_x(EP))],color=color,visible=visible)
 	def a(self):
 		return self._a			
 	def b(self):
@@ -441,11 +450,9 @@ class Line_2(object):
 	def x_at_y(self,y):
 		if not self.is_horizontal():
 			return ((-self._b*y)-self._c)/self._a
-		return y#raise IS_HORIZONTAL
 	def y_at_x(self,x):
 		if not self.is_vertical():
 			return ((-self._a*x)-self._c)/self._b
-		return x#raise IS_VERTICAL
 	def __repr__(self):
 		return 'Line_2({self._a} x + {self._b} y + {self._c} = 0)' .format(self=self)
 	def visual(self,visible=None): #argue how will work
@@ -509,25 +516,24 @@ class Ray_2(object):
 	"""
 	def __init__(self,x,y,color=(1,1,1),visible=True):
 		if type(y).__name__ == 'Point_2':
-			y.visual()
-			a=y.x()-x.x()
-			b=y.y()-x.y()
-			self._direction = Direction_2(a,b)
+			#y.visual()
+			self._direction = Direction_2(Segment_2(x,y))
 		if type(y).__name__ == 'Direction_2':
 			self._direction = y
-		if type(y).__name__ == 'vector_2':
+		if type(y).__name__ == 'Vector_2':
 			self._direction = y.direction()
 		if type(y).__name__ == 'Line_2':
 			self._direction = y.direction()
 		d = self._direction
+		l = Line_2(x,d,visible=False)
 		if d.dx() > 0 and d.dy() >0:
-			p = Point_2(EP,EP,visible=False)
+			p = Point_2(EP,l.y_at_x(EP),visible=False)
 		if d.dx() < 0 and d.dy() >0:
-			p = Point_2(-EP,EP,visible=False)
+			p = Point_2(-EP,l.y_at_x(-EP),visible=False)
 		if d.dx() > 0 and d.dy() <0:
-			p = Point_2(EP,-EP,visible=False)
+			p = Point_2(EP,l.y_at_x(EP),visible=False)
 		if d.dx() < 0 and d.dy() <0:
-			p = Point_2(-EP,-EP,visible=False)
+			p = Point_2(-EP,l.y_at_x(-EP),visible=False)
 		if d.dx() == 0:
 			if d.dy() <0:
 				p = Point_2(-EP,x.y(),visible=False)
@@ -792,6 +798,9 @@ a = Point_2(1,1)
 b = Point_2(3,3)
 c = Point_2(3,8)
 d = Point_2(1,4)
+e = Point_2(2,5)
+f = Point_2(0,0,color=(0.4,1,0.7))
+
 s1 = Segment_2(b,c)
 s2 = Segment_2(a,d)
 s3 = Segment_2(a,b)
@@ -801,6 +810,7 @@ v1 = Vector_2(0,5)
 v2 = Vector_2(3,0)
 v3 = Vector_2(s3)
 v4 = Vector_2(s4)
+v5 = Vector_2(2,6)
 
 d1 = Direction_2(1,2)
 d2 = Direction_2(0,5)
@@ -809,19 +819,55 @@ d4 = Direction_2(7,0)
 d5 = Direction_2(0,0)
 d6 = Direction_2(s2)
 
-l1 = Line_2(s2)
-l2 = Line_2(s3)
-l3 = Line_2(s1)
-l4 = Line_2(d,v2)
-l5 = Line_2(b,v1)
-l6 = Line_2(c,d2)
-l7 = Line_2(a,d4)
-l8 = Line_2(a,c)
+'''
+sleep(5)
+l1 = Line_2(s2,color=(0,0,1))
+
+sleep(5)
+l2 = Line_2(s3,color=(0,1,0))
+
+sleep(5)
+l3 = Line_2(s1,color=(0,1,1))
+
+sleep(5)
+l4 = Line_2(d,v2,color=(1,0,0))
+
+sleep(5)
+l5 = Line_2(b,v1,color=(1,0,1))
+
+sleep(5)
+l6 = Line_2(c,d2,color=(1,1,0))
+
+sleep(5)
+l7 = Line_2(a,d4,color=(0.5,0.5,0.5))
+
+sleep(5)
+l8 = Line_2(a,c,color=(0,0.5,0.5))
+
+sleep(5)
 l9 = Line_2(b,d)
 
-
-
-r = Ray_2(b,a)
+a.color(color.red)
+b.color(color.red)
+c.color(color.red)
+d.color(color.red)
+'''
+r1 = Ray_2(b,e,color=color.green)
+sleep(5)
+ss = Segment_2(b,e)
+sleep(5)
+ll = ss.supporting_line()
+ll.visual()
+print ll.direction()
+sleep(5)
+lr1 = r1.supporting_line()
+print lr1.direction()
+lr1.visual()
+print lr1.direction()
+sleep(5)
+r2 = Ray_2(b,v5,color=(0,0,1))
+sleep(5)
+r3 = Ray_2(b,d1,color=(1,0,1))
 
 """
 a = Point_2(1,1)
