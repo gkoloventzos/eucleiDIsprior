@@ -228,7 +228,7 @@ class Vector_2(object):
 				s = x.direction()
 				self._vector=vector(s.dx(),s.dy())
 			elif type(x).__name__=='Line_2':
-				self._vector=vector(x.a(),x.b())
+				self._vector=vector(x.b(),-x.a())
 		#self._vvector=arrow(pos=(0,0,0),axis=(self._vector[0],self._vector[1],0),visible=visible,shaftwidth = 0)
 	def __repr__(self):
 		return 'Vector_2({self._vector[0]},{self._vector[1]})' .format(self=self)
@@ -394,14 +394,14 @@ class Line_2(object):
 				self._c=-(self._b*x.y()+self._a*x.x())
 			if type(a).__name__ == 'Ray_2':
 				self = Line_2(a.source(),a.direction())
-		if c == None:
+		elif c == None:
 			if type(a).__name__ == 'Point_2' and type(b).__name__ =='Vector_2':
-				self._b=b[0]
-				self._a=b[1]
+				self._b=b.x()
+				self._a=-b.y()
 				self._c=-(self._b*a.y()+self._a*a.x())
 			if type(a).__name__ == 'Point_2' and type(b).__name__ =='Direction_2':
-				self._b=b.delta(1)
-				self._a=b.delta(0)
+				self._b=b.delta(0)
+				self._a=-b.delta(1)
 				if a.y() != None and a.x() != None:
 					self._c=-(self._b*a.y()+self._a*a.x())
 				else:
@@ -677,6 +677,8 @@ class Segment_2(object):#all clear
 			self._segment.color=x
 			return
 		self._segment.color=(x,y,z)
+	def direction(self):
+		return Direction_2(self)
 
 	
 class Triangle_2(object):
@@ -866,8 +868,10 @@ lr1.visual()
 print lr1.direction()
 sleep(5)
 r2 = Ray_2(b,v5,color=(0,0,1))
+l = Line_2(b,v5,color = (1,0,0))
 sleep(5)
 r3 = Ray_2(b,d1,color=(1,0,1))
+re = Line_2(b,d1,color = (0,1,0))
 
 """
 a = Point_2(1,1)
