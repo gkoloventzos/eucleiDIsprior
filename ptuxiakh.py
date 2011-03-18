@@ -924,7 +924,7 @@ d6 = Direction_2(s2)
 sleep(5)
 l1 = Line_2(s2,color=(0,0,1))
 
-sleep(5)'''
+sleep(5)
 l2 = Line_2(s3)
 print l2.a()
 print l2.b()
@@ -940,7 +940,7 @@ print l2.point(100)
 print l2.x_at_y(4)
 print l2.y_at_x(3)
 
-'''
+
 print l2.oriented_side(c)
 print l2.oriented_side(f)
 print l2.oriented_side(g)
