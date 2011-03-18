@@ -22,11 +22,16 @@ class No_Constructor(Exception):
 		self.name = type(value[0]).__name__
 		self.parameters = value[1:]
 	def repr(self):
-		print '{self.name} has no constructor with this arguments' .format(self=self)
+		print '{self.name} has no constructor with this arguments' .format(self=self),
 		for i in range(self.parameters):
 			if self.parameters[i] != None:
-				print '{self.parameters[i]}' .format(self=self)
-
+				print '{self.parameters[i]}' .format(self=self),
+			print ""
+class Is_Degenerate(Exception):
+	def __init__(self,value):
+		self.name = type(value).__name__
+	def repr(self): 
+		print 'The {self.name} is degenerate' .format(self=self)
 def prepareScene():
 	#scene.userspin = False #Gia na exoume k deksi koumpi sto pontiki
 	scene.range = 10
@@ -726,7 +731,7 @@ class Triangle_2(object):
 		return self._orientation
 	def oriented_side(self,p):############################not cool
 		if self.is_degenerate():
-			raise IS_DEGENERATE
+			raise Is_Degenerate(self)
 		x =[]
 		for i in range(3):
 			x.append(orientation(self._segments[i].source(),self._segments[i].target(),p))
@@ -920,11 +925,11 @@ d4 = Direction_2(7,0)
 d5 = Direction_2(0,0)
 d6 = Direction_2(s2)
 
-'''
-sleep(5)
+
+
 l1 = Line_2(s2,color=(0,0,1))
 
-sleep(5)
+
 l2 = Line_2(s3)
 print l2.a()
 print l2.b()
@@ -939,7 +944,7 @@ print l2.point(1)
 print l2.point(100)
 print l2.x_at_y(4)
 print l2.y_at_x(3)
-
+'''
 
 print l2.oriented_side(c)
 print l2.oriented_side(f)
