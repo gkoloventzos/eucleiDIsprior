@@ -7,10 +7,25 @@ VisualPoints = None
 VisualSegments = None
 control = None
 
+
+orien = {"CLOCKWISE":-1,"COLLINEAR":0,"COUNTERCLOCKWISE":1}
+rorien = {-1:"CLOCKWISE",0:"COLLINEAR",1:"COUNTERCLOCKWISE"}
+sides = {"ON_NEGATIVE_SIDE":-1,"ON_ORIENTED_BOUNDARY":0,"ON_POSITIVE_SIDE":1}
+rsides = {-1:"ON_NEGATIVE_SIDE",0:"ON_ORIENTED_BOUNDARY",1:"ON_POSITIVE_SIDE"}
 CLOCKWISE = ON_NEGATIVE_SIDE = -1
 COUNTERCLOCKWISE = ON_POSITIVE_SIDE = 1
 COLLINEAR = ON_ORIENTED_BOUNDARY = 0
 EP = 15	#Extreme Point for creating lines and rays which does not have a particulary end
+
+class No_Constructor(Exception):
+	def __init__(self,value):
+		self.name = type(value[0]).__name__
+		self.parameters = value[1:]
+	def repr(self):
+		print '{self.name} has no constructor with this arguments' .format(self=self)
+		for i in range(self.parameters):
+			if self.parameters[i] != None:
+				print '{self.parameters[i]}' .format(self=self)
 
 def prepareScene():
 	#scene.userspin = False #Gia na exoume k deksi koumpi sto pontiki
@@ -106,6 +121,7 @@ def prepareControls():
 	ru = button(pos=(0,-20), height=20, width=50, color = (1,0,0), text='Run', action=lambda: run(VisualPoints))
 	while 1:
 		control.interact()
+
 def is_permute(l1,l2):
 	"""
 	Returning True if l2 is a cyclic permutation of l1
@@ -119,6 +135,8 @@ def is_permute(l1,l2):
 			return True
 		l1 = list1
 	return False
+	
+
 class Point_2(object):#all clear
 	"""
 	Point in 2d
@@ -165,11 +183,11 @@ class Point_2(object):#all clear
 				return Vector_2(self,other)
 			return Point_2(self.x()-other.x(),self.y()-other.y())
 	def __eq__(self,other):
-		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
+		if other == None:
 			return False
 		return (self.x()==other.x()) and (self.y()==other.y())
 	def __ne__(self,other):
-		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
+		if other==None:
 			return False
 		return (self.x()!=other.x()) or (self.y()!=other.y())
 	def __gt__(self,other):
@@ -214,7 +232,7 @@ class Vector_2(object):
 	"""
 	def __init__(self,x=None,y=None,visible=True):
 		if type(x).__name__==type(y).__name__=='NoneType':
-			raise ASHOL
+			raise No_Constructor([self,x,y])
 		if type(x).__name__==type(y).__name__== 'Point_2':
 			self._vector=vector(y.x()-x.x(),y.y()-x.y())
 		if (type(x).__name__==type(y).__name__=='int') or(type(x).__name__==type(y).__name__=='float'):
@@ -320,7 +338,7 @@ class Direction_2(object):#all clear
 				self._direction=y/x
 			self._d.extend([x,y])
 		else:
-			raise No_Constructor
+			raise No_Constructor([self,x,y])
 	def delta(self,i):
 		if i>=0 and i<=1:
 			return self._d[i]
@@ -461,19 +479,18 @@ class Line_2(object):
 		else:
 			self._line.visible = visible
 		return self._line.visible
-	def oriented_side(self,c): #needs debug
-		x1 = self.x_at_y(0)
-		y1 = self.y_at_x(0)
-		a = Point_2(x1,0,visible=False)
-		b = Point_2(0,y1,visible=False)
+	def oriented_side(self,c):
+		x1 = self.x_at_y(1)
+		y1 = self.y_at_x(x1+1)
+		a = Point_2(x1,1,visible=False)
+		b = Point_2(x1+1,y1,visible=False)
 		orie = ((a.x()-c.x())*(b.y()-c.y()))-((a.y()-c.y())*(b.x()-c.x()))
-		print orie
 		if orie == 0:
-			return ON_ORIENTED_BOUNDARY
+			return rsides[0]
 		elif orie < 0:
-			return ON_NEGATIVE_SIDE
+			return rsides[-1]
 		else:
-			return ON_POSITIVE_SIDE
+			return rsides[1]
 	def point(self,i):
 		x=1+self._b*i
 		y=self.y_at_x(x)
@@ -483,9 +500,9 @@ class Line_2(object):
 		x=d.dx()
 		y=d.dy()
 		if (x >=0 and y>=0) or (x <=0 and y<=0):
-			d1=Direction_2(y,-x)
-		else:
 			d1=Direction_2(-y,x)
+		else:
+			d1=Direction_2(y,-x)
 		return Line_2(p,d1,visible=False)
 	def has_on(self,p):
 		return self.oriented_side(p) == 0
@@ -690,7 +707,7 @@ class Triangle_2(object):
 			self._segments.extend([Segment_2(x,y),Segment_2(y,z),Segment_2(z,x)])
 			self._orientation = orientation(x,y,z)
 		else:
-			raise INCOMPATIBLE_TYPES
+			raise No_Constructor([self,x,y,z])
 	def __eq__(self,other):
 		if other == None:
 			return False
@@ -733,15 +750,96 @@ class Triangle_2(object):
 		
 	
 #class Iso_rectangle_2(object):
-#class Circle_2(object):
+class Circle_2(object):
+	def __init__(self,x,y,z="COUNTERCLOCKWISE",color=(1,1,1),visible=True):
+		if type(x).__name__ == type(y).__name__ == type(z).__name__ == 'Point_2':
+			o = orientation(x,y,z)
+			if o != COLLINEAR:
+				self._orientation = orien[o]
+			l1 = Line_2(x,y,visible=False)
+			l2 = Line_2(y,z,visible=False)
+			self._center = intersection(l1.perpendicular(),l2.perpendicular())
+			s = Segment_2(self._center,x,visible=False)
+			self._sqradius = s.squared_length()
+		elif type(x).__name__ == type(y).__name__ == 'Point_2' and type(z).__name__ == 'str':
+			if z != "COLLINEAR":
+				self._orientation = orien[z] #lathos string h arithmos????????????????????
+				s = Segment_2(p,q)
+				self._center = s.middle()
+				self._sqradius = s.squared_length()/2
+		elif type(x).__name__ == 'Point_2' and type(y).__name__ == 'str':
+			if y != "COLLINEAR":
+				self._center =x
+				self._sqradius =0
+		elif type(x).__name__ =='Point_2' and (type(y).__name__ == 'int' or type(y).__name__ == 'float') and type(z).__name__ == 'str':
+				if z != "COLLINEAR" and y >= 0:
+					self._center =x
+					self._orientation = orien[z]
+					self._sqradius = y
+		else:
+			raise No_Constructor([self,x,y,z])
+		self._circle = ring(pos = (self._center.x(),self._center.y(),0), axis=(0,0,1),thickness=0.02,radius = sqrt(self._sqradius),color=color,visible=visible)
+	def center(self):
+		return self._center
+	def squared_radius(self):
+		return self._sqradius
+	def orientation(self):
+		return self._orientation
+	def is_degenerate(self):
+		return self._sqradius == 0
+	def opposite(self):
+		ori = rorien[-self._orientation]
+		return Circle_2(self._center,self._sqradius,ori)
+	def oriented_side(self,p):
+		s = Segment_2(self._center,p,visible=False)
+		ori = s.squared_length() - self._sqradious
+		if ori == 0:
+			return ori
+		if ori < 0:
+			return -1
+		if ori > 0:
+			return 1
+	def bounded_side(self,p):
+		s = Segment_2(self._center,p,visible=False)
+		ori = s.squared_length() - self._sqradious
+		if ori == 0:
+			return ori
+		if ori < 0:
+			return -1
+		if ori > 0:
+			return 1		
+	
+			
+			
 def orientation(a,b,c):
 		orie = ((a.x()-c.x())*(b.y()-c.y()))-((a.y()-c.y())*(b.x()-c.x()))
 		if orie == 0:
-			return COLLINEAR
+			return "COLLINEAR"
 		elif orie < 0:
-			return CLOCKWISE
+			return "CLOCKWISE"
 		else:
-			return COUNTERCLOCKWISE
+			return "COUNTERCLOCKWISE"
+def intersection(a,b):
+	"""
+	Intersection in 2d
+	"""
+	if type(a).__name__ == type(b).__name__ =='Line_2':
+		p = (a.a()*b.b()) - (a.b()*b.a())
+		if p != 0:
+			return Point_2((-a.c()*b.b()+a.b()*b.c())/p,(-(a.a()*b.c())+a.c()*b.a())/p)
+	elif type(a).__name__ == type(b).__name__ =='Segment_2':
+		max1 = a.max()
+		min1 = a.min()
+		max2 = b.max()
+		min2 = b.min()
+		r = intersection(a.supporting_line(),b.supporting_line())
+		if r >= min1 and r>=min2 and r <=max1 and r<=max2:
+			return r
+		else:
+			return None
+	else:
+		return None
+		
 
 def run(Vpoints):
       """
@@ -802,6 +900,7 @@ c = Point_2(3,8)
 d = Point_2(1,4)
 e = Point_2(2,5)
 f = Point_2(0,0,color=(0.4,1,0.7))
+g = Point_2(3,-2)
 
 s1 = Segment_2(b,c)
 s2 = Segment_2(a,d)
@@ -825,8 +924,26 @@ d6 = Direction_2(s2)
 sleep(5)
 l1 = Line_2(s2,color=(0,0,1))
 
-sleep(5)
-l2 = Line_2(s3,color=(0,1,0))
+sleep(5)'''
+l2 = Line_2(s3)
+print l2.a()
+print l2.b()
+print l2.c()
+print l2.direction()
+wl = l2.perpendicular(d)
+wl.visual()
+print wl.point(1)
+print wl.point(100)
+print wl.direction()
+print l2.point(1)
+print l2.point(100)
+print l2.x_at_y(4)
+print l2.y_at_x(3)
+
+'''
+print l2.oriented_side(c)
+print l2.oriented_side(f)
+print l2.oriented_side(g)
 
 sleep(5)
 l3 = Line_2(s1,color=(0,1,1))
@@ -853,7 +970,7 @@ a.color(color.red)
 b.color(color.red)
 c.color(color.red)
 d.color(color.red)
-'''
+
 r1 = Ray_2(b,e,color=color.green)
 sleep(5)
 ss = Segment_2(b,e)
@@ -868,10 +985,25 @@ lr1.visual()
 print lr1.direction()
 sleep(5)
 r2 = Ray_2(b,v5,color=(0,0,1))
+sleep(5)
 l = Line_2(b,v5,color = (1,0,0))
 sleep(5)
 r3 = Ray_2(b,d1,color=(1,0,1))
+sleep(5)
 re = Line_2(b,d1,color = (0,1,0))
+'''
+
+
+#l = Line_2(3,3,4,color = (1,0,0))
+#re = Line_2(3,3,9,color = (0,1,0))
+
+#s1 = Segment_2(e,b)
+#s2 = Segment_2(e,f)
+#r = intersection(s1,s2)
+#if r :
+#	r.color(1,0,1)
+
+#c = Circle_2(f,2)
 
 """
 a = Point_2(1,1)
