@@ -710,7 +710,7 @@ class Triangle_2(object):
 			self._segments=[]
 			self._vertex.extend([x,y,z])
 			self._segments.extend([Segment_2(x,y),Segment_2(y,z),Segment_2(z,x)])
-			self._orientation = orientation(x,y,z)
+			self._orientation = orien[orientation(x,y,z)]
 		else:
 			raise No_Constructor([self,x,y,z])
 	def __eq__(self,other):
@@ -729,18 +729,32 @@ class Triangle_2(object):
 		return self.orientation() == COLLINEAR
 	def orientation(self):
 		return self._orientation
-	def oriented_side(self,p):############################not cool
+	def oriented_side(self,p):
 		if self.is_degenerate():
 			raise Is_Degenerate(self)
 		x =[]
 		for i in range(3):
 			x.append(orientation(self._segments[i].source(),self._segments[i].target(),p))
-			if x[-1] == COLLINEAR:
-				return ON_ORIENTED_BOUNDARY
+			if x[-1] == "COLLINEAR":
+				return 0
 		if x[0] == x[1] == x[2]:
-			return x[0]
+			return -1
 		else:
-			return ON_POSITIVE_SIDE
+			return 1
+	def bounded_side(self,p):
+		if self.is_degenerate():
+			raise Is_Degenerate(self)
+		o = self.oriented_side(p)
+		if o == 0:
+			return 0
+		if o < 0 and self._orientation <0:
+			return 1
+		if o < 0 and self._orientation>0:
+			return -1
+		if o > 0 and self._orientation <0:
+			return -1
+		if o > 0 and self._orientation>0:
+			return 1		
 	def opposite(self):
 		return Triangle_2(self._vertex[2],self._vertex[1],self._vertex[0])
 	def area(self):
@@ -768,7 +782,7 @@ class Circle_2(object):
 			self._sqradius = s.squared_length()
 		elif type(x).__name__ == type(y).__name__ == 'Point_2' and type(z).__name__ == 'str':
 			if z != "COLLINEAR":
-				self._orientation = orien[z] #lathos string h arithmos????????????????????
+				self._orientation = orien[z]
 				s = Segment_2(p,q)
 				self._center = s.middle()
 				self._sqradius = s.squared_length()/2
@@ -903,15 +917,27 @@ a = Point_2(1,1)
 b = Point_2(3,3)
 c = Point_2(3,8)
 d = Point_2(1,4)
-e = Point_2(2,5)
+e = Point_2(2,5,color=(1,0,0))
 f = Point_2(0,0,color=(0.4,1,0.7))
 g = Point_2(3,-2)
 
-s1 = Segment_2(b,c)
-s2 = Segment_2(a,d)
-s3 = Segment_2(a,b)
-s4 = Segment_2(c,a)
 
+tr = Triangle_2(c,f,g)
+print tr.bounded_side(a)
+print tr.bounded_side(b)
+print tr.bounded_side(d)
+print tr.bounded_side(e)
+tr1 = tr.opposite()
+print tr1.bounded_side(a)
+print tr1.bounded_side(b)
+print tr1.bounded_side(d)
+print tr1.bounded_side(e)
+#s1 = Segment_2(b,c)
+#s2 = Segment_2(a,d)
+#s3 = Segment_2(a,b)
+#s4 = Segment_2(c,a)
+#print orientation(c,a,e)
+'''
 v1 = Vector_2(0,5)
 v2 = Vector_2(3,0)
 v3 = Vector_2(s3)
@@ -944,7 +970,7 @@ print l2.point(1)
 print l2.point(100)
 print l2.x_at_y(4)
 print l2.y_at_x(3)
-'''
+
 
 print l2.oriented_side(c)
 print l2.oriented_side(f)
