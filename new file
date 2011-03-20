@@ -1,0 +1,110 @@
+>>> from visual import *
+>>> m = faces( pos =[(0,0,0),(1,1,0),(0,1,0),(0,0,0),(-1,0,0),(-1,-1,0),(0,0,0),(0,1,0),(-1,1,0)],color=color.blue)
+>>> m.normal = m.pos
+>>> m.normal = -m.pos
+>>> m.normal = m.pos
+>>> m.normal = -m.pos
+>>> m.normal = m.pos
+>>> m.normal = -m.pos
+>>> m.normal = m.pos
+>>> m.normal = -m.pos
+>>> m.normal = m.pos
+>>> m.normal = -m.pos
+>>> m.normal = m.pos
+>>> m.smooth()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'faces' object has no attribute 'smooth'
+>>> m.make_normals()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'faces' object has no attribute 'make_normals'
+>>> m.visible=False
+>>> m.visible=True
+>>> m.pos[0]
+array([ 0.,  0.,  0.])
+>>> m.pos[1]
+array([ 1.,  1.,  0.])
+>>> m.pos[2]
+array([ 0.,  1.,  0.])
+>>> print m.pos
+[[ 0.  0.  0.]
+ [ 1.  1.  0.]
+ [ 0.  1.  0.]
+ [ 0.  0.  0.]
+ [-1.  0.  0.]
+ [-1. -1.  0.]
+ [ 0.  0.  0.]
+ [ 0.  1.  0.]
+ [-1.  1.  0.]]
+>>> print m.normal
+[[ 0.  0.  0.]
+ [ 1.  1.  0.]
+ [ 0.  1.  0.]
+ [ 0.  0.  0.]
+ [-1.  0.  0.]
+ [-1. -1.  0.]
+ [ 0.  0.  0.]
+ [ 0.  1.  0.]
+ [-1.  1.  0.]]
+>>> m.normal = m.pos
+>>> print m.pos
+[[ 0.  0.  0.]
+ [ 1.  1.  0.]
+ [ 0.  1.  0.]
+ [ 0.  0.  0.]
+ [-1.  0.  0.]
+ [-1. -1.  0.]
+ [ 0.  0.  0.]
+ [ 0.  1.  0.]
+ [-1.  1.  0.]]
+>>> print m.pos
+[[ 0.  0.  0.]
+ [ 1.  1.  0.]
+ [ 0.  1.  0.]
+ [ 0.  0.  0.]
+ [-1.  0.  0.]
+ [-1. -1.  0.]
+ [ 0.  0.  0.]
+ [ 0.  1.  0.]
+ [-1.  1.  0.]]
+>>> m.normal = -m.pos
+>>> print m.pos
+[[ 0.  0.  0.]
+ [ 1.  1.  0.]
+ [ 0.  1.  0.]
+ [ 0.  0.  0.]
+ [-1.  0.  0.]
+ [-1. -1.  0.]
+ [ 0.  0.  0.]
+ [ 0.  1.  0.]
+ [-1.  1.  0.]]
+>>> print m.normal
+[[-0. -0. -0.]
+ [-1. -1. -0.]
+ [-0. -1. -0.]
+ [-0. -0. -0.]
+ [ 1. -0. -0.]
+ [ 1.  1. -0.]
+ [-0. -0. -0.]
+ [-0. -1. -0.]
+ [ 1. -1. -0.]]
+>>> m.normal[0] = m.pos[0]
+>>> m.normal[1] = m.pos[1]
+>>> m.normal[2] = m.pos[2]
+>>> m.normal[6] = m.pos[6]
+>>> m.normal[7] = m.pos[7]
+>>> m.normal[8] = m.pos[8]
+>>> print m.normal
+[[ 0.  0.  0.]
+ [ 1.  1.  0.]
+ [ 0.  1.  0.]
+ [-0. -0. -0.]
+ [ 1. -0. -0.]
+ [ 1.  1. -0.]
+ [ 0.  0.  0.]
+ [ 0.  1.  0.]
+ [-1.  1.  0.]]
+>>> print m.pos[8]
+[-1.  1.  0.]
+
