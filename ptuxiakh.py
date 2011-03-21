@@ -84,6 +84,25 @@ def getVisualPoints():
 			points.append(point)
 	return points
 	
+def getPolygon():
+	points =[]
+	segments =[]
+	while True:
+		if scene.kb.keys:
+			s = scene.kb.getkey()
+			if s == 'backspace':
+				break
+		if scene.mouse.clicked:
+			click =	scene.mouse.getclick()
+			point = Point_2(click.pos.x,click.pos.y)
+			points.append(point)
+			if len(points)>1:
+				segment = Segment_2(points[-2],points[-1])
+				segments.append(segment)
+	segment = Segment_2(points[-1],points[0])
+	segments.append(segment)
+	return points,segments
+			
 def movePoints():
 	pick = None # no object picked out of the scene yet
 	global VisualSegments
@@ -691,14 +710,6 @@ class Segment_2(object):#all clear
 		else:
 			self._segment.visible = visible
 		return self._segment.visible
-	def color(self,x=0,y=0,z=0):
-		if(x==0 and y==0 and z==0):
-			print self._segment.color
-			return
-		if type(x).__name__=='tuple':
-			self._segment.color=x
-			return
-		self._segment.color=(x,y,z)
 	def direction(self):
 		return Direction_2(self)
 
@@ -711,6 +722,11 @@ class Triangle_2(object):
 			self._vertex.extend([x,y,z])
 			self._segments.extend([Segment_2(x,y),Segment_2(y,z),Segment_2(z,x)])
 			self._orientation = orien[orientation(x,y,z)]
+			if self._orientation == -1:
+				r.extend([z,y,x])
+			else:
+				r.extend([x,y,z])
+			self._face= faces(pos=r,normal=[(1,1,0),(1,1,0),(1,1,0)])
 		else:
 			raise No_Constructor([self,x,y,z])
 	def __eq__(self,other):
@@ -766,6 +782,14 @@ class Triangle_2(object):
 		c = self._vertex[2].squared_length()
 		s = (a+b+c)/2
 		return sqrt(s*(s-a)*(s-b)*(s-c))
+	def color(self,x=0,y=0,z=0):
+		if(x==0 and y==0 and z==0):
+			print self._face.color
+			return
+		if type(x).__name__=='tuple':
+			self._face.color=x
+			return
+		self._face.color=(x,y,z)
 		
 	
 #class Iso_rectangle_2(object):
