@@ -1,7 +1,8 @@
+#!/usr/bin/python
 from __future__ import division
 from visual import *
 from visual.controls import *
-from time import sleep
+import time
 
 VisualPoints = None
 VisualSegments = None
@@ -271,7 +272,6 @@ class Vector_2(object):
 				self._vector=vector(s.dx(),s.dy())
 			elif type(x).__name__=='Line_2':
 				self._vector=vector(x.b(),-x.a())
-		#self._vvector=arrow(pos=(0,0,0),axis=(self._vector[0],self._vector[1],0),visible=visible,shaftwidth = 0)
 	def __repr__(self):
 		return 'Vector_2({self._vector[0]},{self._vector[1]})' .format(self=self)
 	def x(self):
@@ -722,11 +722,15 @@ class Triangle_2(object):
 			self._vertex.extend([x,y,z])
 			self._segments.extend([Segment_2(x,y),Segment_2(y,z),Segment_2(z,x)])
 			self._orientation = orien[orientation(x,y,z)]
+			r=[]
+			z1=(z.x(),z.y(),0)
+			x1=(x.x(),x.y(),0)
+			y1=(y.x(),y.y(),0)
 			if self._orientation == -1:
-				r.extend([z,y,x])
+				r.extend([z1,y1,x1])
 			else:
-				r.extend([x,y,z])
-			self._face= faces(pos=r,normal=[(1,1,0),(1,1,0),(1,1,0)])
+				r.extend([x1,y1,z1])
+			self._face= faces(pos=r,normal=[(1,1,0),(1,1,0),(1,1,0)],visible=False)
 		else:
 			raise No_Constructor([self,x,y,z])
 	def __eq__(self,other):
@@ -788,6 +792,7 @@ class Triangle_2(object):
 			return
 		if type(x).__name__=='tuple':
 			self._face.color=x
+			self._face.visible=True
 			return
 		self._face.color=(x,y,z)
 		
@@ -916,217 +921,251 @@ def run(Vpoints):
       return hull
  
 class Polygon_2(object):
-	def __init__(self,points,vertices=None,visible=True):
-		pass
+	def __init__(self,points,segments=None,visible=True):
+		if edge !=None:
+			self._points=points
+			self._segments=segments
+		else:
+			if len(points)>1:
+				for i in range(len(points)-1):
+					segment = Segment_2(points[i],points[i+1])
+					self._segments.append(segment)
+				segment = Segment_2(points[-1],points[0],visible=visible)
+				self._segments.append(segment)
+				self._points=points
+			else:
+				raise No_Constructor
+	def create(self):
+		for s in self._segments:
+			s.visual()
+		self._segments=[]
+		if len(self._points)>1:
+				for i in range(len(self._points)-1):
+					segment = Segment_2(self._points[i],self._points[i+1])
+					self._segments.append(segment)
+				segment = Segment_2(self._points[-1]self._,points[0],visible=True)
+				self._segments.append(segment)		
+	def clear(self):
+		for s in self._segments:
+			s.visual()
+		self._segments=[]
+		for t in self._points:
+			t.visual()
+		self._points=[]
+	def size(self):
+		return len(self._points)
+	def is_empty(self):
+		return self.size() == 0
+	
 
 prepareScene()
 
-def main():
-	prepareScene()
-	#prepareControls()
-	#m=[]
-	#m=getVisualPoints()
-	#print m
-	#t = jarvis(m)
-	#print t 
-	#print VisualPoints
-	#a = Segment_2(VisualPoints[m[0]],VisualPoints[m[1]])
-	#b = Segment_2(VisualPoints[m[0]],VisualPoints[m[2]])
-	#sleep(5)
-	#movePoints()
-	#print VisualPoints
-	#if orientation(VisualPoints[m[0]],VisualPoints[m[1]],VisualPoints[m[2]]) == CLOCKWISE:
-	#if orientation(Point_2(1,1),Point_2(2,2),Point_2(3,3)) == COLLINEAR:
-	#	print "NiCe"
-	#################Line_2##################
-	#l=Line_2(3,4,29)
-	#x=l.x_at_y(0)
-	#c = Point_2(l.x_at_y(0),0,visible=True,color=(1,0,0))
-	#print l.oriented_side(c)
-	################Ray_2######################
-	a = Point_2(1,1)
-	b = Point_2(3,3)
-	c = Point_2(3,8)
-	d = Point_2(1,4)
-	e = Point_2(2,5,color=(1,0,0))
-	f = Point_2(0,0,color=(0.4,1,0.7))
-	g = Point_2(3,-2)
+#prepareControls()
+#m=[]
+#m=getVisualPoints()
+#print m
+#t = jarvis(m)
+#print t 
+#print VisualPoints
+#a = Segment_2(VisualPoints[m[0]],VisualPoints[m[1]])
+#b = Segment_2(VisualPoints[m[0]],VisualPoints[m[2]])
+#sleep(5)
+#movePoints()
+#print VisualPoints
+#if orientation(VisualPoints[m[0]],VisualPoints[m[1]],VisualPoints[m[2]]) == CLOCKWISE:
+#if orientation(Point_2(1,1),Point_2(2,2),Point_2(3,3)) == COLLINEAR:
+#	print "NiCe"
+#################Line_2##################
+#l=Line_2(3,4,29)
+#x=l.x_at_y(0)
+#c = Point_2(l.x_at_y(0),0,visible=True,color=(1,0,0))
+#print l.oriented_side(c)
+################Ray_2######################
+"""
+a = Point_2(1,1)
+b = Point_2(3,3)
+c = Point_2(3,8)
+d = Point_2(1,4)
+e = Point_2(2,5,color=(1,0,0))
+f = Point_2(0,0,color=(0.4,1,0.7))
+g = Point_2(3,-2)
 
 
-	tr = Triangle_2(c,f,g)
-	print tr.bounded_side(a)
-	print tr.bounded_side(b)
-	print tr.bounded_side(d)
-	print tr.bounded_side(e)
-	tr1 = tr.opposite()
-	print tr1.bounded_side(a)
-	print tr1.bounded_side(b)
-	print tr1.bounded_side(d)
-	print tr1.bounded_side(e)
-	#s1 = Segment_2(b,c)
-	#s2 = Segment_2(a,d)
-	#s3 = Segment_2(a,b)
-	#s4 = Segment_2(c,a)
-	#print orientation(c,a,e)
-	'''
-	v1 = Vector_2(0,5)
-	v2 = Vector_2(3,0)
-	v3 = Vector_2(s3)
-	v4 = Vector_2(s4)
-	v5 = Vector_2(2,6)
+tr = Triangle_2(c,f,g)
+print tr.bounded_side(a)
+print tr.bounded_side(b)
+print tr.bounded_side(d)
+print tr.bounded_side(e)
+tr1 = tr.opposite()
+print tr1.bounded_side(a)
+print tr1.bounded_side(b)
+print tr1.bounded_side(d)
+print tr1.bounded_side(e)
+"""
+#s1 = Segment_2(b,c)
+#s2 = Segment_2(a,d)
+#s3 = Segment_2(a,b)
+#s4 = Segment_2(c,a)
+#print orientation(c,a,e)
+'''
+v1 = Vector_2(0,5)
+v2 = Vector_2(3,0)
+v3 = Vector_2(s3)
+v4 = Vector_2(s4)
+v5 = Vector_2(2,6)
 
-	d1 = Direction_2(1,2)
-	d2 = Direction_2(0,5)
-	d3 = Direction_2(s1)
-	d4 = Direction_2(7,0)
-	d5 = Direction_2(0,0)
-	d6 = Direction_2(s2)
-
-
-
-	l1 = Line_2(s2,color=(0,0,1))
+d1 = Direction_2(1,2)
+d2 = Direction_2(0,5)
+d3 = Direction_2(s1)
+d4 = Direction_2(7,0)
+d5 = Direction_2(0,0)
+d6 = Direction_2(s2)
 
 
-	l2 = Line_2(s3)
-	print l2.a()
-	print l2.b()
-	print l2.c()
-	print l2.direction()
-	wl = l2.perpendicular(d)
-	wl.visual()
-	print wl.point(1)
-	print wl.point(100)
-	print wl.direction()
-	print l2.point(1)
-	print l2.point(100)
-	print l2.x_at_y(4)
-	print l2.y_at_x(3)
+
+l1 = Line_2(s2,color=(0,0,1))
 
 
-	print l2.oriented_side(c)
-	print l2.oriented_side(f)
-	print l2.oriented_side(g)
-
-	sleep(5)
-	l3 = Line_2(s1,color=(0,1,1))
-
-	sleep(5)
-	l4 = Line_2(d,v2,color=(1,0,0))
-
-	sleep(5)
-	l5 = Line_2(b,v1,color=(1,0,1))
-
-	sleep(5)
-	l6 = Line_2(c,d2,color=(1,1,0))
-
-	sleep(5)
-	l7 = Line_2(a,d4,color=(0.5,0.5,0.5))
-
-	sleep(5)
-	l8 = Line_2(a,c,color=(0,0.5,0.5))
-
-	sleep(5)
-	l9 = Line_2(b,d)
-
-	a.color(color.red)
-	b.color(color.red)
-	c.color(color.red)
-	d.color(color.red)
-
-	r1 = Ray_2(b,e,color=color.green)
-	sleep(5)
-	ss = Segment_2(b,e)
-	sleep(5)
-	ll = ss.supporting_line()
-	ll.visual()
-	print ll.direction()
-	sleep(5)
-	lr1 = r1.supporting_line()
-	print lr1.direction()
-	lr1.visual()
-	print lr1.direction()
-	sleep(5)
-	r2 = Ray_2(b,v5,color=(0,0,1))
-	sleep(5)
-	l = Line_2(b,v5,color = (1,0,0))
-	sleep(5)
-	r3 = Ray_2(b,d1,color=(1,0,1))
-	sleep(5)
-	re = Line_2(b,d1,color = (0,1,0))
-	'''
+l2 = Line_2(s3)
+print l2.a()
+print l2.b()
+print l2.c()
+print l2.direction()
+wl = l2.perpendicular(d)
+wl.visual()
+print wl.point(1)
+print wl.point(100)
+print wl.direction()
+print l2.point(1)
+print l2.point(100)
+print l2.x_at_y(4)
+print l2.y_at_x(3)
 
 
-	#l = Line_2(3,3,4,color = (1,0,0))
-	#re = Line_2(3,3,9,color = (0,1,0))
+print l2.oriented_side(c)
+print l2.oriented_side(f)
+print l2.oriented_side(g)
 
-	#s1 = Segment_2(e,b)
-	#s2 = Segment_2(e,f)
-	#r = intersection(s1,s2)
-	#if r :
-	#	r.color(1,0,1)
+sleep(5)
+l3 = Line_2(s1,color=(0,1,1))
 
-	#c = Circle_2(f,2)
+sleep(5)
+l4 = Line_2(d,v2,color=(1,0,0))
 
-	"""
-	a = Point_2(1,1)
-	b = Point_2(3,3)
-	c = Point_2()
+sleep(5)
+l5 = Line_2(b,v1,color=(1,0,1))
 
-	#g = mouseClick()
-	#t=Point_2(g.pos.x,g.pos.y)
-	#print "mouse click pos ",g.pos.x, "lalalal ",g.pos.y
-	#t.color(1,1,0)
-	##orientation
-	#print ((a.x-c.x)*(b.y-c.y))-((a.y-c.y)*(b.x-c.x))
-	##
+sleep(5)
+l6 = Line_2(c,d2,color=(1,1,0))
 
-	rod = Segment_2(a,b)
-	rod.color(0,0,1)
-	rod.label("ert")
-	d= rod.source()
-	e= rod.target()
-	d.color(1,0,1)
-	a.color()
-	#for seeing the difference
-	scene.mouse.getclick()
-	a.color(color.cyan)
-	#point
-	a.color()
-	print a.x()
-	print a.y()
-	print a
-	print a[0]
-	print a[1]
-	print a.dimension()
-	print a == d
-	print a == e
-	print d != e
-	print d < e
-	print a < d
-	print a <= d
-	print a >= d
-	print a >= e
-	print a <= e
-	for poin in e.iter():
-		print poin
-	dd = d+e
-	print dd
-	#vector
-	r = d-e
-	print r
-	print -r
-	#segment
-	print rod
-	print rod.min()
-	print rod.max()
-	f=rod.middle()
-	print rod.has_on(f)
-	print rod.has_on(dd)
-	print rod.has_on(c)
-	print f
-	rod.color()
-	print rod.squared_length()
-	"""
+sleep(5)
+l7 = Line_2(a,d4,color=(0.5,0.5,0.5))
+
+sleep(5)
+l8 = Line_2(a,c,color=(0,0.5,0.5))
+
+sleep(5)
+l9 = Line_2(b,d)
+
+a.color(color.red)
+b.color(color.red)
+c.color(color.red)
+d.color(color.red)
+
+r1 = Ray_2(b,e,color=color.green)
+sleep(5)
+ss = Segment_2(b,e)
+sleep(5)
+ll = ss.supporting_line()
+ll.visual()
+print ll.direction()
+sleep(5)
+lr1 = r1.supporting_line()
+print lr1.direction()
+lr1.visual()
+print lr1.direction()
+sleep(5)
+r2 = Ray_2(b,v5,color=(0,0,1))
+sleep(5)
+l = Line_2(b,v5,color = (1,0,0))
+sleep(5)
+r3 = Ray_2(b,d1,color=(1,0,1))
+sleep(5)
+re = Line_2(b,d1,color = (0,1,0))
+'''
+
+
+#l = Line_2(3,3,4,color = (1,0,0))
+#re = Line_2(3,3,9,color = (0,1,0))
+
+#s1 = Segment_2(e,b)
+#s2 = Segment_2(e,f)
+#r = intersection(s1,s2)
+#if r :
+#	r.color(1,0,1)
+
+#c = Circle_2(f,2)
+
+"""
+a = Point_2(1,1)
+b = Point_2(3,3)
+c = Point_2()
+
+#g = mouseClick()
+#t=Point_2(g.pos.x,g.pos.y)
+#print "mouse click pos ",g.pos.x, "lalalal ",g.pos.y
+#t.color(1,1,0)
+##orientation
+#print ((a.x-c.x)*(b.y-c.y))-((a.y-c.y)*(b.x-c.x))
+##
+
+rod = Segment_2(a,b)
+rod.color(0,0,1)
+rod.label("ert")
+d= rod.source()
+e= rod.target()
+d.color(1,0,1)
+a.color()
+#for seeing the difference
+scene.mouse.getclick()
+a.color(color.cyan)
+#point
+a.color()
+print a.x()
+print a.y()
+print a
+print a[0]
+print a[1]
+print a.dimension()
+print a == d
+print a == e
+print d != e
+print d < e
+print a < d
+print a <= d
+print a >= d
+print a >= e
+print a <= e
+for poin in e.iter():
+	print poin
+dd = d+e
+print dd
+#vector
+r = d-e
+print r
+print -r
+#segment
+print rod
+print rod.min()
+print rod.max()
+f=rod.middle()
+print rod.has_on(f)
+print rod.has_on(dd)
+print rod.has_on(c)
+print f
+rod.color()
+print rod.squared_length()
+"""
 print __name__, __file__
 if __name__ == "__main__":
     main()
