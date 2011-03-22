@@ -943,7 +943,7 @@ class Polygon_2(object):
 				for i in range(len(self._points)-1):
 					segment = Segment_2(self._points[i],self._points[i+1])
 					self._segments.append(segment)
-				segment = Segment_2(self._points[-1]self._,points[0],visible=True)
+				segment = Segment_2(self._points[-1],self._points[0],visible=True)
 				self._segments.append(segment)		
 	def clear(self):
 		for s in self._segments:
