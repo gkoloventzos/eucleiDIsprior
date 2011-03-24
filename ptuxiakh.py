@@ -922,6 +922,7 @@ def run(Vpoints):
  
 class Polygon_2(object):
 	def __init__(self,points,segments=None,visible=True):
+		self._simple=self._convex=self._orientation =2
 		if edge !=None:
 			self._points=points
 			self._segments=segments
@@ -956,11 +957,87 @@ class Polygon_2(object):
 		return len(self._points)
 	def is_empty(self):
 		return self.size() == 0
+	def insert(self,i,p):
+		if p is not list:
+			self._points.insert(i,p)
+			self.create()
+		else:
+			for x in p:
+				self._points.insert(i,x)
+				i+=1
+		self.create()
+	def push_back(self,p):
+		self._points.insert(p)
+		self.create()
+	def erase(self,i,j=None):
+		if j==None:
+			del self._points[i]
+		else:
+			del self._points[i:j]
+		self.create()
+	def reverse_orientation(self):
+		self._points.reverse()
+		s = self._points.pop()
+		self._points.insert(0,s)
+	def vertex(self,i):# 1<i<self.size()
+		return self._points[i-1]
+	def edge(self,i):
+		return self._segments[i-1]
+	def __getitem__(self,i):
+		return self.vertex(i)
+	def is_simple(self):
+		if self._simple != 2:
+			return self._simple
+		for i in range(len(self._segments)-1):
+			if intersection(self._segments[i],self._segments[i+1]) != None:
+				self._simple = 0
+				return self._simple
+		self._simple = 1
+		return self._simple
+	def is_convex(self): #Find if the diagon is inside the polygon.(exersize 1 2008-09)
+		if self._convex != 2:
+			return self._convex
+		n = len(self._segments)
+		for i in range(n):
+			j = (i+2)%n
+			i1 = (i+1)%n
+			in1 = (i+n-1)%n
+			or1 = orientation(self._segments[in1],self._segments[i],self._segments[i1])
+			or2 = orientation(self._segments[in1],self._segments[i],self._segments[j])
+			or3 = orientation(self._segments[i],self._segments[j],self._segments[i1])
+			or4 = orientation(self._segments[i],self._segments[i1],self._segments[j])
+			if or1 >=1:
+				if or2 == 1 and or3 ==-1:
+					continue
+			else:
+				if or2 == 1 or or4 ==1:
+					continue
+			self._convex = 0
+			return self._convex
+		self._convex = 1
+		return self._convex
+	def orientation(self):
+		if self._orientation != 2:
+			return self._orientation
+		if self.is_simple():
+			if self.size() < 3:
+				self._orientation =0
+				return 0
+			else:
+				self._orientation = orientation(self._points[0],self._points[1],self._points[2])
+				return self._orientation
+			
+			
+			
+		
 	
 
 prepareScene()
 
+#controls
 #prepareControls()
+#/controls
+
 #m=[]
 #m=getVisualPoints()
 #print m
@@ -975,13 +1052,7 @@ prepareScene()
 #if orientation(VisualPoints[m[0]],VisualPoints[m[1]],VisualPoints[m[2]]) == CLOCKWISE:
 #if orientation(Point_2(1,1),Point_2(2,2),Point_2(3,3)) == COLLINEAR:
 #	print "NiCe"
-#################Line_2##################
-#l=Line_2(3,4,29)
-#x=l.x_at_y(0)
-#c = Point_2(l.x_at_y(0),0,visible=True,color=(1,0,0))
-#print l.oriented_side(c)
-################Ray_2######################
-"""
+
 a = Point_2(1,1)
 b = Point_2(3,3)
 c = Point_2(3,8)
@@ -990,7 +1061,7 @@ e = Point_2(2,5,color=(1,0,0))
 f = Point_2(0,0,color=(0.4,1,0.7))
 g = Point_2(3,-2)
 
-
+#############Triangle_2#####################
 tr = Triangle_2(c,f,g)
 print tr.bounded_side(a)
 print tr.bounded_side(b)
@@ -1001,7 +1072,7 @@ print tr1.bounded_side(a)
 print tr1.bounded_side(b)
 print tr1.bounded_side(d)
 print tr1.bounded_side(e)
-"""
+
 #s1 = Segment_2(b,c)
 #s2 = Segment_2(a,d)
 #s3 = Segment_2(a,b)
@@ -1022,7 +1093,7 @@ d5 = Direction_2(0,0)
 d6 = Direction_2(s2)
 
 
-
+#################Line_2##################
 l1 = Line_2(s2,color=(0,0,1))
 
 
@@ -1071,7 +1142,7 @@ a.color(color.red)
 b.color(color.red)
 c.color(color.red)
 d.color(color.red)
-
+##################Ray_2#############################
 r1 = Ray_2(b,e,color=color.green)
 sleep(5)
 ss = Segment_2(b,e)
@@ -1105,7 +1176,7 @@ re = Line_2(b,d1,color = (0,1,0))
 #	r.color(1,0,1)
 
 #c = Circle_2(f,2)
-
+###################various Point_2 staff######################
 """
 a = Point_2(1,1)
 b = Point_2(3,3)
