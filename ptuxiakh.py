@@ -1026,9 +1026,26 @@ class Polygon_2(object):
 			else:
 				self._orientation = orientation(self._points[0],self._points[1],self._points[2])
 				return self._orientation
-			
-			
-			
+	def area(self):
+		n = len(self._points)
+		sum =0
+		for i in range(n+1):
+			x=i%n
+			y=(i+1)%n
+			sum += (self._points[x].x()*self._points[y].y() - self._points[x].y()*self._points[y].x())
+		return sum/2		
+	def is_counterclockwise_oriented(self):
+		return self.orientation() == 1
+	def is_clockwise_oriented(self):
+		return self.orientation() == -1
+	def is_collinear_oriented(self):
+		return self.orientation() == 0
+	def return_points(self):
+		return self._points
+	def __eq__(self,other):
+		return is_permute(self._points,other.return_points())
+	def __ne__(self,other):
+		return not is_permute(self._points,other.return_points())
 		
 	
 
