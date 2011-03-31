@@ -2,7 +2,7 @@
 from __future__ import division
 from visual import *
 from visual.controls import *
-import time
+import time,operator
 
 VisualPoints = None
 VisualSegments = None
@@ -240,6 +240,7 @@ class Point_2(object):#all clear
 		else:
 			self._point.visible = visible
 		return self._point.visible
+	
 
 
 """
@@ -1046,8 +1047,34 @@ class Polygon_2(object):
 		return is_permute(self._points,other.return_points())
 	def __ne__(self,other):
 		return not is_permute(self._points,other.return_points())
+	def left_vertex(self):
+		s = sorted(self._points)
+		return s[-1]
+	def right_vertex(self):
+		s = sorted(self._points)
+		return s[0]
+	def top_vertex(self):
+		s = sorted(self._points,key=operator.itemgetter(1))
+		return s[-1]
+	def bottom_vertex(self):
+		s = sorted(self._points,key=operator.itemgetter(1))
+		return s[0]		
+			
+
+#Class gia na dhmiourghsw thn sunarthsh |isa| h opoia mporei na xrhsimopoihthei gia na
+#vroume se poia Class anoikei to antikeimeno pou exoume
+#p.x. d = Point_2() d <<isa>> Point_2 => True (Xrhsimopoih ta <<>> giati dn xrhsimopoiountai pouthena)
+class Infix:
+    def __init__(self, function):
+        self.function = function
+    def __rlshift__(self, other):
+        return Infix(lambda x, self=self, other=other: self.function(other, x))
+    def __rshift__(self, other):
+        return self.function(other)
+    def __call__(self, value1, value2):
+        return self.function(value1, value2)
 		
-	
+isa=Infix(lambda x,y: x.__class__==y)
 
 prepareScene()
 
@@ -1069,7 +1096,7 @@ prepareScene()
 #if orientation(VisualPoints[m[0]],VisualPoints[m[1]],VisualPoints[m[2]]) == CLOCKWISE:
 #if orientation(Point_2(1,1),Point_2(2,2),Point_2(3,3)) == COLLINEAR:
 #	print "NiCe"
-
+"""
 a = Point_2(1,1)
 b = Point_2(3,3)
 c = Point_2(3,8)
@@ -1095,6 +1122,7 @@ print tr1.bounded_side(e)
 #s3 = Segment_2(a,b)
 #s4 = Segment_2(c,a)
 #print orientation(c,a,e)
+"""
 '''
 v1 = Vector_2(0,5)
 v2 = Vector_2(3,0)
