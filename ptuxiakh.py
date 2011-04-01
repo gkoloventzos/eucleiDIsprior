@@ -750,7 +750,7 @@ class Triangle_2(object):
 		return self.orientation() == COLLINEAR
 	def orientation(self):
 		return self._orientation
-	def oriented_side(self,p):
+	def oriented_side(self,p): # more tests no good understanding
 		if self.is_degenerate():
 			raise Is_Degenerate(self)
 		x =[]
@@ -1059,7 +1059,28 @@ class Polygon_2(object):
 	def bottom_vertex(self):
 		s = sorted(self._points,key=operator.itemgetter(1))
 		return s[0]		
-			
+	def bounded_side(self,other):
+		if not ( other <<isa>> Point_2) and not self.is_simple():
+			print "Precondition failed.Either not point given or not simple polygon"
+			return -2
+		x=[]
+		for i in range(len(self._segments)):
+			x.append(orientation(self._segment.source(),self._segment.target(),other))
+			if x[-1] == 0:
+				return 0
+			if i > 0:
+				if x[-1] != x[-2]:
+					return -1
+		return 1
+	def oriented_side(self,other):
+		bs = self.bounded_side(other)
+		if bs == 0:
+			return 0
+		elif bs == self.orientation() == -1:
+			return 1
+		elif 	
+		
+
 
 #Class gia na dhmiourghsw thn sunarthsh |isa| h opoia mporei na xrhsimopoihthei gia na
 #vroume se poia Class anoikei to antikeimeno pou exoume
