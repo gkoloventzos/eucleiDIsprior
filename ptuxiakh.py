@@ -744,13 +744,15 @@ class Triangle_2(object):
 		return not is_permute(self._vertex,other.vertexs()) or self._orientation != other.orientation()
 	def vertex(self,i):
 		return self._vertex[i%3]
+	def edge(self,i):
+		return self._segments[i%3]
 	def __getitem__(self,i):
 		return self.vertex(i)
 	def is_degenerate(self):
 		return self.orientation() == COLLINEAR
 	def orientation(self):
 		return self._orientation
-	def oriented_side(self,p): # more tests no good understanding
+	def bounded_side(self,p): # more tests no good understanding
 		if self.is_degenerate():
 			raise Is_Degenerate(self)
 		x =[]
@@ -762,10 +764,10 @@ class Triangle_2(object):
 			return -1
 		else:
 			return 1
-	def bounded_side(self,p):
+	def oriented_side(self,p):
 		if self.is_degenerate():
 			raise Is_Degenerate(self)
-		o = self.oriented_side(p)
+		o = self.bounded_side(p)
 		if o == 0:
 			return 0
 		if o < 0 and self._orientation <0:
@@ -872,24 +874,126 @@ def intersection(a,b):
 	"""
 	Intersection in 2d
 	"""
-	if type(a).__name__ == type(b).__name__ =='Line_2':
-		p = (a.a()*b.b()) - (a.b()*b.a())
-		if p != 0:
-			return Point_2((-a.c()*b.b()+a.b()*b.c())/p,(-(a.a()*b.c())+a.c()*b.a())/p)
-	elif type(a).__name__ == type(b).__name__ =='Segment_2':
-		max1 = a.max()
-		min1 = a.min()
-		max2 = b.max()
-		min2 = b.min()
-		r = intersection(a.supporting_line(),b.supporting_line())
-		if r >= min1 and r>=min2 and r <=max1 and r<=max2:
-			return r
-		else:
-			return None
-	else:
-		return None
-		
-
+	if type(a).__name__ == 'Line_2':
+		if type(b).__name__ =='Line_2':
+			if a.a() == b.a() and a.b() == b.b():
+				if a.c() == b.c():
+					return a
+				else: 
+					return None
+			p = (a.a()*b.b()) - (a.b()*b.a())
+			if p != 0:
+				return Point_2((-a.c()*b.b()+a.b()*b.c())/p,(-(a.a()*b.c())+a.c()*b.a())/p)
+		if type(b).__name__ == "Ray_2" or type(b).__name__ == "Segment_2":
+			lin = b.supporting_line()
+			ret = orientation(a,lin)
+			if ret == None or type(ret).__name__ == "Point_2":
+				return ret
+			return b
+		if type(b).__name__ == "Triangle_2":
+			ret = []
+			for i in range(3):
+				lin = b.edge(i).supporting_line()
+				retu = (intersection(a,lin))
+				if retu != None:
+					ret.append(retu)
+			if len(ret) >0:
+				return ret
+			else:
+				return None
+	elif type(a).__name__ == 'Segment_2':
+		if type(b).__name__ =='Segment_2':
+			max1 = a.max()
+			min1 = a.min()
+			max2 = b.max()
+			min2 = b.min()
+			r = intersection(a.supporting_line(),b.supporting_line())
+			if r == None:
+				return None
+			if type(r).__name__ == "Point_2":
+				if r >= min1 and r>=min2 and r <=max1 and r<=max2:
+					return r
+				else:
+					return None
+			if 	type(r).__name__ == "Line_2":
+				if min1 <= min2:
+					min = min2
+				else:
+					min = min1
+				if max1 <= max2:
+					max = max1
+				else:
+					max = max2
+				return Segment_2(min,max)
+		if type(b).__name__ == 'Ray_2':
+			r = intersection(a.supporting_line(),b.supporting_line())
+			if r == None:
+				return None
+			if type(r).__name__ == "Point_2":
+				if r >= a.min() and r <= a.max():
+					return r
+				else:
+					return None
+			if 	type(r).__name__ == "Line_2":
+				s = b.point(300)
+				if b.source > a.min() and b.source() < a.max():
+					if s < a.min():
+						return Segment_2(b.source(),a.min())
+					else:
+						return Segment_2(b.source(),a.max())
+				if b.source() > a.max():
+					if s > a.max():
+						return None
+					else:
+						return a
+				if b.source() < a.min():
+					if s < a.min():
+						return None
+					else:
+						return a
+				if b.source() == a.min():
+					if s<a.min():
+						return a.min()
+					else:
+						return a
+				if b.source() == a.max():
+					if s>a.max():
+						return a.max()
+					else:
+						return a
+				print "WTF!!!!!"
+		if type(b).__name__ == "Line_2":
+			return intersection(b,a)
+		if type(b).__name__ == "Triangle_2":
+			ret = []
+			for i in range(3):
+				lin = b.edge(i).supporting_line()
+				retu = (intersection(lin,a))
+				if retu != None:
+					ret.append(retu)
+			if len(ret) >0:
+				return ret
+			else:
+				return None				
+	if type(a).__name__ == "Ray_2":
+		if type(b).__name__ != "Triangle_2":
+			return intersection(b,a)
+		if type(b).__name__ == "Triangle_2":
+			ret = []
+			s = a.point(300)
+			seg = Segment_2(a.source(),a)
+			for i in range(3):
+				lin = b.edge(i)
+				retu = (intersection(lin,seg))
+				if retu != None:
+					ret.append(retu)
+			if len(ret)>0:
+				return ret
+			else:
+				return None
+						
+				
+				
 def run(Vpoints):
       """
       Jarvis Convex Hull algorithm.
@@ -1078,7 +1182,8 @@ class Polygon_2(object):
 			return 0
 		elif bs == self.orientation() == -1:
 			return 1
-		elif 	
+		#elif:
+		#	pass	
 		
 
 
@@ -1117,7 +1222,7 @@ prepareScene()
 #if orientation(VisualPoints[m[0]],VisualPoints[m[1]],VisualPoints[m[2]]) == CLOCKWISE:
 #if orientation(Point_2(1,1),Point_2(2,2),Point_2(3,3)) == COLLINEAR:
 #	print "NiCe"
-"""
+
 a = Point_2(1,1)
 b = Point_2(3,3)
 c = Point_2(3,8)
@@ -1143,7 +1248,7 @@ print tr1.bounded_side(e)
 #s3 = Segment_2(a,b)
 #s4 = Segment_2(c,a)
 #print orientation(c,a,e)
-"""
+
 '''
 v1 = Vector_2(0,5)
 v2 = Vector_2(3,0)
