@@ -886,7 +886,7 @@ def intersection(a,b):
 				return Point_2((-a.c()*b.b()+a.b()*b.c())/p,(-(a.a()*b.c())+a.c()*b.a())/p)
 		if type(b).__name__ == "Ray_2" or type(b).__name__ == "Segment_2":
 			lin = b.supporting_line()
-			ret = orientation(a,lin)
+			ret = intersection(a,lin)
 			if ret == None or type(ret).__name__ == "Point_2":
 				return ret
 			return b
@@ -1222,7 +1222,7 @@ prepareScene()
 #if orientation(VisualPoints[m[0]],VisualPoints[m[1]],VisualPoints[m[2]]) == CLOCKWISE:
 #if orientation(Point_2(1,1),Point_2(2,2),Point_2(3,3)) == COLLINEAR:
 #	print "NiCe"
-
+"""
 a = Point_2(1,1)
 b = Point_2(3,3)
 c = Point_2(3,8)
@@ -1242,7 +1242,7 @@ print tr1.bounded_side(a)
 print tr1.bounded_side(b)
 print tr1.bounded_side(d)
 print tr1.bounded_side(e)
-
+"""
 #s1 = Segment_2(b,c)
 #s2 = Segment_2(a,d)
 #s3 = Segment_2(a,b)
@@ -1408,7 +1408,23 @@ print f
 rod.color()
 print rod.squared_length()
 """
-print __name__, __file__
+#intersection
+l = Line_2(3,4,6)
+l1 = Line_2(3,4,6)
+l2 = l.perpendicular(Point_2())
+l2.visual()
+l3 = Line_2(6,8,4)
+print intersection(l,l1)
+
+s = intersection(l,l2)
+s.color(1,1,0)
+print intersection(l,l3)
+d = Point_2(0,-3)
+d1=Point_2(0,3)
+seg = Segment_2(Point_2(),d1)
+r = intersection(l,seg)
+r.color(1,0,1)
+
 if __name__ == "__main__":
     main()
 
