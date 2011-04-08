@@ -218,19 +218,23 @@ class Point_2(object):#all clear
 	def __gt__(self,other):
 		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
 			return False
-		return self.x() < other.x() or ( self.x() == other.x() and self.y() < other.y() )
+		return self.x() > other.x() or ( self.x() == other.x() and self.y() > other.y() )
 	def __lt__(self,other):
 		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
 			return False
-		return self.x() > other.x() or ( self.x() == other.x() and self.y() > other.y() )
+		return self.x() < other.x() or ( self.x() == other.x() and self.y() < other.y() )
 	def __ge__(self,other):
 		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
 			return False
-		return self.x() >= other.x()
+		if self == other:
+			return True
+		return self.x() > other.x() or ( self.x() == other.x() and self.y() > other.y() )
 	def __le__(self,other):
 		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
 			return False
-		return self.x() <= other.x()
+		if self == other:
+			return True
+		return self.x() < other.x() or ( self.x() == other.x() and self.y() < other.y() )		
 	def __getitem__(self,i):
 		if i>=0 and i<=1:
 			return self._point.pos[i]
@@ -374,12 +378,27 @@ class Direction_2(object):#all clear
 	def dy(self):
 		return self._d[1]
 	def __neg__(self):
-		return Direction_2(-self._d[0],self._d[1])
+		if self._d[0]!= 0:
+			return Direction_2(-self._d[0],self._d[1])
+		return Direction_2(self._d[0],-self._d[1])
 	def vector(self):
 		return Vector_2(self._d[0],self._d[1],visible=False)
 	def __eq__(self,other):
-		if other == None:
-			return False
+		if isinstance(other,int) or isinstance(other,float):
+			return self._direction == other
+		if isinstance(other,Direction_2) and isinstance(self,Direction_2):
+			if (self._d[0] == other._d[0] == 0):
+				if (self._d[1] < 0 and other._d[1]<0) or (self._d[1] > 0 and other._d[1] > 0):
+					return True
+				else:
+					return False
+			if (self._d[1] == other._d[1] == 0):
+				if (self._d[0] < 0 and other._d[0]<0) or (self._d[0] > 0 and other._d[0] > 0):
+					return True
+				else:
+					return False				
+		if other == None and self._direction == None:
+			return True
 		return self.vector() == other.vector()
 	def __ne__(self,other):
 		if other == None:
@@ -426,7 +445,7 @@ class Line_2(object):
 		self._a=None
 		self._b=None
 		self._c=None
-		if b == None and c == None:
+		if not isinstance(b,Direction_2) and b == None and c == None:
 			if type(a).__name__ == 'Segment_2':
 				x=a.source()
 				y=a.target()
@@ -462,8 +481,6 @@ class Line_2(object):
 				self._b=b
 				self._c=c
 				self._a=a
-		print self._a,self._b,self._c
-		print self.y_at_x(-EP),self.y_at_x(EP),"\n"
 		if self.is_vertical():
 			f = self._c/self._a
 			self._line=curve(pos=[(-f, -EP),(-f,EP)],color=color,visible=visible)
@@ -496,6 +513,8 @@ class Line_2(object):
 	def y_at_x(self,x):
 		if not self.is_vertical():
 			return ((-self._a*x)-self._c)/self._b
+		else:
+			return 
 	def __repr__(self):
 		return 'Line_2({self._a} x + {self._b} y + {self._c} = 0)' .format(self=self)
 	def visual(self,visible=None): #argue how will work
@@ -517,7 +536,9 @@ class Line_2(object):
 		else:
 			return rsides[1]
 	def point(self,i):
+		print "in point"
 		x=1+self._b*i
+		print x
 		y=self.y_at_x(x)
 		return Point_2(x,y,visible=False)
 	def perpendicular(self,p):
@@ -578,9 +599,9 @@ class Ray_2(object):
 			p = Point_2(-EP,l.y_at_x(-EP),visible=False)
 		if d.dx() == 0:
 			if d.dy() <0:
-				p = Point_2(-EP,x.y(),visible=False)
+				p = Point_2(x.y(),-EP,visible=False)
 			elif d.dy()>0:
-				p = Point_2(EP,x.y(),visible=False)
+				p = Point_2(x.y(),EP,visible=False)
 		if d.dy() == 0:
 			if d.dx() <0:
 				p = Point_2(x.x(),-EP,visible=False)
@@ -596,7 +617,7 @@ class Ray_2(object):
 			self._ray.color=x
 			return
 		self._ray.color=(x,y,z)
-	def source():
+	def source(self):
 		return self._source
 	def __eq__(self,other):
 		if other == None:
@@ -870,6 +891,7 @@ def orientation(a,b,c):
 			return "CLOCKWISE"
 		else:
 			return "COUNTERCLOCKWISE"
+
 def intersection(a,b):
 	"""
 	Intersection in 2d
@@ -887,8 +909,24 @@ def intersection(a,b):
 		if type(b).__name__ == "Ray_2" or type(b).__name__ == "Segment_2":
 			lin = b.supporting_line()
 			ret = intersection(a,lin)
-			if ret == None or type(ret).__name__ == "Point_2":
+			if ret == None:
 				return ret
+			if isinstance(ret,Point_2):
+				if isinstance(b,Ray_2):
+					seg = Segment_2(b.source(),ret,visible=False)
+					print "in direction"
+					print seg.direction()
+					print b.direction()
+					print "out direction"
+					if seg.direction() == b.direction() :
+						return ret
+					else:
+						return None
+				if isinstance(b,Segment_2):
+					if ret >= b.min() and ret <= b.max():
+						return ret
+					else:
+						return None
 			return b
 		if type(b).__name__ == "Triangle_2":
 			ret = []
@@ -1164,7 +1202,7 @@ class Polygon_2(object):
 		s = sorted(self._points,key=operator.itemgetter(1))
 		return s[0]		
 	def bounded_side(self,other):
-		if not ( other <<isa>> Point_2) and not self.is_simple():
+		if not (isinstance(other,Point_2)) and not self.is_simple():
 			print "Precondition failed.Either not point given or not simple polygon"
 			return -2
 		x=[]
@@ -1185,22 +1223,6 @@ class Polygon_2(object):
 		#elif:
 		#	pass	
 		
-
-
-#Class gia na dhmiourghsw thn sunarthsh |isa| h opoia mporei na xrhsimopoihthei gia na
-#vroume se poia Class anoikei to antikeimeno pou exoume
-#p.x. d = Point_2() d <<isa>> Point_2 => True (Xrhsimopoih ta <<>> giati dn xrhsimopoiountai pouthena)
-class Infix:
-    def __init__(self, function):
-        self.function = function
-    def __rlshift__(self, other):
-        return Infix(lambda x, self=self, other=other: self.function(other, x))
-    def __rshift__(self, other):
-        return self.function(other)
-    def __call__(self, value1, value2):
-        return self.function(value1, value2)
-		
-isa=Infix(lambda x,y: x.__class__==y)
 
 prepareScene()
 
@@ -1230,6 +1252,10 @@ d = Point_2(1,4)
 e = Point_2(2,5,color=(1,0,0))
 f = Point_2(0,0,color=(0.4,1,0.7))
 g = Point_2(3,-2)
+h=g
+print "a < b == %s" %str(a < b)
+print "a<=b == %s" %str(a<=b)
+print "b<c == %s" %str(b<c)
 
 #############Triangle_2#####################
 tr = Triangle_2(c,f,g)
@@ -1414,16 +1440,23 @@ l1 = Line_2(3,4,6)
 l2 = l.perpendicular(Point_2())
 l2.visual()
 l3 = Line_2(6,8,4)
-print intersection(l,l1)
+#print intersection(l,l1)
 
 s = intersection(l,l2)
 s.color(1,1,0)
-print intersection(l,l3)
+#print intersection(l,l3)
 d = Point_2(0,-3)
 d1=Point_2(0,3)
 seg = Segment_2(Point_2(),d1)
-r = intersection(l,seg)
-r.color(1,0,1)
+e = -seg.direction()
+#print seg.direction()
+we = Ray_2(Point_2(),-seg.direction())
+print "inter in"
+r = intersection(l,we)
+print "inter out"
+print r
+if isinstance(r,Point_2):
+	r.color(1,0,1)
 
 if __name__ == "__main__":
     main()
