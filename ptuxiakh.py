@@ -580,7 +580,7 @@ class Ray_2(object):
 	def __init__(self,x,y,color=(1,1,1),visible=True):
 		if type(y).__name__ == 'Point_2':
 			#y.visual()
-			self._direction = Direction_2(Segment_2(x,y))
+			self._direction = Direction_2(Segment_2(x,y,visible=False))
 		if type(y).__name__ == 'Direction_2':
 			self._direction = y
 		if type(y).__name__ == 'Vector_2':
@@ -603,10 +603,11 @@ class Ray_2(object):
 			elif d.dy()>0:
 				p = Point_2(x.y(),EP,visible=False)
 		if d.dy() == 0:
-			if d.dx() <0:
-				p = Point_2(x.x(),-EP,visible=False)
+			if d.dx()<0:
+				p = Point_2(-EP,x.x(),visible=False)
 			elif d.dx()>0:
-				p = Point_2(x.x(),EP,visible=False)
+				p = Point_2(EP,x.x(),color=(1,0,1))
+				print p
 		self._source=x
 		self._ray=curve(pos=[(x.x(), x.y()),(p.x(), p.y())],color=color,visible=visible)
 	def color(self,x=0,y=0,z=0):
@@ -921,11 +922,14 @@ def intersection(a,b):
 					if seg.direction() == b.direction() :
 						return ret
 					else:
+						ret.visual()
 						return None
 				if isinstance(b,Segment_2):
 					if ret >= b.min() and ret <= b.max():
+						
 						return ret
 					else:
+						ret.visual()
 						return None
 			return b
 		if type(b).__name__ == "Triangle_2":
