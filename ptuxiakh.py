@@ -40,7 +40,15 @@ def prepareScene():
 	scene.height = 700
 	scene.title = "eukleiDIs"
 	scene.exit=1
-	
+
+def quadratic(a, b, c=None):
+	 if c: # (ax^2 + bx + c = 0) 
+		a, b = b / float(a), c / float(a) 
+		t = a / 2.0 
+		r = t**2 - b 
+		y1 = math.sqrt(r) 
+		return y1 - t, y2 - t 
+
 class mouseClick(object):
 	"""
 	click = mouseClick(which_button=None)
@@ -606,8 +614,7 @@ class Ray_2(object):
 			if d.dx()<0:
 				p = Point_2(-EP,x.x(),visible=False)
 			elif d.dx()>0:
-				p = Point_2(EP,x.x(),color=(1,0,1))
-				print p
+				p = Point_2(EP,x.x(),visible=False)
 		self._source=x
 		self._ray=curve(pos=[(x.x(), x.y()),(p.x(), p.y())],color=color,visible=visible)
 	def color(self,x=0,y=0,z=0):
@@ -932,7 +939,7 @@ def intersection(a,b):
 						ret.visual()
 						return None
 			return b
-		if type(b).__name__ == "Triangle_2":
+		if isinstance(b,Triangle_2):
 			ret = []
 			for i in range(3):
 				lin = b.edge(i).supporting_line()
@@ -943,6 +950,24 @@ def intersection(a,b):
 				return ret
 			else:
 				return None
+		if isinstance(b,Circle_2):
+			lin = a.perpendicular(b.center(),visible=False)
+			f = intersection(a,lin)
+			if not isinstance(f,Point_2):
+				exit(-34)
+			seq = Segment_2(f,b.center(),visible=False)
+			if seq.squared_length() == b.squared_radius():
+				f.visual()
+				return f
+			if seq.squared_length() < b.squared_radius():
+				g = b.center()
+				aaa = (((a.b()**2)/a.a()**2)+1)
+				bbb = ((2*a.b()/(a.a()**2))+(2*a.b()*g.x()/a.a()) -2)
+				ccc = ((a.c()**2)+a.c())/a.c()**2 + g.x()**2 + 2*a.c()*g.x()/a.() + g.y()**2 - g.squared_radius()
+				y1,y2 = quadratic(aaa,bbb,ccc)
+				if a.vertical():
+					
+				return []
 	elif type(a).__name__ == 'Segment_2':
 		if type(b).__name__ =='Segment_2':
 			max1 = a.max()
@@ -1450,11 +1475,12 @@ s = intersection(l,l2)
 s.color(1,1,0)
 #print intersection(l,l3)
 d = Point_2(0,-3)
-d1=Point_2(0,3)
+d1=Point_2(3,0)
 seg = Segment_2(Point_2(),d1)
 e = -seg.direction()
 #print seg.direction()
 we = Ray_2(Point_2(),-seg.direction())
+
 print "inter in"
 r = intersection(l,we)
 print "inter out"
