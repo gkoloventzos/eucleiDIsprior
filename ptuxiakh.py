@@ -900,59 +900,60 @@ def orientation(a,b,c):
 		else:
 			return "COUNTERCLOCKWISE"
 
-def intersection(a,b):
+def intersection(a,b,c=True):
 	"""
 	Intersection in 2d
+	Every Segment, Ray trasformed as Line
+	Triangle,Polygon returns list (if empty returns None)
+	Circle return either list, Point_2,None
 	"""
-	if type(a).__name__ == 'Line_2':
-		if type(b).__name__ =='Line_2':
+	if isinstance(a,Line_2):
+		if isinstance(b,Line_2):
 			if a.a() == b.a() and a.b() == b.b():
 				if a.c() == b.c():
+					a.visual(c)
 					return a
 				else: 
 					return None
 			p = (a.a()*b.b()) - (a.b()*b.a())
 			if p != 0:
-				return Point_2((-a.c()*b.b()+a.b()*b.c())/p,(-(a.a()*b.c())+a.c()*b.a())/p)
-		if type(b).__name__ == "Ray_2" or type(b).__name__ == "Segment_2":
+				return Point_2((-a.c()*b.b()+a.b()*b.c())/p,(-(a.a()*b.c())+a.c()*b.a())/p,visible=c)
+		if isinstance(b,Ray_2) or isinstance(b,Segment_2):
 			lin = b.supporting_line()
-			ret = intersection(a,lin)
+			ret = intersection(a,lin,False)
 			if ret == None:
 				return ret
 			if isinstance(ret,Point_2):
 				if isinstance(b,Ray_2):
 					seg = Segment_2(b.source(),ret,visible=False)
-					print "in direction"
-					print seg.direction()
-					print b.direction()
-					print "out direction"
 					if seg.direction() == b.direction() :
+						ret.visual()
 						return ret
 					else:
-						ret.visual()
 						return None
 				if isinstance(b,Segment_2):
 					if ret >= b.min() and ret <= b.max():
-						
+						ret.visual()
 						return ret
 					else:
-						ret.visual()
 						return None
 			return b
 		if isinstance(b,Triangle_2):
 			ret = []
 			for i in range(3):
 				lin = b.edge(i).supporting_line()
-				retu = (intersection(a,lin))
+				retu = intersection(a,lin,False)
 				if retu != None:
 					ret.append(retu)
 			if len(ret) >0:
+				for i in ret:
+					i.visual()
 				return ret
 			else:
 				return None
 		if isinstance(b,Circle_2):
 			lin = a.perpendicular(b.center(),visible=False)
-			f = intersection(a,lin)
+			f = intersection(a,lin,False)
 			if not isinstance(f,Point_2):
 				exit(-34)
 			seq = Segment_2(f,b.center(),visible=False)
@@ -961,28 +962,36 @@ def intersection(a,b):
 				return f
 			if seq.squared_length() < b.squared_radius():
 				g = b.center()
+				if a.is_vertical():
+					x = -a.c()/a.a()
+					y1,y2 = quadratic(1,(-2*g.y()),((g.y()**2)+((x-g.x())**2)),(-b.squared_radius()))
+					return [Point_2(x,y1),Point_2(x,y2)]
+				if a.is_horizontal():
+					y = -a.b()/a.a()
+					x1,x2 = quadratic(1,(-2*g.x()),((g.x()**2)+((y-g.y())**2)),(-b.squared_radius()))
+					return [Point_2(x1,y),Point_2(x2,y)]
 				aaa = (((a.b()**2)/a.a()**2)+1)
 				bbb = ((2*a.b()/(a.a()**2))+(2*a.b()*g.x()/a.a()) -2)
-				ccc = ((a.c()**2)+a.c())/a.c()**2 + g.x()**2 + 2*a.c()*g.x()/a.() + g.y()**2 - g.squared_radius()
-				y1,y2 = quadratic(aaa,bbb,ccc)
-				if a.vertical():
-					
-				return []
-	elif type(a).__name__ == 'Segment_2':
-		if type(b).__name__ =='Segment_2':
+				ccc = (((a.c()**2)+a.c())/(a.a()**2)) + (g.x()**2) + (2*a.c()*g.x()/a.a()) + (g.y()**2) - g.squared_radius()
+				y1,y2 = quadratic(aaa,bbb,ccc)	
+				return [Point_2(a.x_at_y(y1),y1),Point_2(a.x_at_y(y2),y2)]
+			return None
+	if isinstance(a,Segment_2):
+		if isinstance(b,Segment_2):
 			max1 = a.max()
 			min1 = a.min()
 			max2 = b.max()
 			min2 = b.min()
-			r = intersection(a.supporting_line(),b.supporting_line())
+			r = intersection(a.supporting_line(),b.supporting_line(),False)
 			if r == None:
 				return None
-			if type(r).__name__ == "Point_2":
+			if isinstance(r,Point_2):
 				if r >= min1 and r>=min2 and r <=max1 and r<=max2:
+					r.visual()
 					return r
 				else:
 					return None
-			if 	type(r).__name__ == "Line_2":
+			if 	isinstance(r,Line_2):
 				if min1 <= min2:
 					min = min2
 				else:
@@ -992,16 +1001,17 @@ def intersection(a,b):
 				else:
 					max = max2
 				return Segment_2(min,max)
-		if type(b).__name__ == 'Ray_2':
-			r = intersection(a.supporting_line(),b.supporting_line())
+		if isinstance(b,Ray_2):
+			r = intersection(a.supporting_line(),b.supporting_line(),False)
 			if r == None:
 				return None
-			if type(r).__name__ == "Point_2":
+			if isinstance(r,Point_2):
 				if r >= a.min() and r <= a.max():
+					r.visual()
 					return r
 				else:
 					return None
-			if 	type(r).__name__ == "Line_2":
+			if 	isinstance(r,Line_2):
 				s = b.point(300)
 				if b.source > a.min() and b.source() < a.max():
 					if s < a.min():
@@ -1035,17 +1045,15 @@ def intersection(a,b):
 			ret = []
 			for i in range(3):
 				lin = b.edge(i).supporting_line()
-				retu = (intersection(lin,a))
+				retu = intersection(lin,a)
 				if retu != None:
 					ret.append(retu)
 			if len(ret) >0:
 				return ret
 			else:
 				return None				
-	if type(a).__name__ == "Ray_2":
-		if type(b).__name__ != "Triangle_2":
-			return intersection(b,a)
-		if type(b).__name__ == "Triangle_2":
+	if isinstance(a,Ray_2):
+		if isinstance(b,Triangle_2):
 			ret = []
 			s = a.point(300)
 			seg = Segment_2(a.source(),a)
@@ -1058,7 +1066,21 @@ def intersection(a,b):
 				return ret
 			else:
 				return None
-						
+		if isinstance(b,Circle_2):
+			pass
+		if isinstance(b,Ray_2):
+			pass
+		return intersection(b,a)
+	if isinstance(a,Circle_2):
+		if isinstance(b,Circle_2):
+			pass
+		if isinstance(b,Triangle_2):
+			pass
+		return intersection(b,a)
+	if isinstance(a,Triangle_2):
+		if isinstance(b,Triangle_2):
+			pass
+		return intersection(b,a)
 				
 				
 def run(Vpoints):
