@@ -27,19 +27,20 @@ class No_Constructor(Exception):
 		for i in range(self.parameters):
 			if self.parameters[i] != None:
 				print '{self.parameters[i]}' .format(self=self),
-			print ""
+
 class Is_Degenerate(Exception):
 	def __init__(self,value):
 		self.name = type(value).__name__
 	def repr(self): 
 		print 'The {self.name} is degenerate' .format(self=self)
+		
 def prepareScene():
 	#scene.userspin = False #Gia na exoume k deksi koumpi sto pontiki
 	scene.range = 10
 	scene.width = 800
 	scene.height = 700
 	scene.title = "eukleiDIs"
-	scene.exit=1
+	scene.exit=-1
 
 def quadratic(a, b, c=None):
 	 if c: # (ax^2 + bx + c = 0) 
@@ -1498,14 +1499,13 @@ s.color(1,1,0)
 #print intersection(l,l3)
 d = Point_2(0,-3)
 d1=Point_2(3,0)
-seg = Segment_2(Point_2(),d1)
-e = -seg.direction()
+seg = Segment_2(Point_2(-1,0),d1)
+#e = -seg.direction()
 #print seg.direction()
-we = Ray_2(Point_2(),-seg.direction())
-
-print "inter in"
-r = intersection(l,we)
-print "inter out"
+#we = Ray_2(Point_2(),-seg.direction())
+seg1 = Segment_2(Point_2(0,1),d,visible=False)
+ss= seg1.supporting_line()
+r = intersection(seg,ss)
 print r
 if isinstance(r,Point_2):
 	r.color(1,0,1)
