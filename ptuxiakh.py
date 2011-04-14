@@ -253,17 +253,7 @@ class Point_2(object):#all clear
 		else:
 			self._point.visible = visible
 		return self._point.visible
-	
 
-
-"""
-	kanei swsta thn anathesi omws dn allazei to xrwma :'(
-	def get_color(self):
-		return self._point.color
-	def set_color(self,color):
-		self._point.color = color
-	color = property(get_color,set_color)
-"""
 
 class Vector_2(object):
 	"""
@@ -988,7 +978,7 @@ def intersection(a,b,c=True):
 				return None
 			if isinstance(r,Point_2):
 				if r >= min1 and r>=min2 and r <=max1 and r<=max2:
-					r.visual()
+					r.visual(c)
 					return r
 				else:
 					return None
@@ -1001,14 +991,14 @@ def intersection(a,b,c=True):
 					max = max1
 				else:
 					max = max2
-				return Segment_2(min,max)
+				return Segment_2(min,max,visible=c)
 		if isinstance(b,Ray_2):
 			r = intersection(a.supporting_line(),b.supporting_line(),False)
 			if r == None:
 				return None
 			if isinstance(r,Point_2):
 				if r >= a.min() and r <= a.max():
-					r.visual()
+					r.visual(c)
 					return r
 				else:
 					return None
@@ -1040,37 +1030,62 @@ def intersection(a,b,c=True):
 					else:
 						return a
 				print "WTF!!!!!"
-		if type(b).__name__ == "Line_2":
-			return intersection(b,a)
-		if type(b).__name__ == "Triangle_2":
+		if isinstance(b,Line_2):
+			return intersection(b,a,c)
+		if isinstance(b,Triangle_2):
 			ret = []
 			for i in range(3):
 				lin = b.edge(i).supporting_line()
-				retu = intersection(lin,a)
+				retu = intersection(lin,a,False)
 				if retu != None:
+					retu.visual(c)
 					ret.append(retu)
 			if len(ret) >0:
 				return ret
 			else:
-				return None				
+				return None
+		if isinstance(b,Circle_2):
+			r = intersection(a.supporting_line(),b,c)
+			if r == None:
+				return None
+			if isinstance(r,Point_2):
+				if r >=a.min() and r <=a.max():
+					r.visual(c)
+					return r
+			else:
+				ret = []
+				if r[0] >=a.min() and r[0] <=a.max():
+					r[0].visual(c)
+					ret.append(r)
+				if r[1] >=a.min() and r[1] <=a.max():
+					r[0].visual(c)
+					ret.append(r)
+				le = len(ret)
+				if le == 0:
+					return None
+				if le ==1:
+					return ret[0]
+				else:
+					return ret					
 	if isinstance(a,Ray_2):
+		ret = []
+		s = a.point(300)
+		seg = Segment_2(a.source(),s)
 		if isinstance(b,Triangle_2):
-			ret = []
-			s = a.point(300)
-			seg = Segment_2(a.source(),a)
 			for i in range(3):
 				lin = b.edge(i)
-				retu = (intersection(lin,seg))
+				retu = intersection(lin,seg,False)
 				if retu != None:
+					retu.visual(c)
 					ret.append(retu)
 			if len(ret)>0:
 				return ret
 			else:
 				return None
 		if isinstance(b,Circle_2):
-			pass
+			return intersection(seg,b)
 		if isinstance(b,Ray_2):
-			pass
+			return intersection(b,seg)
 		return intersection(b,a)
 	if isinstance(a,Circle_2):
 		if isinstance(b,Circle_2):
