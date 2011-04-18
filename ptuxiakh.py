@@ -898,40 +898,40 @@ def intersection(a,b,c=True):
 	Triangle,Polygon returns list (if empty returns None)
 	Circle return either list, Point_2,None
 	"""
-	if isinstance(a,Line_2):
+	if isinstance(a,Line_2): #If it is Line
 		if isinstance(b,Line_2):
-			if a.a() == b.a() and a.b() == b.b():
+			if a.a() == b.a() and a.b() == b.b(): # If it is the same line(not with == because will fail in direction)
 				if a.c() == b.c():
-					a.visual(c)
+					a.visual(c)#return a line
 					return a
 				else: 
 					return None
 			p = (a.a()*b.b()) - (a.b()*b.a())
 			if p != 0:
 				return Point_2((-a.c()*b.b()+a.b()*b.c())/p,(-(a.a()*b.c())+a.c()*b.a())/p,visible=c)
-		if isinstance(b,Ray_2) or isinstance(b,Segment_2):
+		if isinstance(b,Ray_2) or isinstance(b,Segment_2): #if it is ray or segment
 			lin = b.supporting_line()
 			ret = intersection(a,lin,False)
 			if ret == None:
 				return ret
-			if isinstance(ret,Point_2):
+			if isinstance(ret,Point_2):# if the intersection with the line returns a point
 				if isinstance(b,Ray_2):
-					seg = Segment_2(b.source(),ret,visible=False)
-					if seg.direction() == b.direction() :
-						ret.visual()
+					seg = Segment_2(b.source(),ret,visible=False)	#create a segment with the source an the inter point
+					if seg.direction() == b.direction() : #check if segment and ray has same direction
+						ret.visual(c)
 						return ret
 					else:
 						return None
 				if isinstance(b,Segment_2):
-					if ret >= b.min() and ret <= b.max():
+					if b.has_on(ret):	#check if the point is inside segment
 						ret.visual()
 						return ret
 					else:
 						return None
 			return b
-		if isinstance(b,Triangle_2):
+		if isinstance(b,Triangle_2): #if it is triangle
 			ret = []
-			for i in range(3):
+			for i in range(3): #for every edge find interseciont point(s), line
 				lin = b.edge(i).supporting_line()
 				retu = intersection(a,lin,False)
 				if retu != None:
@@ -943,6 +943,18 @@ def intersection(a,b,c=True):
 			else:
 				return None
 		if isinstance(b,Circle_2):
+			"""
+			In the circle intersecion we have 3 possibilities
+			No intersection, single point, two points.
+			First we create the perpendicular line form center of circle
+			to the line. We find the intersection of this lines 
+			(they have a point intersection). We create the
+			segment between center and intersection point(segment seq).
+			If seq length is bigger than the radius then we have no intersection.
+			If they are equal we have one point intersection, with this point is
+			the inesection point we have found before.
+			If it is smaller then we have 2 points intersection
+			"""
 			lin = a.perpendicular(b.center(),visible=False)
 			f = intersection(a,lin,False)
 			if not isinstance(f,Point_2):
@@ -964,7 +976,7 @@ def intersection(a,b,c=True):
 				aaa = (((a.b()**2)/a.a()**2)+1)
 				bbb = ((2*a.b()/(a.a()**2))+(2*a.b()*g.x()/a.a()) -2)
 				ccc = (((a.c()**2)+a.c())/(a.a()**2)) + (g.x()**2) + (2*a.c()*g.x()/a.a()) + (g.y()**2) - g.squared_radius()
-				y1,y2 = quadratic(aaa,bbb,ccc)	
+				y1,y2 = quadratic(aaa,bbb,ccc)	#function to solve quadratic equatations
 				return [Point_2(a.x_at_y(y1),y1),Point_2(a.x_at_y(y2),y2)]
 			return None
 	if isinstance(a,Segment_2):
@@ -1083,26 +1095,65 @@ def intersection(a,b,c=True):
 			else:
 				return None
 		if isinstance(b,Circle_2):
-			return intersection(seg,b)
+			return intersection(seg,b,c)
 		if isinstance(b,Ray_2):
-			return intersection(b,seg)
-		return intersection(b,a)
+			return intersection(b,seg,c)
+		return intersection(b,a,c)
 	if isinstance(a,Circle_2):
 		if isinstance(b,Circle_2):
-			pass
+			seq=Segment_2(a.center(),b.center(),visible=False)
+			dis_square = a.squared_radius() + b.squared_radius()
+			if a.center() == b.center() and a.squared_radius == b.squared_radius():
+				return a
+			if seq.squared_length() > dis_square.squared_length():
+				return None
+			if seq.squared_length() == dis_square.squared_length():
+				l = intersection(a,seq.supporting_line(),False)
+				l1 = intersection(b,seq.supporting_line(),False)
+				for t in l:
+					if t in l1:
+						t.visual(c)
+						return t
+			else:
+				ca = (a.squared_radius - b.squared_radius() + seq.squared_length())/(2*sqrt(seq.squared_length()))
+				h = sqrt(a.squared_radius() - (ca**2))
+				p2 = a.center() + ca*(b.center() - a.center())/sqrt(dis_square)
+				c1 = Point_2(p2.x()+h*(b.center().y()-a.center().y()),p2.y()-h*(b.center().x()-a.center().x()))
+				c2 = Point_2(p2.x()-h*(b.center().y()-a.center().y()),p2.y()+h*(b.center().x()-a.center().x()))
 		if isinstance(b,Triangle_2):
-			pass
-		return intersection(b,a)
+			ret = []
+			for i in range(3):
+				lin = b.edge(i)
+				retu = intersection(lin,a)
+				if retu != None:
+					retu.visual(c)
+					ret.append(retu)
+				if len(ret)>0:
+					return ret
+				else:
+					return None			
+		return intersection(b,a,c)
 	if isinstance(a,Triangle_2):
 		if isinstance(b,Triangle_2):
-			pass
-		return intersection(b,a)
+			ret = []
+			for i in range(3):
+				for j in range(3):
+					lin = b.edge(i)
+					lin1 = a.edge(j)
+					retu = intersection(lin,lin1,c)
+					if retu != None:
+						ret.extend(retu)
+			if len(ret)>0:
+				return ret
+			else:
+				return None
+		return intersection(b,a,c)
 				
 				
 def run(Vpoints):
       """
       Jarvis Convex Hull algorithm.
-      points is a list of CGAL.Point_2 points
+      points is a list of Point_2 points
       """
       points = Vpoints.values()
       import random
