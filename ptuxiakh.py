@@ -18,7 +18,11 @@ COUNTERCLOCKWISE = ON_POSITIVE_SIDE = 1
 COLLINEAR = ON_ORIENTED_BOUNDARY = 0
 EP = 15	#Extreme Point for creating lines and rays which does not have a particulary end
 
+#Exception if someone tries to create an object with false input
 class No_Constructor(Exception):
+	"""
+	Exception if someone tries to create an object with false input
+	"""
 	def __init__(self,value):
 		self.name = type(value[0]).__name__
 		self.parameters = value[1:]
@@ -27,15 +31,21 @@ class No_Constructor(Exception):
 		for i in range(self.parameters):
 			if self.parameters[i] != None:
 				print '{self.parameters[i]}' .format(self=self),
-
+			
+#Exception for the degenarate objects there are in CGAL
 class Is_Degenerate(Exception):
+	"""
+	If an object is degenarate
+	"""
 	def __init__(self,value):
 		self.name = type(value).__name__
 	def repr(self): 
 		print 'The {self.name} is degenerate' .format(self=self)
 		
 def prepareScene():
-	#scene.userspin = False #Gia na exoume k deksi koumpi sto pontiki
+	"""
+	Creates the scene with some default values
+	"""
 	scene.range = 10
 	scene.width = 800
 	scene.height = 700
@@ -43,7 +53,11 @@ def prepareScene():
 	scene.exit=-1
 
 def quadratic(a, b, c=None):
-	 if c: # (ax^2 + bx + c = 0) 
+	"""
+	Solution of a quadratic equatation
+	Is used for the Circle_2 object
+	"""
+	if c: # (ax^2 + bx + c = 0) 
 		a, b = b / float(a), c / float(a) 
 		t = a / 2.0 
 		r = t**2 - b 
@@ -206,7 +220,7 @@ class Point_2(object):#all clear
 			return self._point.pos[i]
 	def dimension(self):
 		return 2
-#generator gia na ulopoihsw tous iterators ths CGAL
+#generator in order to emulate th iterators of CGAL
 	def iter(self):
 		for index in range(2):
 			yield self._point.pos[index]
@@ -577,14 +591,14 @@ class Ray_2(object):
 	Ray in 2d
 	"""
 	def __init__(self,x,y,color=(1,1,1),visible=True):
-		if type(y).__name__ == 'Point_2':
+		if isinstance(y,Point_2):
 			#y.visual()
 			self._direction = Direction_2(Segment_2(x,y,visible=False))
-		if type(y).__name__ == 'Direction_2':
+		if isinstance(y,Direction_2):
 			self._direction = y
-		if type(y).__name__ == 'Vector_2':
+		if isinstance(y,Vector_2):
 			self._direction = y.direction()
-		if type(y).__name__ == 'Line_2':
+		if isinstance(y,Line_2):
 			self._direction = y.direction()
 		d = self._direction
 		l = Line_2(x,d,visible=False)
@@ -894,9 +908,12 @@ def orientation(a,b,c):
 def intersection(a,b,c=True):
 	"""
 	Intersection in 2d
-	Every Segment, Ray trasformed as Line
+	Every Segment, Ray trasformed as Line for intersection
+	If there is interesection then we look if it is inside
+	the Segment or Ray
 	Triangle,Polygon returns list (if empty returns None)
 	Circle return either list, Point_2,None
+	The c parameter is if we want to depict the intersection.
 	"""
 	if isinstance(a,Line_2): #If it is Line
 		if isinstance(b,Line_2):
@@ -1097,7 +1114,7 @@ def intersection(a,b,c=True):
 		if isinstance(b,Circle_2):
 			return intersection(seg,b,c)
 		if isinstance(b,Ray_2):
-			return intersection(b,seg,c)
+			return intersection(seg,b,c)
 		return intersection(b,a,c)
 	if isinstance(a,Circle_2):
 		if isinstance(b,Circle_2):
