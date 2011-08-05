@@ -42,6 +42,18 @@ class Is_Degenerate(Exception):
 	def repr(self): 
 		print 'The {self.name} is degenerate' .format(self=self)
 		
+class Wrong_Arguments(Exception):
+	"""
+	If wrong argument given to a function
+	"""
+	def __init__(self,value):
+		self.name = type(value).__name__
+	def repr(self):
+		print '{self.name} cannot take this arguments' .format(self=self),
+		for i in range(self.parameters):
+			if self.parameters[i] != None:
+				print '{self.parameters[i]}' .format(self=self),
+		
 def prepareScene():
 	"""
 	Creates the scene with some default values
@@ -225,11 +237,17 @@ class Point_2(object):#all clear
 		for index in range(2):
 			yield self._point.pos[index]
 	def __add__(self,other):
-		return Point_2(other.x()+self.x(),other.y()+self.y())
+		if isinstance(other,Vector_2):
+			return Point_2(other.x()+self.x(),other.y()+self.y())
+		else:
+			raise Wrong_Arguments([self,self,other])
 	def __sub__(self,other):
 			if type(self).__name__==type(other).__name__:
 				return Vector_2(self,other)
-			return Point_2(self.x()-other.x(),self.y()-other.y())
+			elif isinstance(other,Vector_2):
+				return Point_2(self.x()-other.x(),self.y()-other.y())
+			else:
+				raise Wrong_Arguments([self,self,other])				
 	def __eq__(self,other):
 		if other == None:
 			return False
