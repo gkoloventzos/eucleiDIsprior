@@ -223,7 +223,7 @@ class Point_2(object):#all clear
 		if(x==0 and y==0 and z==0):
 			print self._point.color
 			return
-		if type(x).__name__=='tuple':
+		if isinstance(x,tuple):
 			self._point.color=x
 			return
 		self._point.color=(x,y,z)
@@ -242,7 +242,7 @@ class Point_2(object):#all clear
 		else:
 			raise Wrong_Arguments([self,self,other])
 	def __sub__(self,other):
-			if type(self).__name__==type(other).__name__:
+			if type(self)==type(other):
 				return Vector_2(self,other)
 			elif isinstance(other,Vector_2):
 				return Point_2(self.x()-other.x(),self.y()-other.y())
@@ -257,21 +257,21 @@ class Point_2(object):#all clear
 			return False
 		return (self.x()!=other.x()) or (self.y()!=other.y())
 	def __gt__(self,other):
-		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
+		if self==None or other==None:
 			return False
 		return self.x() > other.x() or ( self.x() == other.x() and self.y() > other.y() )
 	def __lt__(self,other):
-		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
+		if self==None or other==None:
 			return False
 		return self.x() < other.x() or ( self.x() == other.x() and self.y() < other.y() )
 	def __ge__(self,other):
-		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
+		if self==None or other==None:
 			return False
 		if self == other:
 			return True
 		return self.x() > other.x() or ( self.x() == other.x() and self.y() > other.y() )
 	def __le__(self,other):
-		if type(self).__name__=='NoneType' or type(other).__name__=='NoneType':
+		if self==None or other==None:
 			return False
 		if self == other:
 			return True
@@ -292,21 +292,21 @@ class Vector_2(object):
 	Vector in 2d
 	"""
 	def __init__(self,x=None,y=None,visible=True):
-		if type(x).__name__==type(y).__name__=='NoneType':
+		if x==y==None:
 			raise No_Constructor([self,x,y])
-		if type(x).__name__==type(y).__name__== 'Point_2':
+		if isinstance(x,Point_2) and isinstance(y,Point_2):
 			self._vector=vector(y.x()-x.x(),y.y()-x.y())
-		if (type(x).__name__==type(y).__name__=='int') or(type(x).__name__==type(y).__name__=='float'):
+		if (isinstance(x,int) and isinstance(y,int)) or(isinstance(x,float) and isinstance(y,float)):
 			self._vector=(x,y)
-		if type(y).__name__ == 'NoneType':
-			if type(x).__name__=='Segment_2':
+		if y==None:
+			if isinstance(x,Segment_2):
 				a = x.source()
 				b = x.target()
 				self._vector=vector(b.x() - a.x(),b.y() - a.y())
-			elif type(x).__name__=='Ray_2':
+			elif isinstance(x,Ray_2):
 				s = x.direction()
 				self._vector=vector(s.dx(),s.dy())
-			elif type(x).__name__=='Line_2':
+			elif isinstance(x,Line_2):
 				self._vector=vector(x.b(),-x.a())
 	def __repr__(self):
 		return 'Vector_2({self._vector[0]},{self._vector[1]})' .format(self=self)
@@ -340,7 +340,7 @@ class Vector_2(object):
 	def __neg__(self):
 		return Vector_2(-self.x(),-self.y())
 	def __mul__(self,other):
-		if type(other).__name__=='Vector_2':
+		if isinstance(other,Vector_2):
 			return dot(self,other)
 		else:
 			return Vector_2(other*self.x(),other*self.y())
@@ -370,20 +370,20 @@ class Direction_2(object):#all clear
 	"""
 	def __init__(self,x,y=None):
 		self._d=[]
-		if type(y).__name__=='NoneType':
-			if type(x).__name__=='Vector_2':
+		if y==None:
+			if isinstance(x,Vector_2):
 				if x.x() == 0:
 					self._direction = None
 				else:
 					self._direction=x.y()/x.x()
 				self._d.extend([x.x(),x.y()])				
-			if type(x).__name__=='Line_2':
+			if isinstance(x,Line_2):
 				self._direction=x.direction()
 				self._d.extend[-x.a(),x.b()]
-			if type(x).__name__=='Ray_2':
+			if isinstance(x,Ray_2):
 				f = x.to_vector()
 				self = Direction_2(f)
-			if type(x).__name__=='Segment_2':
+			if isinstance(x,Segment_2):
 				s=x.source()
 				t=x.target()
 				self._d.extend([t.x()-s.x(),t.y()-s.y()])
@@ -477,7 +477,7 @@ class Line_2(object):
 		self._b=None
 		self._c=None
 		if not isinstance(b,Direction_2) and b == None and c == None:
-			if type(a).__name__ == 'Segment_2':
+			if isinstance(a,Segment_2):
 				x=a.source()
 				y=a.target()
 				if a.is_degenerate():
@@ -485,21 +485,21 @@ class Line_2(object):
 				self._b=(y.x() - x.x()) # y = -(y2-y1)/(x2-x1)*x +c
 				self._a=-(y.y() - x.y())
 				self._c=-(self._b*x.y()+self._a*x.x())
-			if type(a).__name__ == 'Ray_2':
+			if isinstance(a,Ray_2):
 				self = Line_2(a.source(),a.direction())
 		elif c == None:
-			if type(a).__name__ == 'Point_2' and type(b).__name__ =='Vector_2':
+			if isinstance(a,Point_2) and isinstance(b,Vector_2):
 				self._b=b.x()
 				self._a=-b.y()
 				self._c=-(self._b*a.y()+self._a*a.x())
-			if type(a).__name__ == 'Point_2' and type(b).__name__ =='Direction_2':
+			if isinstance(a,Point_2) and isinstance(b,Direction_2):
 				self._b=b.delta(0)
 				self._a=-b.delta(1)
 				if a.y() != None and a.x() != None:
 					self._c=-(self._b*a.y()+self._a*a.x())
 				else:
 					self._c=0
-			if type(a).__name__ == 'Point_2' and type(b).__name__ =='Point_2':
+			if isinstance(a,Point_2) and isinstance(b,Point_2):
 				p=Segment_2(a,b)
 				x=p.source()
 				y=p.target()
@@ -599,7 +599,7 @@ class Line_2(object):
 		if(x==0 and y==0 and z==0):
 			print self._line.color
 			return
-		if type(x).__name__=='tuple':
+		if isinstance(x,tuple):
 			self._line.color=x
 			return
 		self._line.color=(x,y,z)
@@ -644,7 +644,7 @@ class Ray_2(object):
 		if(x==0 and y==0 and z==0):
 			print self._ray.color
 			return
-		if type(x).__name__=='tuple':
+		if isinstance(x,tuple):
 			self._ray.color=x
 			return
 		self._ray.color=(x,y,z)
@@ -698,7 +698,7 @@ class Segment_2(object):#all clear
 		if(x==0 and y==0 and z==0):
 			print self._segment.color
 			return
-		if type(x).__name__=='tuple':
+		if isinstance(x,tuple):
 			self._segment.color=x
 			return
 		self._segment.color=(x,y,z)
@@ -752,7 +752,7 @@ class Segment_2(object):#all clear
 	def to_vector(self):
 		return Vector_2(self._point_end,self._point_start,visible=False)
 	def has_on(self,other):
-		if type(other).__name__== 'Point_2':
+		if isinstance(other,Point_2):
 			if ((self._point_start.x()-other.x())*(self._point_end.y()-other.y()))-((self._point_start.y()-other.y())*(self._point_end.x()-other.x())) == 0:
 				return self.min() <= other <= self.max()
 	def supporting_line(self):
