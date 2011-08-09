@@ -1,0 +1,86 @@
+<a name="definition"></a><h2 class="title"><a>Point_2</a></h2>
+<h3 style="color:#111;">Definition</h3>
+<p>An object of the class Point_2 is a point in the two-dimensional Euclidean plane.</p>
+
+
+<a name="constructor"></a><h3 style="color:#111;">Constructor</h3>
+<p><code>p = Point_2(x=0,y=0,color=(1,1,1),visible=True)</code>
+The contructor of the Point_2 object has as arguments the position
+of the point in the 2 dimensional space, the color of which the bullet
+will be colored and the visibility of the bullet.
+</p>
+
+
+<a name="operations"></a><h3 style="color:#111;">Operations</h3>
+<p><code><strong>float</strong>  p.x()</code>
+Returns the x coordinate.
+</p>
+<p><code><strong>float</strong>  p.y()</code>
+Returns the y coordinate.
+</p>
+<p><code><strong>float</strong>  p.cartesian( int i )</code>
+Returns the i coordinate (0&le;i&le;1).
+</p>
+<p><code><strong>int</strong>  p.dimension()</code>
+Returns 2.
+</p>
+<p><code><strong>sphere</strong>  p.pos()</code>
+Returns the visual python object sphere that Point_2 has as representation.
+</p>
+<p><code><strong>void</strong>  p.visual(visible=None)</code>
+If the argument ommitted then it reverses the visibility.
+Otherwise makes the visibility as the argument defines.
+</p>
+<p><code><strong>void</strong>  p.label("label")</code>
+Creates a label with the argument string for the Point_2 p.
+</p>
+<p><code><strong>void</strong>  p.color(x=0,y=0,z=0)</code>
+If color is called as p.color() prints the color of the Point_2<br />
+If it is called with with tuple (color.green) or (256,0,0) then it changes
+the color of the Point_2.<br />
+If you want to color a Point_2 black use the visualfunction(make it invisible).
+</p>
+
+<a name="operators"></a><h3 style="color:#111;">Operators</h3>
+<p><code><strong>bool</strong>  p==q</code>
+Returns true if p and q Point_2 objects has the same coordinates.
+Returns false otherwise.
+</p>
+<p><code><strong>bool</strong>  p!=q</code>
+Returns true if p and q Point_2 objects has not the same coordinates.
+Returns false otherwise.
+</p>
+<p><code><strong>bool</strong>  p&le;q</code>
+Returns true if p coordinates are lesser or equal than q.
+Returns false otherwise.
+</p>
+<p><code><strong>bool</strong>  p&ge;q</code>
+Returns true if p coordinates are greater or equal than q.
+Returns false otherwise.
+</p>
+<p><code><strong>bool</strong>  p&lt;q</code>
+Returns true if p coordinates are lesser than q.
+Returns false otherwise.
+</p>
+<p><code><strong>bool</strong>  p&gt;q</code>
+Returns true if p coordinates are greater than q.
+Returns false otherwise.
+</p>
+<p><code><strong><a href="./point2d.php">Point_2</a></strong>  p+v</code>
+p is Point_2 and v is Vector_2. Returning the point obtained by translating p by the vector v.
+Else raises exception.
+</p>
+<p><code><strong><a href="./point2d.php">Point_2</a></strong>  p-v</code>
+p is Point_2 and v is Vector_2. Returning the point obtained by translating p by the vector -v.
+Else raises exception.
+</p>
+<p><code><strong><a href="./vector2d.php">Vector_2</a></strong>  p-q</code>
+p and q are Point_2. Returning the difference vector between p and q.
+Else raises exception.
+</p>
+<p><code><strong>float</strong>  p[ int i ]</code>
+Returns the i coordinate (0&le;i&le;1).
+</p>
+
+
+

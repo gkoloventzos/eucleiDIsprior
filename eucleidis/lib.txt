@@ -1,0 +1,33 @@
+<h2 class="title"><a>Kernel 2D</a></h2>
+<ul>
+<li><h3>Classes</h3>
+	<ul>
+		<li><a href="./point2d.php">Point_2</a></li>
+		<li><a href="./segment2d.php">Segment_2</a></li>
+		<li><a href="./vector2d.php">Vector_2</a></li>
+		<li><a href="./direction2d.php">Direction_2</a></li>
+		<li><a href="./2d.php">Triangle_2</a></li>
+		<li><a href="./line2d.php">Line_2</a></li>
+		<li><a href="./ray2d.php">Ray_2</a></li>
+		<li><a href="./circle2d.php">Circle_2</a></li>
+		<li><a href="">Polygon_2</a></li>
+	</ul>
+</li>
+<li><h3>Functions</h3></li>
+	<ul>
+		<li><a href="">getPolygon</a></li>
+		<li><a href="">getVisualPoints</a></li>
+		<li><a href="">intersection</a></li>
+		<li><a href="">is_permute</a></li>
+		<li><a href="">orientation</a></li>
+		<li><a href="">quadratic</a></li>
+		<li><a href="">prepareScene</a></li>
+		<li><a href="">prepareControls</a></li>
+		<li><a href="">run</a></li>
+	</ul>
+<li><h3>Exceptions</h3></li>
+	<ul>
+		<li><a href="">Is_Degenarate</a></li>
+		<li><a href="">No_Constructor</a></li>
+	</ul>
+</ul>

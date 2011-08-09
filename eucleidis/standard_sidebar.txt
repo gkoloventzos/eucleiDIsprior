@@ -1,0 +1,8 @@
+			<h3>Links</h3>
+			<ul class="sidemenu">
+				<li><a href="http://www.vpython.org/">VPython</a></li>
+				<li><a href="http://www.python.org/">Python</a></li>
+				<li><a href="http://www.cgal.org/">CGAL</a></li>					
+				<li><a href="http://erga.di.uoa.gr/">ΕρΓΑ</a></li>
+				<li><a href="http://www.di.uoa.gr/">D.I.</a></li>
+			</ul>

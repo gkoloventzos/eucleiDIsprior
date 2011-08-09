@@ -1,0 +1,9 @@
+			<div id="scrollingDiv">
+			<h3>Sort-cut</h3>
+			<ul class="sidemenu">
+				<li><a href="#definition">Home</a></li>
+				<li><a href="#contructor">Constructor</a></li>
+				<li><a href="#operations">Operations</a></li>
+				<li><a href="#operators">Operators</a></li>
+			</ul>
+			</div>
