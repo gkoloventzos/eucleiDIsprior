@@ -1,4 +1,8 @@
 <h2 class="title"><a>Kernel 2D</a></h2>
+<p>
+Most of the constructors are pseudo overloaded for having the same contructor
+for the same class.
+</p>
 <ul>
 <li><h3>Classes</h3>
 	<ul>

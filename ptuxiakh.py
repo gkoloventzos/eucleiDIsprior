@@ -329,9 +329,6 @@ class Vector_2(object):
 		if other == None:
 			return False
 		return self._vector != other._vector
-	def cartesian(self,i):
-		if i>=0 and i<=1:
-			return self._vector[i]
 	def __getitem__(self,i):
 		if i>=0 and i<=1:
 			return self._vector[i]
@@ -590,11 +587,12 @@ class Line_2(object):
 	def __eq__(self,other):
 		if other == None:
 			return False
-		return (self._a == other.a()) and (self._b == other.b()) and (self._c==other.c())
+			l = intersection(self,other,False)
+		return isinstance(l,Line_2)
 	def __ne__(self,other):
 		if other == None:
 			return False
-		return (self._a != other.a()) or (self._b != other.b()) or (self._c != other.c())
+		return not (self==other)
 	def color(self,x=0,y=0,z=0):
 		if(x==0 and y==0 and z==0):
 			print self._line.color
@@ -935,15 +933,13 @@ def intersection(a,b,c=True):
 	"""
 	if isinstance(a,Line_2): #If it is Line
 		if isinstance(b,Line_2):
-			if a.a() == b.a() and a.b() == b.b(): # If it is the same line(not with == because will fail in direction)
-				if a.c() == b.c():
-					a.visual(c)#return a line
-					return a
-				else: 
-					return None
+			if (a.a() == b.a() and a.b() == b.b() and a.c() == b.c()) or (a.a() == -b.a() and a.b() == -b.b() and a.c() == -b.c()): # If it is the same line(not with == because will fail in direction)
+				a.visual(c)#return a line
+				return a
 			p = (a.a()*b.b()) - (a.b()*b.a())
 			if p != 0:
 				return Point_2((-a.c()*b.b()+a.b()*b.c())/p,(-(a.a()*b.c())+a.c()*b.a())/p,visible=c)
+			return None
 		if isinstance(b,Ray_2) or isinstance(b,Segment_2): #if it is ray or segment
 			lin = b.supporting_line()
 			ret = intersection(a,lin,False)

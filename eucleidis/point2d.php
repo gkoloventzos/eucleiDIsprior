@@ -1,7 +1,7 @@
 <?php 
 $title = "Point_2";
 $content = "point2d.txt";
-$sidebar = "point2_sidebar.txt";
+$sidebar = "sidebar.php";
 $id2=True;
 require("standard.txt");
 ?>

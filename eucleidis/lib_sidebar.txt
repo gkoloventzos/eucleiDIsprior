@@ -6,5 +6,6 @@
 				<li><a href="#operations">Operations</a></li>
 				<li><a href="#operators">Operators</a></li>
 				<li><a href="#predicates">Predicates</a></li>
+				<li><a href="#predicates">Examples</a></li>
 			</ul>
 			</div>

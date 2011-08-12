@@ -10,6 +10,7 @@ Also has the color of the line will be colored and the visibility of the line.
 </p>
 
 
+
 <a name="operations"></a><h3 style="color:#111;">Operations</h3>
 <p><code><strong><a href="./point2d.php">Point_2</a></strong>  s.source()</code>
 Returns the source of s. 
@@ -59,16 +60,6 @@ If color is called as p.color() prints the color of the Segment_2<br />
 If it is called with with tuple (color.green) or (256,0,0) then it changes
 the color of the Segment_2.<br />
 If you want to color a Segment_2 black use the visualfunction(make it invisible).
-</p>
-<a name="operators"></a><h3 style="color:#111;">Operators</h3>
-<p><code><strong>bool</strong>  p==q</code>
-Test for equality: Two segments are equal, iff their sources and targets are equal. 
-</p>
-<p><code><strong>bool</strong>  p!=q</code>
-Test for inequality. 
-</p>
-<p><code><strong><a href="./point2d.php">Point_2</a></strong>  s[ int i ]</code>
-Returns the vertex(i).
 </p>
 
 <a name="predicates"></a><h3 style="color:#111;">Predicates</h3>
