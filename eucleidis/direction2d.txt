@@ -1,0 +1,78 @@
+<a name="definition"></a><h2 class="title"><a>Direction_2</a></h2>
+<h3 style="color:#111;">Definition</h3>
+<p>
+An object of the class Direction_2 is a vector in the two-dimensional vector space where we forget about its length. They can be viewed as unit vectors, although there is no normalization internally, since this is error prone. Directions are used whenever the length of a vector does not matter. They also characterize a set of parallel oriented lines that have the same orientations. For example, you can ask for the direction orthogonal to an oriented plane, or the direction of an oriented line. Further, they can be used to indicate angles. The slope of a direction is dy()/dx(). 
+</p>
+
+<a name="constructor"></a><h3 style="color:#111;">Constructor</h3>
+<p><code>
+d = Direction_2(&lt;<strong><a href="./segment2d.php">Segment_2</a></strong>&gt; s)
+</code>
+Introduces the direction d of segment s. 
+</p>
+<p><code>
+d = Direction_2(&lt;<strong><a href="./vector2d.php">Vector_2</a></strong>&gt; v)
+</code>
+Introduces the direction d of vector v. 
+</p>
+<p><code>
+d = Direction_2(&lt;<strong><a href="./line2d.php">Line_2</a></strong>&gt; l)
+</code>
+Introduces the direction d of line l.
+</p>
+<p><code>
+d = Direction_2(&lt;<strong><a href="./ray2d.php">Ray_2</a></strong>&gt; r)
+</code>
+Introduces the direction d of ray r. 
+</p>
+<p><code>
+d = Direction_2(&lt;<strong>int</strong>&gt; x, &lt;<strong>int</strong>&gt; y)
+</code>
+Introduces a direction d passing through the origin and the point with Cartesian coordinates (x, y).
+</p>
+
+<a name="operators"></a><h3 style="color:#111;">Operators</h3>
+<p><code><strong>bool</strong>  d==e</code>
+Returns true if d and e Direction_2 objects has the same coordinates.
+Returns false otherwise.
+</p>
+<p><code><strong>bool</strong>  d!=e</code>
+Returns true if p and e Direction_2 objects has not the same coordinates.
+Returns false otherwise.
+</p>
+<p><code><strong>bool</strong>  d&le;e</code>
+Returns true if d coordinates are lesser or equal than e.
+Returns false otherwise.
+</p>
+<p><code><strong>bool</strong>  d&ge;e</code>
+Returns true if d coordinates are greater or equal than e.
+Returns false otherwise.
+</p>
+<p><code><strong>bool</strong>  d&lt;e</code>
+Returns true if d coordinates are lesser than e.
+Returns false otherwise.
+</p>
+<p><code><strong>bool</strong>  d&gt;e</code>
+Returns true if d coordinates are greater than e.
+Returns false otherwise.
+</p>
+<p><code><strong><a href="./direction2d.php">Direction_2</a></strong>  -d</code>
+Returns the opposite direction.
+</p>
+
+<a name="operations"></a><h3 style="color:#111;">Operations</h3>
+<p><code><strong>float</strong>  d.delta(int i)</code>
+Returns values, such that d== Direction_2(delta(0),delta(1)). (0&le;i&le;1)
+</p>
+<p><code><strong>float</strong>  d.dx()</code>
+Returns delta(0).
+</p>
+<p><code><strong>float</strong>  d.dy()</code>
+Returns delta(1).
+</p>
+<p><code><strong>bool</strong>  d.counterclockwise_in_between ( d1, d2) </code>
+Returns true, iff d is not equal to d1, and while rotating counterclockwise starting at d1, d is reached strictly before d2 is reached. Note that true is returned if d1 == d2, unless also d == d1. 
+</p>
+<p><code><strong><a href="./vector2d.php">Vector_2</a></strong>  d.to_vector()</code>
+Returns a vector that has the same direction as d.
+</p>

@@ -1,0 +1,67 @@
+<a name="definition"></a><h2 class="title"><a>Line_2</a></h2>
+<h3 style="color:#111;">Definition</h3>
+<p>
+An object l of the data type Line_2 is a directed straight line in the two-dimensional Euclidean plane. It is defined by the set of points with Cartesian coordinates (x,y) that satisfy the equation l : ax + by + c = 0
+</p>
+<p>
+The line splits two-dimensional Euclidean plane in a positive and a negative side. A point p with Cartesian coordinates (px, py) is on the positive side of l, iff a px + b py + c > 0, it is on the negative side of l, iff a px + b py + c < 0. The positive side is to the left of l. 
+</p>
+
+<a name="constructor"></a><h3 style="color:#111;">Constructor</h3>
+<p><code>s = Line_2(int a, int b, int c color=(1,1,1), visible=True)</code>
+Introduces a line l with the line equation in Cartesian coordinates ax +by +c = 0.
+</p>
+<p><code>s = Line_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./point2d.php">Point_2</a>&gt; q, color=(1,1,1), visible=True)</code>
+Introduces a line l passing through the points p and q. Line l is directed from p to q
+</p>
+<p><code>s= Line_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./direction2d.php">Direction_2</a>&gt; d,color=(1,1,1), visible=True)</code>
+Introduces a line l passing through point p with direction d. 
+</p>
+<p><code>s = Line_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./vector2d.php">Vector_2</a>&gt; v, color=(1,1,1), visible=True)</code>
+</p>
+Introduces a line l passing through point p and oriented by v. 
+<p><code>s = Line_2(&lt;<a href="./segment2d.php">Segment_2</a>&gt; s, color=(1,1,1), visible=True)</code>
+Introduces a line l supporting the segment s, oriented from source to target.
+</p>
+<p><code>s = Line_2(&lt;<a href="./ray2d.php">Ray_2</a>&gt; r, color=(1,1,1), visible=True)</code>
+Introduces a line l supporting the ray r, with same orientation. 
+</p>
+
+<a name="operators"></a><h3 style="color:#111;">Operators</h3>
+<p><code><strong>bool</strong>  l==h</code>
+Test for equality: Two lines are equal, iff the intersection of the lines are a line.
+</p>
+<p><code><strong>bool</strong>  l!=h</code>
+Test for inequality. 
+</p>
+
+<a name="operations"></a><h3 style="color:#111;">Operations</h3>
+<p><code><strong>int</strong> l.a()</code>
+Returns the first coefficient of l. 
+</p>
+<p><code><strong>int</strong> l.b()</code>
+Returns the second coefficient of l. 
+</p>
+<p><code><strong>int</strong> l.c()</code>
+Returns the third coefficient of l. 
+</p>
+<p><code><strong>int</strong> l.x_at_y()</code>
+Returns the x-coordinate of the point at l with given y-coordinate.
+Precondition: l is not horizontal.
+</p>
+<p><code><strong>int</strong> l.y_at_x()</code>
+Returns the y-coordinate of the point at l with given x-coordinate.
+Precondition: l is not vertical.
+</p>
+<p><code><strong><a href="./point2d.php">Point_2</a></strong> l.point(int i)</code>
+Returns an arbitrary point on l. It holds point(i) == point(j), iff i==j. Furthermore, l is directed from point(i) to point(j), for all i &lt; j.
+</p>
+<p><code><strong><a href="./point2d.php">Point_2</a></strong> l.projection(<a href="./point2d.php">Point_2</a> p)</code>
+Returns the orthogonal projection of p onto l.
+</p>
+<p><code><strong><a href="./vector2d.php">Vector_2</a></strong>  l.to_vector()</code>
+Returns a vector that has the direction of l.
+</p>
+<p><code><strong><a href="./direction2d.php">Direction_2</a></strong>  l.direction()</code>
+Returns the direction of l.
+</p>
