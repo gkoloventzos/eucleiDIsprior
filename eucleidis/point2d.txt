@@ -81,9 +81,6 @@ If it is called with with tuple (color.green) or (256,0,0) then it changes
 the color of the Point_2.<br />
 If you want to color a Point_2 black use the visualfunction(make it invisible).
 </p>
-<p>
-</p>
-<p>
-</p>
+
 
 
