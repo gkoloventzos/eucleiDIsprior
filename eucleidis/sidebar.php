@@ -8,7 +8,7 @@ $read_file = implode(".",$file_name);
 $fp = fopen($read_file, "r");
 $theData = fread($fp, filesize($read_file));
 $regexp = "<a name=\"([^\"]*)\"><\/a>";
-echo "<div id=\"scrollingDiv\">\n<h3>Sort-cut</h3>\n<ul class=\"sidemenu\">\n";
+echo "<div id=\"menu\">\n<h3>Sort-cut</h3>\n<ul class=\"sidemenu\">\n";
 preg_match_all("/$regexp/siU",$theData,$matches);
 foreach($matches[1] as $match) { 
 	if (strcmp($match,"definition") == 0){

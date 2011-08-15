@@ -1,3 +1,4 @@
+			<div id="menu">
 			<h3>Links</h3>
 			<ul class="sidemenu">
 				<li><a href="http://www.vpython.org/">VPython</a></li>
@@ -6,3 +7,4 @@
 				<li><a href="http://erga.di.uoa.gr/">ΕρΓΑ</a></li>
 				<li><a href="http://www.di.uoa.gr/">D.I.</a></li>
 			</ul>
+			</div>

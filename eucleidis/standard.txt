@@ -12,7 +12,10 @@
 <!-- CSS files -->
 <link rel="shortcut icon" href="./images/diabitis.png" />
 <link rel="stylesheet" href="images/main.css" type="text/css" />
-	<script type="text/javascript" src="jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+
+
+<!--	<script type="text/javascript" src="jquery-1.3.2.min.js"></script>
 	<script>
 		$().ready(function() {
 			var $scrollingDiv = $("#scrollingDiv");
@@ -23,7 +26,7 @@
 					.animate({"marginTop": ($(window).scrollTop() + 30) + "px"}, "slow" );			
 			});
 		});
-	</script>
+	</script>-->
 
 
 </head>
@@ -131,6 +134,7 @@
 
 <!-- wrap ends here -->
 </div>
+<script type="text/javascript" src="./stickyfloat.js"></script>
 
 </body>
 </html>

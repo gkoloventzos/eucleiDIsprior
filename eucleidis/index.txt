@@ -1,4 +1,3 @@
-			<a name="EucleiDIs: A python Geometric Library"></a>
 			<p>EucleiDIs is a python geometric library which imitates CGAL. We are trying to have
 			the ease of python coding with the capabilities of CGAL.</p>
 			<p>In the library section you can have a look of the classes,functions, exceptions

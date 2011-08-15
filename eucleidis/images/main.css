@@ -384,6 +384,12 @@ input.button {
 	vertical-align: top;
 }
 
+#menu {
+	position: inherit;
+	margin: 0% 10%;
+
+}
+
 /* footer */
 #footer-wrap {
 	clear: both;
