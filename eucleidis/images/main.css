@@ -493,4 +493,19 @@ input.button {
 	content: "."; 
 }
 
+.floating-menu {position:fixed;background:#fff4c8;border:1px solid #ffcc00;width:150px;z-index:0;}
+.floating-menu a, h3 {display:block;margin:0 0.5em;}
 
+.cssFloatMenu {  margin: 0;  position: fixed;
+  top: inherit;  left: inherit;  width: 100px;  right: inherit;z-index:0;}
+
+.cssFloatMenu a, em
+{ display: block; margin: 0 2px }
+.cssFloatMenu a, em { border-top: 2px groove #003366 }
+.cssFloatMenu a:first-child { border-top: none }
+.cssFloatMenu em { color: #003366}
+.cssFloatMenu em:first-child { border-top: none }
+
+.cssFloatMenu a:link { text-decoration: none; color: #800000 }
+.cssFloatMenu a:visited { text-decoration: none; color: #0000FF }
+.cssFloatMenu a:hover { background: #003366; color: white }
