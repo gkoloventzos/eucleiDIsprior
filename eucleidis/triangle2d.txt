@@ -1,0 +1,65 @@
+<a name="definition"></a><h2 class="title"><a>Triangle_2</a></h2>
+<h3 style="color:#111;">Definition</h3>
+<p>
+An object t of the class Triangle_2<Kernel> is a triangle in the two-dimensional Euclidean plane. Triangle t is oriented, i.e., its boundary has clockwise or counterclockwise orientation. We call the side to the left of the boundary the positive side and the side to the right of the boundary the negative side.
+</p>
+<p>
+The boundary of a triangle splits the plane in two open regions, a bounded one and an unbounded one. 
+</p>
+<a name="constructor"></a><h3 style="color:#111;">Constructor</h3>
+<p><code>t = Triangle_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./point2d.php">Point_2</a>&gt; q, color=(1,1,1), visible=True)</code>
+Introduces a triangle t with vertices p, q and r.
+</p>
+
+<a name="operators"></a><h3 style="color:#111;">Operators</h3>
+<p><code><strong>bool</strong>  t1==t2</code>
+Test for equality: two triangles are equal, iff there exists a cyclic permutation of the vertices of t2, such that they are equal to the vertices of t. 
+</p>
+<p><code><strong>bool</strong>  t1!=t2</code>
+Test for inequality. 
+</p>
+<p><code><strong><a href="./point2d.php">Point_2</a></strong>  t[int i]</code>
+Returns vertex(i). 
+</p>
+
+<a name="operations"></a><h3 style="color:#111;">Operations</h3>
+<p><code><strong><a href="./point2d.php">Point_2</a></strong>  t.vertex(int i)</code>
+Returns the i'th vertex modulo 3 of t.
+</p>
+<p><code><strong><a href="./triangle2d.php">Triangle_2</a></strong>  t.opposite()</code>
+Returns a triangle where the boundary is oriented the other way round (this flips the positive and the negative side, but not the bounded and unbounded side).
+</p>
+<p><code><strong>float</strong>  t.area()</code>
+Returns the signed area of t (with the help of <a href="http://en.wikipedia.org/wiki/Heron%27s_formula">Heron Formula</a>). 
+</p>
+<a name="predicates"></a><h3 style="color:#111;">Predicates</h3>
+<p><code><strong>bool</strong> t.is_degenerate()</code>
+Triangle t is degenerate, if the vertices are collinear. 
+</p>
+<p><code><strong>Orientation</strong> t.orientation()</code>
+Returns the orientation of t.
+</p>
+<p><code><strong>Oriented side</strong> t.oriented_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+Returns ON_ORIENTED_BOUNDARY, or POSITIVE_SIDE, or the constant ON_NEGATIVE_SIDE, determined by the position of point p.
+Precondition: t is not degenerate.
+</p>
+<p><code><strong>Bounted side</strong> t.bounded_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+Returns the constant ON_BOUNDARY, ON_BOUNDED_SIDE, or else ON_UNBOUNDED_SIDE, depending on where point p is.
+Precondition: t is not degenerate.
+</p>
+<p><code><strong>bool</strong> t.has_on_positive_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+</p>
+<p><code><strong>bool</strong> t.has_on_negative_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+</p>
+<p><code><strong>bool</strong> t.has_on_boundary(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+</p>
+<p><code><strong>bool</strong> t.has_on_bounded_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+</p>
+<p><code><strong>bool</strong> t.has_on_unbounded_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+</p>
+
+
+
+
+
+

@@ -766,12 +766,12 @@ class Segment_2(object):#all clear
 
 	
 class Triangle_2(object):
-	def __init__(self,x,y,z):
+	def __init__(self,x,y,z,color=(1,1,1),visible=True):
 		if type(x).__name__ == type(y).__name__ == type(z).__name__ == 'Point_2':
 			self._vertex=[]
 			self._segments=[]
 			self._vertex.extend([x,y,z])
-			self._segments.extend([Segment_2(x,y),Segment_2(y,z),Segment_2(z,x)])
+			self._segments.extend([Segment_2(x,y,color =color,visible=visible),Segment_2(y,z,color =color,visible=visible),Segment_2(z,x,color =color,visible=visible)])
 			self._orientation = orien[orientation(x,y,z)]
 			r=[]
 			z1=(z.x(),z.y(),0)

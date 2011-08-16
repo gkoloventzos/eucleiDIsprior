@@ -8,22 +8,22 @@ The line splits two-dimensional Euclidean plane in a positive and a negative sid
 </p>
 
 <a name="constructor"></a><h3 style="color:#111;">Constructor</h3>
-<p><code>s = Line_2(int a, int b, int c color=(1,1,1), visible=True)</code>
+<p><code>l = Line_2(int a, int b, int c color=(1,1,1), visible=True)</code>
 Introduces a line l with the line equation in Cartesian coordinates ax +by +c = 0.
 </p>
-<p><code>s = Line_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./point2d.php">Point_2</a>&gt; q, color=(1,1,1), visible=True)</code>
+<p><code>l = Line_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./point2d.php">Point_2</a>&gt; q, color=(1,1,1), visible=True)</code>
 Introduces a line l passing through the points p and q. Line l is directed from p to q
 </p>
-<p><code>s= Line_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./direction2d.php">Direction_2</a>&gt; d,color=(1,1,1), visible=True)</code>
+<p><code>l= Line_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./direction2d.php">Direction_2</a>&gt; d,color=(1,1,1), visible=True)</code>
 Introduces a line l passing through point p with direction d. 
 </p>
-<p><code>s = Line_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./vector2d.php">Vector_2</a>&gt; v, color=(1,1,1), visible=True)</code>
-</p>
+<p><code>l = Line_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./vector2d.php">Vector_2</a>&gt; v, color=(1,1,1), visible=True)</code>
 Introduces a line l passing through point p and oriented by v. 
-<p><code>s = Line_2(&lt;<a href="./segment2d.php">Segment_2</a>&gt; s, color=(1,1,1), visible=True)</code>
+</p>
+<p><code>l = Line_2(&lt;<a href="./segment2d.php">Segment_2</a>&gt; s, color=(1,1,1), visible=True)</code>
 Introduces a line l supporting the segment s, oriented from source to target.
 </p>
-<p><code>s = Line_2(&lt;<a href="./ray2d.php">Ray_2</a>&gt; r, color=(1,1,1), visible=True)</code>
+<p><code>l = Line_2(&lt;<a href="./ray2d.php">Ray_2</a>&gt; r, color=(1,1,1), visible=True)</code>
 Introduces a line l supporting the ray r, with same orientation. 
 </p>
 
@@ -56,7 +56,7 @@ Precondition: l is not vertical.
 <p><code><strong><a href="./point2d.php">Point_2</a></strong> l.point(int i)</code>
 Returns an arbitrary point on l. It holds point(i) == point(j), iff i==j. Furthermore, l is directed from point(i) to point(j), for all i &lt; j.
 </p>
-<p><code><strong><a href="./point2d.php">Point_2</a></strong> l.projection(<a href="./point2d.php">Point_2</a> p)</code>
+<p><code><strong><a href="./point2d.php">Point_2</a></strong> l.projection(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
 Returns the orthogonal projection of p onto l.
 </p>
 <p><code><strong><a href="./vector2d.php">Vector_2</a></strong>  l.to_vector()</code>
@@ -65,3 +65,28 @@ Returns a vector that has the direction of l.
 <p><code><strong><a href="./direction2d.php">Direction_2</a></strong>  l.direction()</code>
 Returns the direction of l.
 </p>
+<p><code><strong><a href="./line2d.php">Line_2</a></strong>  l.opposite()</code>
+Returns the line with opposite direction. 
+</p>
+<p><code><strong><a href="./line2d.php">Line_2</a></strong>  l.perpendicular(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+Returns the line perpendicular to l and passing through p, where the direction is the direction of l rotated counterclockwise by 90 degrees. 
+</p>
+<a name="predicates"></a><h3 style="color:#111;">Predicates</h3>
+<p><code><strong>bool</strong> l.is_degenerate()</code>
+Line l is degenerate, if the coefficients a and b of the line equation are zero. 
+</p>
+<p><code><strong>bool</strong> l.is_horizontal()</code>
+</p>
+<p><code><strong>bool</strong> l.is_vertical()</code>
+</p>
+<p><code><strong>Oriented side</strong> l.oriented_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+Returns ON_ORIENTED_BOUNDARY, ON_NEGATIVE_SIDE, or the constant ON_POSITIVE_SIDE, depending on the position of p relative to the oriented line l.
+</p>
+For convenience we provide the following Boolean functions: 
+<p><code><strong>bool</strong> l.has_on(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+</p>
+<p><code><strong>bool</strong> l.has_on_positive_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+</p>
+<p><code><strong>bool</strong> l.has_on_negative_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+</p>
+

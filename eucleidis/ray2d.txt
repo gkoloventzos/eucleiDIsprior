@@ -1,0 +1,38 @@
+<a name="definition"></a><h2 class="title"><a>Ray_2</a></h2>
+<h3 style="color:#111;">Definition</h3>
+<p>
+An object r of the data type Ray_2 is a directed straight ray in the two-dimensional Euclidean plane. It starts in a point called the source of r and goes to infinity. 
+</p>
+<a name="constructor"></a><h3 style="color:#111;">Constructor</h3>
+<p><code>r = Ray_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./point2d.php">Point_2</a>&gt; q, color=(1,1,1), visible=True)</code>
+Introduces a ray r with source p and passing through point q. 
+</p>
+<p><code>r= Ray_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./direction2d.php">Direction_2</a>&gt; d,color=(1,1,1), visible=True)</code>
+Introduces a ray r starting at source p with direction d. 
+</p>
+<p><code>r = Ray_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./vector2d.php">Vector_2</a>&gt; v, color=(1,1,1), visible=True)</code>
+Introduces a ray r starting at source p with the direction of v. 
+</p>
+<p><code>r = Ray_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./line2d.php">Line_2</a>&gt; l, color=(1,1,1), visible=True)</code>
+Introduces a ray r starting at source p with the same direction as l. 
+</p>
+<a name="operators"></a><h3 style="color:#111;">Operators</h3>
+<p><code><strong>bool</strong>  r==h</code>
+Test for equality: two rays are equal, iff they have the same source and the same direction. 
+</p>
+<p><code><strong>bool</strong>  r!=h</code>
+Test for inequality. 
+</p>
+<a name="operations"></a><h3 style="color:#111;">Operations</h3>
+<p><code><strong><a href="./vector2d.php">Vector_2</a></strong>  r.to_vector()</code>
+Returns a vector that has the direction of r.
+</p>
+<p><code><strong><a href="./direction2d.php">Direction_2</a></strong>  r.direction()</code>
+Returns the direction of r.
+</p>
+<p><code><strong><a href="./ray2d.php">Ray_2</a></strong>  r.opposite()</code>
+Returns the ray with the same source and the opposite direction. 
+</p>
+<p><code><strong><a href="./line2d.php">Line_2</a></strong>  r.supporting_line()</code>
+Returns the line supporting r which has the same direction. 
+</p>

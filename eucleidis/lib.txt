@@ -10,14 +10,14 @@ for the same class.
 		<li><a href="./segment2d.php">Segment_2</a></li>
 		<li><a href="./vector2d.php">Vector_2</a></li>
 		<li><a href="./direction2d.php">Direction_2</a></li>
-		<li><a href="./2d.php">Triangle_2</a></li>
+		<li><a href="./triangle2d.php">Triangle_2</a></li>
 		<li><a href="./line2d.php">Line_2</a></li>
 		<li><a href="./ray2d.php">Ray_2</a></li>
 		<li><a href="./circle2d.php">Circle_2</a></li>
-		<li><a href="">Polygon_2</a></li>
+		<li><a href="./polygon2d.php">Polygon_2</a></li>
 	</ul>
 </li>
-<li><h3>Functions</h3></li>
+<li><h3>Functions</h3>
 	<ul>
 		<li><a href="">getPolygon</a></li>
 		<li><a href="">getVisualPoints</a></li>
@@ -29,9 +29,11 @@ for the same class.
 		<li><a href="">prepareControls</a></li>
 		<li><a href="">run</a></li>
 	</ul>
-<li><h3>Exceptions</h3></li>
+</li>
+<li><h3>Exceptions</h3>
 	<ul>
 		<li><a href="">Is_Degenarate</a></li>
 		<li><a href="">No_Constructor</a></li>
 	</ul>
+</li>
 </ul>
