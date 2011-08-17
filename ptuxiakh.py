@@ -672,6 +672,22 @@ class Ray_2(object):
 			l.point(i)
 		if i==0:
 			return self._source
+	def is_degenerate(self):
+		return self.point(0) == self.point(1)
+	def is_horizontal(self):
+		l = sel.supporting_line()
+		return l.is_horizontal()
+	def is_vertical(self):
+		l = sel.supporting_line()
+		return l.is_vertical()
+	def has_on(self,point):
+		l = self.supporting_line()
+		if l.has_on(point):
+			p = self.source()
+			s = Segment_2(p,point,visible=False)
+			return s.direction() == self.direction()
+		else:
+			return False
 		
 		
 

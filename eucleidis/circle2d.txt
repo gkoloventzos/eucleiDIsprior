@@ -1,0 +1,69 @@
+<a name="definition"></a><h2 class="title"><a>Circle_2</a></h2>
+<h3 style="color:#111;">Definition</h3>
+<p>
+An object of type Circle_2 is a circle in the two-dimensional Euclidean plane. The circle is oriented, i.e. its boundary has clockwise or counterclockwise orientation . The boundary splits 2 into a positive and a negative side, where the positive side is to the left of the boundary. The boundary also splits 2 into a bounded and an unbounded side. Note that the circle can be degenerated, i.e. the squared radius may be zero. 
+</p>
+<a name="constructor"></a><h3 style="color:#111;">Constructor</h3>
+<p><code>c = Circle_2(&lt;<a href="./point2d.php">Point_2</a>&gt; center,(int|float) squared_radius, Orientation ori = COUNTERCLOCKWISE, color=(1,1,1), visible=True)</code>
+Introduces a variable c of type Circle_2. It is initialized to the circle with center center, squared radius squared_radius and orientation ori.
+Precondition: ori &ne; COLLINEAR, and further, squared_radius greater or equal 0.
+</p>
+<p><code>c = Circle_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./point2d.php">Point_2</a>&gt; q,Orientation ori = COUNTERCLOCKWISE, color=(1,1,1), visible=True)</code>
+Introduces a variable c of type Circle_2<Kernel>. It is initialized to the circle with diameter pq and orientation ori.
+Precondition: ori &ne; COLLINEAR.
+</p>
+<p><code>c = Circle_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p, &lt;<a href="./point2d.php">Point_2</a>&gt; q ,&lt;<a href="./point2d.php">Point_2</a>&gt; r, color=(1,1,1), visible=True)</code>
+Introduces a variable c of type Circle_2. It is initialized to the unique circle which passes through the points p, q and r. The orientation of the circle is the orientation of the point triple p, q, r.
+Precondition: 	p, q, and r are not collinear.
+</p>
+<p><code>c = Circle_2(&lt;<a href="./point2d.php">Point_2</a>&gt; center, Orientation ori, color=(1,1,1), visible=True)</code>
+Introduces a variable c of type Circle_2<Kernel>. It is initialized to the circle with center center, squared radius zero and orientation ori.
+Precondition: 	ori &ne; COLLINEAR.
+Postcondition: 	c.is_degenerate() = true.
+</p>
+<a name="operators"></a><h3 style="color:#111;">Operators</h3>
+<p><code><strong>bool</strong>  c==circle2</code>
+Returns true, iff c and circle2 are equal, i.e. if they have the same center, same squared radius and same orientation .
+</p>
+<p><code><strong>bool</strong>  c!=circle2</code>
+Returns true, iff c and circle2 are not equal. 
+</p>
+<a name="operations"></a><h3 style="color:#111;">Operations</h3>
+<p><code><strong><a href="./point2d.php">Point_2</a></strong> c.center()</code>
+Returns the center of c.
+</p>
+<p><code><strong>int | float</strong> c.squared_radius()</code>
+Returns the squared radius of c.
+</p>
+<p><code><strong>Orientation</strong> c.orientation()</code>
+Returns the orientation of c.
+</p>
+<p><code><strong><a href="./circle2d.php">Circle_2</a></strong>  c.opposite()</code>
+Returns the circle with the same center and squared radius as c but with opposite orientation.
+</p>
+<a name="predicates"></a><h3 style="color:#111;">Predicates</h3>
+<p><code><strong>bool</strong> c.is_degenerate()</code>
+Returns true, iff c is degenerate, i.e. if c has squared radius zero. 
+</p>
+<p><code><strong>Oriented side</strong> c.oriented_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+Returns either the constant ON_ORIENTED_BOUNDARY, ON_POSITIVE_SIDE, or ON_NEGATIVE_SIDE, iff p lies on the boundary, properly on the positive side, or properly on the negative side of c, resp.
+</p>
+<p><code><strong>Bounted side</strong> c.bounded_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+Returns ON_BOUNDED_SIDE, ON_BOUNDARY, or ON_UNBOUNDED_SIDE iff p lies properly inside, on the boundary, or properly outside of c, resp. 
+</p>
+<p><code><strong>bool</strong> c.has_on_positive_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+</p>
+<p><code><strong>bool</strong> c.has_on_negative_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+</p>
+<p><code><strong>bool</strong> c.has_on_boundary(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+</p>
+<p><code><strong>bool</strong> c.has_on_bounded_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+</p>
+<p><code><strong>bool</strong> c.has_on_unbounded_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+</p>
+
+
+
+
+
+

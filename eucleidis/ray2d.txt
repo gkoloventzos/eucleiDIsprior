@@ -36,3 +36,14 @@ Returns the ray with the same source and the opposite direction.
 <p><code><strong><a href="./line2d.php">Line_2</a></strong>  r.supporting_line()</code>
 Returns the line supporting r which has the same direction. 
 </p>
+<a name="predicates"></a><h3 style="color:#111;">Predicates</h3>
+<p><code><strong>bool</strong> r.is_degenerate()</code>
+Ray r is degenerate, if the source and the second defining point fall together (that is if the direction is degenerate).
+</p>
+<p><code><strong>bool</strong> r.is_horizontal()</code>
+</p>
+<p><code><strong>bool</strong> r.is_vertical()</code>
+</p>
+<p><code><strong>bool</strong> r.has_on(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+A point is on r, iff it is equal to the source of r, or if it is in the interior of r. 
+</p>

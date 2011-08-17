@@ -14,7 +14,7 @@ Introduces a line l with the line equation in Cartesian coordinates ax +by +c = 
 <p><code>l = Line_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./point2d.php">Point_2</a>&gt; q, color=(1,1,1), visible=True)</code>
 Introduces a line l passing through the points p and q. Line l is directed from p to q
 </p>
-<p><code>l= Line_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./direction2d.php">Direction_2</a>&gt; d,color=(1,1,1), visible=True)</code>
+<p><code>l = Line_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./direction2d.php">Direction_2</a>&gt; d,color=(1,1,1), visible=True)</code>
 Introduces a line l passing through point p with direction d. 
 </p>
 <p><code>l = Line_2(&lt;<a href="./point2d.php">Point_2</a>&gt; p,&lt;<a href="./vector2d.php">Vector_2</a>&gt; v, color=(1,1,1), visible=True)</code>
