@@ -700,6 +700,7 @@ class Segment_2(object):#all clear
 		self._point_start=start1
 		self._point_end=end1
 		self._middle = None
+		self._color = color
 		global VisualSegments
 		if VisualSegments is not None:
 			VisualSegments[self]=self
@@ -714,8 +715,11 @@ class Segment_2(object):#all clear
 			return
 		if isinstance(x,tuple):
 			self._segment.color=x
+			self._color=x
 			return
 		self._segment.color=(x,y,z)
+		self._color=(x,y,z)
+		
 	def source(self):
 		return self._point_start
 	def target(self):
@@ -782,8 +786,11 @@ class Segment_2(object):#all clear
 
 	
 class Triangle_2(object):
+	"""
+	Triangle_2
+	"""
 	def __init__(self,x,y,z,color=(1,1,1),visible=True):
-		if type(x).__name__ == type(y).__name__ == type(z).__name__ == 'Point_2':
+		if isinstance(x,Point_2) and isinstance(y,Point_2) and isinstance(z,Point_2):
 			self._vertex=[]
 			self._segments=[]
 			self._vertex.extend([x,y,z])
@@ -855,7 +862,30 @@ class Triangle_2(object):
 		c = self._vertex[2].squared_length()
 		s = (a+b+c)/2
 		return sqrt(s*(s-a)*(s-b)*(s-c))
-	def color(self,x=0,y=0,z=0):
+	def seg_color(self,x=0,y=0,z=0):
+		if(x==0 and y==0 and z==0):
+			print "Segment {self._segments[0]} {self._segments[0]._color} Segment {self._segments[1]} {self._segments[1]._color} Segment {self._segments[2]} {self._segments[2]._color}" .format(self=self)
+			print "\n"
+			return
+		if type(x).__name__=='tuple':
+			for i in range(3):
+				self._segments[i].color(x)
+			return
+		for i in range(3):
+			self._segments[i].color(x,y,z)			
+	def poi_color(self,x=0,y=0,z=0): #strange None output
+		if(x==0 and y==0 and z==0):
+			for i in range(3):
+				print "Vertex" ,self._vertex[i], "color",self._vertex[i].color()
+				print i
+			return
+		if type(x).__name__=='tuple':
+			for i in range(3):
+				self._vertex[i].color(x)
+			return
+		for i in range(3):
+			self._vertex[i].color(x,y,z)
+	def fill(self,x=0,y=0,z=0):
 		if(x==0 and y==0 and z==0):
 			print self._face.color
 			return
@@ -866,10 +896,9 @@ class Triangle_2(object):
 		self._face.color=(x,y,z)
 		
 	
-#class Iso_rectangle_2(object):
 class Circle_2(object):
 	def __init__(self,x,y,z="COUNTERCLOCKWISE",color=(1,1,1),visible=True):
-		if type(x).__name__ == type(y).__name__ == type(z).__name__ == 'Point_2':
+		if isinstance(x,Point_2) and isinstance(y,Point_2) and isinstance(z,Point_2):
 			o = orientation(x,y,z)
 			if o != COLLINEAR:
 				self._orientation = orien[o]
@@ -878,17 +907,17 @@ class Circle_2(object):
 			self._center = intersection(l1.perpendicular(),l2.perpendicular())
 			s = Segment_2(self._center,x,visible=False)
 			self._sqradius = s.squared_length()
-		elif type(x).__name__ == type(y).__name__ == 'Point_2' and type(z).__name__ == 'str':
+		elif isinstance(x,Point_2) and isinstance(y,Point_2) and isinstance(z,str):
 			if z != "COLLINEAR":
 				self._orientation = orien[z]
 				s = Segment_2(p,q)
 				self._center = s.middle()
 				self._sqradius = s.squared_length()/2
-		elif type(x).__name__ == 'Point_2' and type(y).__name__ == 'str':
+		elif isinstance(x,Point_2) and isinstance(y,str):
 			if y != "COLLINEAR":
 				self._center =x
 				self._sqradius =0
-		elif type(x).__name__ =='Point_2' and (type(y).__name__ == 'int' or type(y).__name__ == 'float') and type(z).__name__ == 'str':
+		elif isinstance(x,Point_2) and (type(y).__name__ == 'int' or type(y).__name__ == 'float') and isinstance(z,str):
 				if z != "COLLINEAR" and y >= 0:
 					self._center =x
 					self._orientation = orien[z]
@@ -1229,17 +1258,17 @@ def run(Vpoints):
       return hull
  
 class Polygon_2(object):
-	def __init__(self,points,segments=None,visible=True):
+	def __init__(self,points,segments=None,color=(1,1,1),visible=True):
 		self._simple=self._convex=self._orientation =2
-		if edge !=None:
+		if segments !=None:
 			self._points=points
 			self._segments=segments
 		else:
 			if len(points)>1:
 				for i in range(len(points)-1):
-					segment = Segment_2(points[i],points[i+1])
+					segment = Segment_2(points[i],points[i+1],color=color,visible=visible)
 					self._segments.append(segment)
-				segment = Segment_2(points[-1],points[0],visible=visible)
+				segment = Segment_2(points[-1],points[0],color=color,visible=visible)
 				self._segments.append(segment)
 				self._points=points
 			else:
@@ -1268,7 +1297,6 @@ class Polygon_2(object):
 	def insert(self,i,p):
 		if p is not list:
 			self._points.insert(i,p)
-			self.create()
 		else:
 			for x in p:
 				self._points.insert(i,x)
@@ -1302,7 +1330,7 @@ class Polygon_2(object):
 				return self._simple
 		self._simple = 1
 		return self._simple
-	def is_convex(self): #Find if the diagon is inside the polygon.(exersize 1 2008-09)
+	def is_convex(self): #Find if the diagon is inside the polygon.(exercise 1 2008-09)
 		if self._convex != 2:
 			return self._convex
 		n = len(self._segments)
@@ -1341,7 +1369,11 @@ class Polygon_2(object):
 			x=i%n
 			y=(i+1)%n
 			sum += (self._points[x].x()*self._points[y].y() - self._points[x].y()*self._points[y].x())
-		return sum/2		
+			total_area = sum/2
+		if self.orientation == 1:
+			return total_area
+		else:
+			return -total_area
 	def is_counterclockwise_oriented(self):
 		return self.orientation() == 1
 	def is_clockwise_oriented(self):
@@ -1365,7 +1397,29 @@ class Polygon_2(object):
 		return s[-1]
 	def bottom_vertex(self):
 		s = sorted(self._points,key=operator.itemgetter(1))
-		return s[0]		
+		return s[0]
+	def seg_color(self,x=0,y=0,z=0): #strange None output
+		if(x==0 and y==0 and z==0):
+			for i in range(len(self._segments)):
+				print "Segment" ,self._segments[i], "color",self._segments[i].color()
+			return
+		if type(x).__name__=='tuple':
+			for i in range(len(self._segments)):
+				self._segments[i].color(x)
+			return
+		for i in range(len(self._segments)):
+				self._segments[i].color(x,y,z)		
+	def poi_color(self,x=0,y=0,z=0): #strange None output
+		if(x==0 and y==0 and z==0):
+			for i in range(len(self._points)):
+				print "Vertex" ,self._points[i], "color",self._points[i].color()
+			return
+		if type(x).__name__=='tuple':
+			for i in range(len(self._points)):
+				self._points[i].color(x)
+			return
+		for i in range(len(self._points)):
+				self._points[i].color(x,y,z)
 	def bounded_side(self,other):
 		if not (isinstance(other,Point_2)) and not self.is_simple():
 			print "Precondition failed.Either not point given or not simple polygon"
@@ -1409,10 +1463,16 @@ prepareScene()
 #if orientation(VisualPoints[m[0]],VisualPoints[m[1]],VisualPoints[m[2]]) == CLOCKWISE:
 #if orientation(Point_2(1,1),Point_2(2,2),Point_2(3,3)) == COLLINEAR:
 #	print "NiCe"
-"""
+
 a = Point_2(1,1)
 b = Point_2(3,3)
 c = Point_2(3,8)
+a.color()
+t = Triangle_2(a,b,c,color=color.red)
+t.poi_color()
+t.poi_color(color.green)
+t.poi_color()
+"""
 d = Point_2(1,4)
 e = Point_2(2,5,color=(1,0,0))
 f = Point_2(0,0,color=(0.4,1,0.7))
@@ -1600,6 +1660,7 @@ rod.color()
 print rod.squared_length()
 """
 #intersection
+"""
 l = Line_2(3,4,6)
 l1 = Line_2(3,4,6)
 l2 = l.perpendicular(Point_2())
@@ -1622,7 +1683,7 @@ r = intersection(seg,ss)
 print r
 if isinstance(r,Point_2):
 	r.color(1,0,1)
-
+"""
 if __name__ == "__main__":
     main()
 

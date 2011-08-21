@@ -52,18 +52,8 @@ Returns either the constant ON_ORIENTED_BOUNDARY, ON_POSITIVE_SIDE, or ON_NEGATI
 Returns ON_BOUNDED_SIDE, ON_BOUNDARY, or ON_UNBOUNDED_SIDE iff p lies properly inside, on the boundary, or properly outside of c, resp. 
 </p>
 <p><code><strong>bool</strong> c.has_on_positive_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+<code><strong>bool</strong> c.has_on_negative_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+<code><strong>bool</strong> c.has_on_boundary(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+<code><strong>bool</strong> c.has_on_bounded_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+<code><strong>bool</strong> c.has_on_unbounded_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
 </p>
-<p><code><strong>bool</strong> c.has_on_negative_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
-</p>
-<p><code><strong>bool</strong> c.has_on_boundary(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
-</p>
-<p><code><strong>bool</strong> c.has_on_bounded_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
-</p>
-<p><code><strong>bool</strong> c.has_on_unbounded_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
-</p>
-
-
-
-
-
-

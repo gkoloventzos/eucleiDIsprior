@@ -32,6 +32,22 @@ Returns a triangle where the boundary is oriented the other way round (this flip
 <p><code><strong>float</strong>  t.area()</code>
 Returns the signed area of t (with the help of <a href="http://en.wikipedia.org/wiki/Heron%27s_formula">Heron Formula</a>). 
 </p>
+<p><code><strong>void</strong>  t.fill(x,y,z)</code>
+If color is called as p.fill() prints the color of the Triangle_2<br />
+If it is called with with tuple (color.green) or (256,0,0) then it changes
+the filling of the Triangle_2.<br />
+</p>
+<p><code><strong>void</strong>  t.poi_color(x,y,z)</code>
+If color is called as p.fill() prints the color of the points Triangle_2<br />
+If it is called with with tuple (color.green) or (256,0,0) then it changes
+the color of the points of the Triangle_2.<br />
+</p>
+<p><code><strong>void</strong>  t.seg_color(x,y,z)</code>
+If color is called as p.fill() prints the color of the segments Triangle_2<br />
+If it is called with with tuple (color.green) or (256,0,0) then it changes
+the color of the segments of the Triangle_2.<br />
+</p>
+
 <a name="predicates"></a><h3 style="color:#111;">Predicates</h3>
 <p><code><strong>bool</strong> t.is_degenerate()</code>
 Triangle t is degenerate, if the vertices are collinear. 
@@ -48,14 +64,10 @@ Returns the constant ON_BOUNDARY, ON_BOUNDED_SIDE, or else ON_UNBOUNDED_SIDE, de
 Precondition: t is not degenerate.
 </p>
 <p><code><strong>bool</strong> t.has_on_positive_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
-</p>
-<p><code><strong>bool</strong> t.has_on_negative_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
-</p>
-<p><code><strong>bool</strong> t.has_on_boundary(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
-</p>
-<p><code><strong>bool</strong> t.has_on_bounded_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
-</p>
-<p><code><strong>bool</strong> t.has_on_unbounded_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+<code><strong>bool</strong> t.has_on_negative_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+<code><strong>bool</strong> t.has_on_boundary(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+<code><strong>bool</strong> t.has_on_bounded_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+<code><strong>bool</strong> t.has_on_unbounded_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
 </p>
 
 
