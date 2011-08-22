@@ -1,0 +1,12 @@
+<h2 class="title"><a>EucleiDIs Releases</a></h2>
+<p>
+The project will be held in an internet svn repository.<br />
+In that order everyone can obtain and contribute to hte project.<br />
+The stable releases will be released here after debugging.<br />
+</p>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
