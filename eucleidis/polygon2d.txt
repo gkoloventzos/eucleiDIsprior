@@ -1,0 +1,122 @@
+<a name="definition"></a><h2 class="title"><a>Polygon_2</a></h2>
+<h3 style="color:#111;">Definition</h3>
+<p>
+An object pgn of the data type Polygon_2 is a plane figure that is bounded by a closed path or circuit, composed of a finite sequence of straight line segments.
+</p>
+<a name="constructor"></a><h3 style="color:#111;">Constructor</h3>
+<p><code>pgn = Polygon_2(&lt;<a href="./point2d.php">Point_2</a> list&gt; points,&lt;<a href="./segment2d.php">Segment_2</a> list&gt; segments=None, color=(1,1,1), visible=True)</code>
+Introduces a polygon pgn with vertices from the list points. The segments list can be filled with the output of <a href="./getPolygon.php">getPolygon</a> function.
+</p>
+<a name="operators"></a><h3 style="color:#111;">Operators</h3>
+<p><code><strong>bool</strong>  p1==p2</code>
+Test for equality: two polygons are equal iff there exists a cyclic permutation of the vertices of p2 such that they are equal to the vertices of p1. Note that the template argument Container of p1 and p2 may be different. 
+</p>
+<p><code><strong>bool</strong>  p1!=p2</code>
+Test for inequality. 
+</p>
+<p><code><strong><a href="./point2d.php">Point_2</a></strong>  p[ int i]</code>
+Returns the i-th vertex. 
+</p>
+<a name="operations"></a><h3 style="color:#111;">Operations</h3>
+<p><code><strong>float</strong>  pgn.area()</code>
+Returns the signed area of the polygon pgn. This means that the area is positive for counter clockwise polygons and negative for clockwise polygons. 
+</p>
+<p><code><strong>int</strong> pgn.size()</code>
+Returns the number of vertices of the polygon pgn.
+</p>
+<p><code><strong><a href="./point2d.php">Point_2</a></strong>  p[ int i]</code>
+Returns the i-th vertex. 
+</p>
+<p><code><strong><a href="./point2d.php">Point_2</a></strong>  p.vertex(int i)</code>
+Returns the i-th vertex. 
+</p>
+<p><code><strong><a href="./segment2d.php">Segment_2</a></strong> p.edge(int i)</code>
+Returns the i-th edge. 
+</p>
+<p><code><strong><a href="./polygon2d.php">Polygon_2</a></strong> p.reverse_orientation()</code>
+Reverses the orientation of the polygon. The vertex pointed to by p[0] remains the same. 
+</p>
+<p><code><strong>void</strong> p.insert(int i,<a href="./point2d.php">Point_2</a> q)</code>
+Inserts the vertex q before i. 
+</p>
+<p><code><strong>void</strong> p.insert(int i,<a href="./point2d.php">Point_2</a> list q)</code>
+Inserts the list of vertex q before i.
+</p>
+<p><code><strong>void</strong> p.erase(int i)</code>
+Erases the vertex pointed to by i.
+</p>
+<p><code><strong>void</strong> p.erase(int first, int last</code>
+Erases the vertices in the range [first, last). 
+</p>
+<p><code><strong>void</strong> p.push_back(<a href="./point2d.php">Point_2</a> q)</code>
+Has the same semantics as p.insert(p.size(), q). 
+</p>
+<p><code><strong>void</strong> p.clear()</code>
+Erases all vertices.
+</p>
+<p><code><strong>void</strong>  p.poi_color(x,y,z)</code>
+If color is called as p.fill() prints the color of the points Triangle_2<br />
+If it is called with with tuple (color.green) or (256,0,0) then it changes
+the color of the points of the Triangle_2.<br />
+</p>
+<p><code><strong>void</strong>  p.seg_color(x,y,z)</code>
+If color is called as p.fill() prints the color of the segments Triangle_2<br />
+If it is called with with tuple (color.green) or (256,0,0) then it changes
+the color of the segments of the Triangle_2.<br />
+</p>
+<a name="predicates"></a><h3 style="color:#111;">Predicates</h3>
+<p><code><strong>bool</strong> pgn.is_simple()</code>
+Returns whether p is a simple polygon. 
+</p>
+<p><code><strong>bool</strong> pgn.is_convex()</code>
+Returns whether p is convex. 
+</p>
+<p><code><strong>bool</strong> pgn.is_empty()</code>
+Returns pgn.size() == 0. 
+</p>
+<p><code><strong>Orientation</strong> pgn.orientation()</code>
+Returns the orientation of pgn.
+</p>
+<p><code><strong>Oriented side</strong> p.oriented_side(&lt;<a href="./point2d.php">Point_2</a>&gt; q)</code>
+Returns POSITIVE_SIDE, or NEGATIVE_SIDE, or ON_ORIENTED_BOUNDARY, depending on where point q is.
+Precondition: p.is_simple().
+</p>
+<p><code><strong>Bounted side</strong> p.bounded_side(&lt;<a href="./point2d.php">Point_2</a>&gt; q)</code>
+Returns the symbolic constant ON_BOUNDED_SIDE, ON_BOUNDARY or ON_UNBOUNDED_SIDE, depending on where point q is.
+Precondition: p.is_simple().
+</p>
+<p><code><strong><a href="./point2d.php">Point_2</a></strong> p.left_vertex()</code>
+Returns the leftmost vertex of the polygon p with the smallest y-coordinate. 
+</p>
+<p><code><strong><a href="./point2d.php">Point_2</a></strong> p.right_vertex()</code>
+Returns the rightmost vertex of the polygon p with the largest y-coordinate.
+</p>
+<p><code><strong><a href="./point2d.php">Point_2</a></strong> p.top_vertex()</code>
+Returns topmost vertex of the polygon p with the largest x-coordinate. 
+</p>
+<p><code><strong><a href="./point2d.php">Point_2</a></strong>  p.bottom_vertex()</code>
+Returns the bottommost vertex of the polygon p with the smallest x-coordinate.
+</p>
+<p><code><strong>bool</strong> pgn.is_counterclockwise_oriented()</code>
+<code><strong>bool</strong> pgn.is_clockwise_oriented ()</code>
+<code><strong>bool</strong> pgn.has_on_positive_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+<code><strong>bool</strong> pgn.has_on_negative_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+<code><strong>bool</strong> pgn.has_on_boundary(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+<code><strong>bool</strong> pgn.has_on_bounded_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+<code><strong>bool</strong> pgn.has_on_unbounded_side(&lt;<a href="./point2d.php">Point_2</a>&gt; p)</code>
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
