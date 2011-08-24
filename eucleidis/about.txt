@@ -1,0 +1,27 @@
+<p>
+General information you can find in the <a href="./">home</a>
+This library started at February of 2011 as my Bachelor thesis
+in the <a href="http://www.uoa.gr">University of Athens</a> at the
+<a href="http://www.di.uoa.gr">Deparment of Informatics and Telecomunications</a>.
+My supervisors are <a href="http://www.di.uoa.gr/~emiris">Ioannis EMIRIS</a> and <a href="https://sites.google.com/site/christodoulosfragoudakis/">Christodoulos FRAGOUDAKIS</a>.
+It is designed in order to be used from the students of the computational geometry
+course at the same department. Because the previous methods was difficult to be
+installed and maintained, the desicion of making a new library from scratch, was made.
+</p>
+<p>
+We used Python because it is really easy to transform pseudo code to a well designed
+program ready to be executed in every machine.
+</p>
+<p>
+I have tried to imitate CGAL because it is the best existing library we know.
+I tried to have the same names of the functions. Hence it will be easy for 
+someone that had used CGAL to do the same things with this library.
+</p>
+<p>
+EucleiDIs uses the <a href="http://www.vpython.org">VPython</a> (it can be easily installed in *NIX based systems
+and with little effort to Windows) library to take the simple objects it needs (points as spheres, ...).
+</p>
+<p>
+Trying to have backward compatibility with the VPython the only mouse button we use is the right one.
+In the newer versions of VPython the other buttons are used for altering the scene (zoom in -out, spin)
+</p>
