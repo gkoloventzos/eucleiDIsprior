@@ -3,6 +3,7 @@ from __future__ import division
 from visual import *
 from visual.controls import *
 import time,operator
+from decimal import *
 
 VisualPoints = None
 VisualSegments = None
@@ -202,6 +203,11 @@ class Point_2(object):#all clear
 	Point in 2d
 	"""
 	def __init__(self,x=0,y=0,color=(1,1,1),visible=True): #using visible not opacity for older versions
+		self._pos=[]
+		self._pos.append(x)
+		self._pos.append(y)
+		self._x = Decimal(str(x))
+		self._y = Decimal(str(y))
 		self._point=sphere(pos=(x,y,0),radius=0.1,color=color,visible=visible) 
 		global VisualPoints
 		if VisualPoints is not None:
@@ -210,11 +216,11 @@ class Point_2(object):#all clear
 			VisualPoints = {}
 			VisualPoints[self]=self
 	def __repr__(self):
-		return 'Point_2({self._point.pos[0]},{self._point.pos[1]})' .format(self=self)
+		return 'Point_2({self._pos[0]},{self._pos[1]})' .format(self=self)
 	def x(self):
-		return self._point.pos[0]
+		return self._x
 	def y(self):
-		return self._point.pos[1]
+		return self._y
 	def pos(self):
 		return self._point
 	def label(self,string):
@@ -229,13 +235,13 @@ class Point_2(object):#all clear
 		self._point.color=(x,y,z)
 	def cartesian(self,i):
 		if i>=0 and i<=1:
-			return self._point.pos[i]
+			return self._pos[i]
 	def dimension(self):
 		return 2
 #generator in order to emulate th iterators of CGAL
 	def iter(self):
 		for index in range(2):
-			yield self._point.pos[index]
+			yield self._pos[index]
 	def __add__(self,other):
 		if isinstance(other,Vector_2):
 			return Point_2(other.x()+self.x(),other.y()+self.y())
@@ -278,7 +284,7 @@ class Point_2(object):#all clear
 		return self.x() < other.x() or ( self.x() == other.x() and self.y() < other.y() )		
 	def __getitem__(self,i):
 		if i>=0 and i<=1:
-			return self._point.pos[i]
+			return self._pos[i]
 	def visual(self,visible=None): #argue how will work
 		if visible == None:
 			self._point.visible = not self._point.visible
@@ -1424,24 +1430,57 @@ class Polygon_2(object):
 		if not (isinstance(other,Point_2)) and not self.is_simple():
 			print "Precondition failed.Either not point given or not simple polygon"
 			return -2
-		x=[]
-		for i in range(len(self._segments)):
-			x.append(orientation(self._segment.source(),self._segment.target(),other))
-			if x[-1] == 0:
+		int = []
+		line = False
+		ray = Ray(other,Line(0,1,-other.x(),visible=False),visible=False)
+		for seg in self._segments:
+			if seg.has_on(other):
 				return 0
-			if i > 0:
-				if x[-1] != x[-2]:
-					return -1
-		return 1
-	def oriented_side(self,other):
-		bs = self.bounded_side(other)
-		if bs == 0:
-			return 0
-		elif bs == self.orientation() == -1:
+			inter = intersection(seg,ray)
+			if isinstance(inter,Point_2) and not line:
+					int.push_back(inter)
+			elif (isinstance(inter,Point_2) and line):
+				int.pop()
+				line = not line
+				continue
+			elif (isinstance(inter,Segment_2) and not line):
+				line = not line
+				continue
+			else :
+				continue
+		if (len(int)%2) ==0:
+			return -1
+		else:
 			return 1
-		#elif:
-		#	pass	
-		
+	def oriented_side(self,other):
+		if not (isinstance(other,Point_2)) and not self.is_simple():
+			print "Precondition failed.Either not point given or not simple polygon"
+			return -2
+		where = self.bounded_side(other)
+		if where == 0:
+			return 0
+		elif where == -1:
+			if self.orientation == 1:
+				return -1
+			else:
+				return 1
+		else:
+			if self.orientation == 1:
+				return 1
+			else:
+				return 	-1
+	def has_on_positive_side(self,other):
+		return self.oriented_side(other) == 1
+	def has_on_negative_side(self,other):
+		return self.oriented_side(other) == -1
+	def has_on_boundary(self,other):
+		return self.bounded_side(other) == 0
+	def has_on_bounded_side(self,other):
+		return self.bounded_side(other) == 1
+	def has_on_unbounded_side(self,other):
+		return self.bounded_side(other) == -1		
+	
+			
 
 prepareScene()
 
