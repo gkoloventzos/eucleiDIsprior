@@ -54,7 +54,26 @@ class Wrong_Arguments(Exception):
 		for i in range(self.parameters):
 			if self.parameters[i] != None:
 				print '{self.parameters[i]}' .format(self=self),
-		
+	
+	
+def get_ep():
+	"""
+	Prints the Extreme Point global variable
+	"""
+	global EP
+	return EP
+def set_ep(new):
+	"""
+	Sets the Extreme Point global variable.
+	Cannot be less than 15
+	"""
+	if new < 15:
+		print "No value less than 15 can be inserted"
+		return
+	global EP
+	EP = new
+	return
+
 def prepareScene():
 	"""
 	Creates the scene with some default values
@@ -63,7 +82,7 @@ def prepareScene():
 	scene.width = 800
 	scene.height = 700
 	scene.title = "eukleiDIs"
-	scene.exit=-1
+	scene.exit=False #You need 2 clicks to exit window
 
 def quadratic(a, b, c=None):
 	"""
@@ -119,6 +138,7 @@ def getVisualPoints():
 #			stri = str(click.pos.x) + "," + str(click.pos.y)
 #			point.label(stri)
 			points.append(point)
+	print points
 	return points
 	
 def getPolygon():
@@ -197,6 +217,9 @@ def is_permute(l1,l2):
 		l1 = list1
 	return False
 	
+def isvalid(a):
+	return isinstance(a,int) or isinstance(a,float) or isinstance(a,Decimal)
+	
 
 class Point_2(object):#all clear
 	"""
@@ -208,7 +231,7 @@ class Point_2(object):#all clear
 		self._pos.append(y)
 		self._x = Decimal(str(x))
 		self._y = Decimal(str(y))
-		self._point=sphere(pos=(x,y,0),radius=0.1,color=color,visible=visible) 
+		self._point=sphere(pos=(float(x),float(y),0),radius=0.1,color=color,visible=visible) 
 		global VisualPoints
 		if VisualPoints is not None:
 			VisualPoints[self]=self
@@ -216,11 +239,15 @@ class Point_2(object):#all clear
 			VisualPoints = {}
 			VisualPoints[self]=self
 	def __repr__(self):
-		return 'Point_2({self._pos[0]},{self._pos[1]})' .format(self=self)
+		return 'Point_2({self._x},{self._y})' .format(self=self)
 	def x(self):
 		return self._x
 	def y(self):
 		return self._y
+	def nx(self):
+		return self._pos[0]
+	def ny(self):
+		return self._pos[1]
 	def pos(self):
 		return self._point
 	def label(self,string):
@@ -298,11 +325,10 @@ class Vector_2(object):
 	Vector in 2d
 	"""
 	def __init__(self,x=None,y=None,visible=True):
-		if x==y==None:
-			raise No_Constructor([self,x,y])
+		self._vector=None
 		if isinstance(x,Point_2) and isinstance(y,Point_2):
 			self._vector=vector(y.x()-x.x(),y.y()-x.y())
-		if (isinstance(x,int) and isinstance(y,int)) or(isinstance(x,float) and isinstance(y,float)):
+		if isvalid(x) and isvalid(y):
 			self._vector=(x,y)
 		if y==None:
 			if isinstance(x,Segment_2):
@@ -314,6 +340,8 @@ class Vector_2(object):
 				self._vector=vector(s.dx(),s.dy())
 			elif isinstance(x,Line_2):
 				self._vector=vector(x.b(),-x.a())
+		if self._vector==None:
+			raise No_Constructor([self,x,y])
 	def __repr__(self):
 		return 'Vector_2({self._vector[0]},{self._vector[1]})' .format(self=self)
 	def x(self):
@@ -394,7 +422,7 @@ class Direction_2(object):#all clear
 					self._direction = None
 				else:
 					self._direction= self._d[1]/self._d[0]
-		elif (isinstance(x,float) or isinstance(x,int)) and (isinstance(y,float) or isinstance(y,int)):
+		elif isvalid(x) and isvalid(y):
 			if x == 0:
 				self._direction = None
 			else:
@@ -479,6 +507,9 @@ class Line_2(object):
 		self._a=None
 		self._b=None
 		self._c=None
+		self._na=None
+		self._nb=None
+		self._nc=None
 		if not isinstance(b,Direction_2) and b == None and c == None:
 			if isinstance(a,Segment_2):
 				x=a.source()
@@ -511,18 +542,23 @@ class Line_2(object):
 				self._b=(y.x() - x.x())
 				self._a=-(y.y() - x.y())
 				self._c=-(self._b*y.y()+self._a*y.x())				
-		if (isinstance(a,float) or isinstance(a,int)) and (isinstance(b,float) or isinstance(b,int)) and (isinstance(c,float) or isinstance(c,int)):
+		if (isvalid(a) and isvalid(b) and isvalid(c)):
 				self._b=b
 				self._c=c
 				self._a=a
+		self._nb=float(self._b)
+		self._nc=float(self._c)
+		self._na=float(self._a)
 		if self.is_vertical():
-			f = self._c/self._a
+			f = self._nc/self._na
 			self._line=curve(pos=[(-f, -EP),(-f,EP)],color=color,visible=visible)
 		elif self.is_horizontal():
-			f = self._c/self._b
+			f = self._nc/self._nb
 			self._line=curve(pos=[(-EP,-f),(EP,-f)],color=color,visible=visible)
 		else:
 			self._line=curve(pos=[(-EP, self.y_at_x(-EP)),(EP,self.y_at_x(EP))],color=color,visible=visible)
+		if self._a==None:
+			raise No_Constructor([self,a,b,c])
 	def a(self):
 		return self._a			
 	def b(self):
@@ -613,15 +649,19 @@ class Ray_2(object):
 	Ray in 2d
 	"""
 	def __init__(self,x,y,color=(1,1,1),visible=True):
+		if not isinstance(x,Point_2):
+			raise No_Constructor([self,x,y])
 		if isinstance(y,Point_2):
 			#y.visual()
 			self._direction = Direction_2(Segment_2(x,y,visible=False))
-		if isinstance(y,Direction_2):
+		elif isinstance(y,Direction_2):
 			self._direction = y
-		if isinstance(y,Vector_2):
+		elif isinstance(y,Vector_2):
 			self._direction = y.direction()
-		if isinstance(y,Line_2):
+		elif isinstance(y,Line_2):
 			self._direction = y.direction()
+		else:
+			raise No_Constructor([self,x,y])
 		d = self._direction
 		l = Line_2(x,d,visible=False)
 		if d.dx() > 0 and d.dy() >0:
@@ -702,7 +742,9 @@ class Segment_2(object):#all clear
 	Segment in 2d
 	"""
 	def __init__(self,start1,end1,color=(1,1,1),visible=True):
-		self._segment=curve(pos=[(start1.x(), start1.y()),(end1.x(), end1.y())],color=color,visible=visible)
+		if not (isinstance(start1,Point_2) and isinstance(end1,Point_2)):
+			raise No_Constructor([self,start1,end1])
+		self._segment=curve(pos=[(start1.nx(), start1.ny()),(end1.nx(), end1.ny())],color=color,visible=visible)
 		self._point_start=start1
 		self._point_end=end1
 		self._middle = None
@@ -714,7 +756,7 @@ class Segment_2(object):#all clear
 			VisualSegments = {}
 			VisualSegments[self]=self
 	def __repr__(self):
-		return 'Segment_2({self._point_start[0]},{self._point_start[1]}),({self._point_end[0]},{self._point_end[1]})' .format(self=self)	
+		return 'Segment_2(source({self._point_start[0]},{self._point_start[1]}),target({self._point_end[0]},{self._point_end[1]}))' .format(self=self)	
 	def color(self,x=0,y=0,z=0):
 		if(x==0 and y==0 and z==0):
 			print self._segment.color
@@ -923,7 +965,7 @@ class Circle_2(object):
 			if y != "COLLINEAR":
 				self._center =x
 				self._sqradius =0
-		elif isinstance(x,Point_2) and (type(y).__name__ == 'int' or type(y).__name__ == 'float') and isinstance(z,str):
+		elif isinstance(x,Point_2) and (isvalid(y)) and isinstance(z,str):
 				if z != "COLLINEAR" and y >= 0:
 					self._center =x
 					self._orientation = orien[z]
@@ -1502,7 +1544,7 @@ prepareScene()
 #if orientation(VisualPoints[m[0]],VisualPoints[m[1]],VisualPoints[m[2]]) == CLOCKWISE:
 #if orientation(Point_2(1,1),Point_2(2,2),Point_2(3,3)) == COLLINEAR:
 #	print "NiCe"
-
+"""
 a = Point_2(1,1)
 b = Point_2(3,3)
 c = Point_2(3,8)
@@ -1511,7 +1553,7 @@ t = Triangle_2(a,b,c,color=color.red)
 t.poi_color()
 t.poi_color(color.green)
 t.poi_color()
-"""
+
 d = Point_2(1,4)
 e = Point_2(2,5,color=(1,0,0))
 f = Point_2(0,0,color=(0.4,1,0.7))
@@ -1722,7 +1764,37 @@ r = intersection(seg,ss)
 print r
 if isinstance(r,Point_2):
 	r.color(1,0,1)
+
+#point_2 example
+a = Point_2("1.1426553264563634","1.2345464786578458")
+b = Point_2("3.46365346346346","3.85476544636546")
+c = Point_2()
+d = Point_2(4,7)
+a.color()
+a.color(color.red)
+a.color()
+b.color(256,0,256)
+c.color((256,256,0))
+d.label("This is d")
+c.label("This is c")
+a.y()
+print a < c
+print a <= c
+print a > c 
+##############################################################
+"""
+
+"""
+print a
+
+s1 = Segment_2(a,b)
+f = s1.source()
+l = Line_2(a,d)
+print l.a(), l.b()
+print l
+r = Ray_2(b,l.direction())
 """
 if __name__ == "__main__":
-    main()
-
+	a = Point_2(1,1)
+	b = Point_2(3,3)
+	c = Point_2(3,8)
