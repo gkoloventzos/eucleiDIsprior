@@ -203,6 +203,8 @@ class Point_2(object):#all clear
     Point in 2d
     """
     def __init__(self,x=0,y=0,color=(1,1,1),visible=True): #using visible not opacity for older versions
+        if (not (isinstance(x,float) or isinstance(x,int) or isinstance(x,str) or isinstance(x,Decimal))) and (not (isinstance(y,float) or isinstance(y,int) or isinstance(y,str) or isinstance(y,Decimal))):
+            raise No_Constructor([self,x,y])
         self._pos=[]
         self._pos.append(x)
         self._pos.append(y)
@@ -302,18 +304,20 @@ class Vector_2(object):
             raise No_Constructor([self,x,y])
         if isinstance(x,Point_2) and isinstance(y,Point_2):
             self._vector=vector(y.x()-x.x(),y.y()-x.y())
-        if (isinstance(x,int) and isinstance(y,int)) or(isinstance(x,float) and isinstance(y,float)) or (isinstance(x,string) and isinstance(y,string)):
-            self._vector=(Decimal(str(x)),Decimal(str(y)))
+        if (isinstance(x,int) or isinstance(x,float) or isinstance(x,str) or isinstance(x,Decimal)) and (isinstance(y,int) or isinstance(y,float) or isinstance(y,str) or isinstance(y,Decimal)):
+            self._vector=vector(Decimal(str(x)),Decimal(str(y)))
         if y==None:
             if isinstance(x,Segment_2):
                 a = x.source()
                 b = x.target()
-                self._vector=vector(b.x() - a.x(),b.y() - a.y())
+                self._vector=vector(b.x() -a.x(),b.y() - a.y())
             elif isinstance(x,Ray_2):
                 s = x.direction()
                 self._vector=vector(s.dx(),s.dy())
             elif isinstance(x,Line_2):
                 self._vector=vector(x.b(),-x.a())
+            else:
+                raise No_Constructor([self,x,y])
     def __repr__(self):
         return 'Vector_2({self._vector[0]},{self._vector[1]})' .format(self=self)
     def x(self):
@@ -339,7 +343,7 @@ class Vector_2(object):
         if i>=0 and i<=1:
             return self._vector[i]
     def squared_length(self):
-        return mag2(self)
+        return mag2(self._vector)
     def __neg__(self):
         return Vector_2(-self.x(),-self.y())
     def __mul__(self,other):
@@ -394,7 +398,7 @@ class Direction_2(object):#all clear
                     self._direction = None
                 else:
                     self._direction= self._d[1]/self._d[0]
-        elif (isinstance(x,float) or isinstance(x,int) or isinstance(x,string) or isinstance(x,Decimal)) and (isinstance(y,float) or isinstance(y,int) or isinstance(y,string) or isinstance(y,Decimal)):
+        elif (isinstance(x,float) or isinstance(x,int) or isinstance(x,str) or isinstance(x,Decimal)) and (isinstance(y,float) or isinstance(y,int) or isinstance(y,str) or isinstance(y,Decimal)):
             if x == 0:
                 self._direction = None
             else:
@@ -513,7 +517,7 @@ class Line_2(object):
                 self._b=(y.x() - x.x())
                 self._a=-(y.y() - x.y())
                 self._c=-(self._b*y.y()+self._a*y.x())              
-        if (isinstance(a,float) or isinstance(a,int) or isinstance(a,string)) and (isinstance(b,float) or isinstance(b,int) or isinstance(b,string)) and (isinstance(c,float) or isinstance(c,int) or isinstance(c,string)):
+        if (isinstance(a,float) or isinstance(a,int) or isinstance(a,str)) and (isinstance(b,float) or isinstance(b,int) or isinstance(b,str)) and (isinstance(c,float) or isinstance(c,int) or isinstance(c,str)):
                 self._b=Decimal(str(b))
                 self._c=Decimal(str(c))
                 self._a=Decimal(str(a))
@@ -652,7 +656,7 @@ class Ray_2(object):
             elif d.dx()>0:
                 p = Point_2(EP,x.x(),visible=False)
         self._source=x
-        self._ray=curve(pos=[(x.x(), x.y()),(p.x(), p.y())],color=color,visible=visible)
+        self._ray=curve(pos=[(float(x.x()), float(x.y())),(float(p.x()), float(p.y()))],color=color,visible=visible)
     def color(self,x=0,y=0,z=0):
         if(x==0 and y==0 and z==0):
             print self._ray.color
@@ -941,7 +945,7 @@ class Circle_2(object):
                     self._sqradius = y
         else:
             raise No_Constructor([self,x,y,z])
-        self._circle = ring(pos = (self._center.x(),self._center.y(),0), axis=(0,0,1),thickness=0.02,radius = sqrt(self._sqradius),color=color,visible=visible)
+        self._circle = ring(pos = (float(self._center.x()),float(self._center.y()),0), axis=(0,0,1),thickness=0.02,radius = sqrt(self._sqradius),color=color,visible=visible)
     def center(self):
         return self._center
     def squared_radius(self):
@@ -1289,7 +1293,7 @@ class Polygon_2(object):
                 self._segments.append(segment)
                 self._points=points
             else:
-                raise No_Constructor
+                raise No_Constructor([self,points,segments])
     def create(self):
         for s in self._segments:
             s.visual()
@@ -1522,6 +1526,9 @@ t = Triangle_2(a,b,c,color=color.red)
 t.poi_color()
 t.poi_color(color.green)
 t.poi_color()
+v2=Vector_2(a,b)
+print v2
+print v2.squared_length()
 """
 d = Point_2(1,4)
 e = Point_2(2,5,color=(1,0,0))
