@@ -196,6 +196,9 @@ def is_permute(l1,l2):
             return True
         l1 = list1
     return False
+
+def isgood(x):
+    return (isinstance(x,float) or isinstance(x,int) or isinstance(x,str) or isinstance(x,Decimal))
     
 
 class Point_2(object):#all clear
@@ -203,7 +206,7 @@ class Point_2(object):#all clear
     Point in 2d
     """
     def __init__(self,x=0,y=0,color=(1,1,1),visible=True): #using visible not opacity for older versions
-        if (not (isinstance(x,float) or isinstance(x,int) or isinstance(x,str) or isinstance(x,Decimal))) and (not (isinstance(y,float) or isinstance(y,int) or isinstance(y,str) or isinstance(y,Decimal))):
+        if (not isgood(x)) and (not isgood(y)):
             raise No_Constructor([self,x,y])
         self._pos=[]
         self._pos.append(x)
@@ -304,7 +307,7 @@ class Vector_2(object):
             raise No_Constructor([self,x,y])
         if isinstance(x,Point_2) and isinstance(y,Point_2):
             self._vector=vector(y.x()-x.x(),y.y()-x.y())
-        if (isinstance(x,int) or isinstance(x,float) or isinstance(x,str) or isinstance(x,Decimal)) and (isinstance(y,int) or isinstance(y,float) or isinstance(y,str) or isinstance(y,Decimal)):
+        if (isgood(x)) and (isgood(y)):
             self._vector=vector(Decimal(str(x)),Decimal(str(y)))
         if y==None:
             if isinstance(x,Segment_2):
@@ -321,9 +324,9 @@ class Vector_2(object):
     def __repr__(self):
         return 'Vector_2({self._vector[0]},{self._vector[1]})' .format(self=self)
     def x(self):
-        return self._vector[0]
+        return Decimal(self._vector[0])
     def y(self):
-        return self._vector[1]
+        return Decimal(self._vector[1])
     def dimension(self):
         return 2
     def cartesian(self,i):
@@ -384,13 +387,13 @@ class Direction_2(object):#all clear
                 else:
                     self._direction=x.y()/x.x()
                 self._d.extend([x.x(),x.y()])               
-            if isinstance(x,Line_2):
+            elif isinstance(x,Line_2):
                 self._direction=x.direction()
                 self._d.extend[-x.a(),x.b()]
-            if isinstance(x,Ray_2):
+            elif isinstance(x,Ray_2):
                 f = x.to_vector()
                 self = Direction_2(f)
-            if isinstance(x,Segment_2):
+            elif isinstance(x,Segment_2):
                 s=x.source()
                 t=x.target()
                 self._d.extend([t.x()-s.x(),t.y()-s.y()])
@@ -398,7 +401,9 @@ class Direction_2(object):#all clear
                     self._direction = None
                 else:
                     self._direction= self._d[1]/self._d[0]
-        elif (isinstance(x,float) or isinstance(x,int) or isinstance(x,str) or isinstance(x,Decimal)) and (isinstance(y,float) or isinstance(y,int) or isinstance(y,str) or isinstance(y,Decimal)):
+            else:
+                raise No_Constructor([self,x,y])
+        elif (isgood(x)) and (isgood(y)):
             if x == 0:
                 self._direction = None
             else:
@@ -437,7 +442,7 @@ class Direction_2(object):#all clear
                     return False                
         if other == None and self._direction == None:
             return True
-        return self.vector() == other.vector()
+        return False
     def __ne__(self,other):
         if other == None:
             return False
@@ -488,7 +493,7 @@ class Line_2(object):
                 x=a.source()
                 y=a.target()
                 if a.is_degenerate():
-                    raise Degenetate_Segment
+                    raise Degenetate_Segment([self,a,b,c])
                 self._b=(y.x() - x.x()) # y = -(y2-y1)/(x2-x1)*x +c
                 self._a=-(y.y() - x.y())
                 self._c=-(self._b*x.y()+self._a*x.x())
@@ -517,7 +522,7 @@ class Line_2(object):
                 self._b=(y.x() - x.x())
                 self._a=-(y.y() - x.y())
                 self._c=-(self._b*y.y()+self._a*y.x())              
-        if (isinstance(a,float) or isinstance(a,int) or isinstance(a,str)) and (isinstance(b,float) or isinstance(b,int) or isinstance(b,str)) and (isinstance(c,float) or isinstance(c,int) or isinstance(c,str)):
+        elif (isgood(a)) and (isgood(b)) and (isgood(c)):
                 self._b=Decimal(str(b))
                 self._c=Decimal(str(c))
                 self._a=Decimal(str(a))
@@ -530,7 +535,7 @@ class Line_2(object):
             f = self._c/self._b
             self._line=curve(pos=[(-EP,float(-f)),(EP,float(-f))],color=color,visible=visible)
         else:
-            self._line=curve(pos=[(-EP, self.y_at_x(-EP)),(EP,self.y_at_x(EP))],color=color,visible=visible)
+            self._line=curve(pos=[(-EP, float(self.y_at_x(-EP))),(EP,float(self.y_at_x(EP)))],color=color,visible=visible)
     def a(self):
         return self._a          
     def b(self):
@@ -938,7 +943,7 @@ class Circle_2(object):
             if y != "COLLINEAR":
                 self._center =x
                 self._sqradius =0
-        elif isinstance(x,Point_2) and (type(y).__name__ == 'int' or type(y).__name__ == 'float') and isinstance(z,str):
+        elif isinstance(x,Point_2) and isgood(y) and isinstance(z,str):
                 if z != "COLLINEAR" and y >= 0:
                     self._center =x
                     self._orientation = orien[z]
@@ -1521,15 +1526,17 @@ prepareScene()
 a = Point_2(1,1)
 b = Point_2(3,3)
 c = Point_2(3,8)
+"""
 a.color()
 t = Triangle_2(a,b,c,color=color.red)
 t.poi_color()
 t.poi_color(color.green)
 t.poi_color()
+"""
 v2=Vector_2(a,b)
 print v2
 print v2.squared_length()
-"""
+
 d = Point_2(1,4)
 e = Point_2(2,5,color=(1,0,0))
 f = Point_2(0,0,color=(0.4,1,0.7))
@@ -1538,7 +1545,7 @@ h=g
 print "a < b == %s" %str(a < b)
 print "a<=b == %s" %str(a<=b)
 print "b<c == %s" %str(b<c)
-
+"""
 #############Triangle_2#####################
 tr = Triangle_2(c,f,g)
 print tr.bounded_side(a)
@@ -1551,13 +1558,13 @@ print tr1.bounded_side(b)
 print tr1.bounded_side(d)
 print tr1.bounded_side(e)
 """
-#s1 = Segment_2(b,c)
-#s2 = Segment_2(a,d)
-#s3 = Segment_2(a,b)
-#s4 = Segment_2(c,a)
-#print orientation(c,a,e)
+s1 = Segment_2(b,c)
+s2 = Segment_2(a,d)
+s3 = Segment_2(a,b)
+s4 = Segment_2(c,a)
+print orientation(c,a,e)
 
-'''
+
 v1 = Vector_2(0,5)
 v2 = Vector_2(3,0)
 v3 = Vector_2(s3)
@@ -1573,6 +1580,7 @@ d6 = Direction_2(s2)
 
 
 #################Line_2##################
+"""
 l1 = Line_2(s2,color=(0,0,1))
 
 
@@ -1596,54 +1604,55 @@ print l2.oriented_side(c)
 print l2.oriented_side(f)
 print l2.oriented_side(g)
 
-sleep(5)
+#sleep(5)
 l3 = Line_2(s1,color=(0,1,1))
 
-sleep(5)
+#sleep(5)
 l4 = Line_2(d,v2,color=(1,0,0))
 
-sleep(5)
+#sleep(5)
 l5 = Line_2(b,v1,color=(1,0,1))
 
-sleep(5)
+#sleep(5)
 l6 = Line_2(c,d2,color=(1,1,0))
 
-sleep(5)
+#sleep(5)
 l7 = Line_2(a,d4,color=(0.5,0.5,0.5))
 
-sleep(5)
+#sleep(5)
 l8 = Line_2(a,c,color=(0,0.5,0.5))
 
-sleep(5)
+#sleep(5)
 l9 = Line_2(b,d)
 
 a.color(color.red)
 b.color(color.red)
 c.color(color.red)
 d.color(color.red)
+"""
 ##################Ray_2#############################
 r1 = Ray_2(b,e,color=color.green)
-sleep(5)
+#sleep(5)
 ss = Segment_2(b,e)
-sleep(5)
+#sleep(5)
 ll = ss.supporting_line()
 ll.visual()
 print ll.direction()
-sleep(5)
+#sleep(5)
 lr1 = r1.supporting_line()
 print lr1.direction()
 lr1.visual()
 print lr1.direction()
-sleep(5)
+#sleep(5)
 r2 = Ray_2(b,v5,color=(0,0,1))
-sleep(5)
+#sleep(5)
 l = Line_2(b,v5,color = (1,0,0))
-sleep(5)
+#sleep(5)
 r3 = Ray_2(b,d1,color=(1,0,1))
-sleep(5)
+#sleep(5)
 re = Line_2(b,d1,color = (0,1,0))
-'''
 
+"""
 
 #l = Line_2(3,3,4,color = (1,0,0))
 #re = Line_2(3,3,9,color = (0,1,0))
@@ -1656,7 +1665,7 @@ re = Line_2(b,d1,color = (0,1,0))
 
 #c = Circle_2(f,2)
 ###################various Point_2 staff######################
-"""
+
 a = Point_2(1,1)
 b = Point_2(3,3)
 c = Point_2()
