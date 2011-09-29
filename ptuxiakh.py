@@ -324,9 +324,9 @@ class Vector_2(object):
     def __repr__(self):
         return 'Vector_2({self._vector[0]},{self._vector[1]})' .format(self=self)
     def x(self):
-        return Decimal(self._vector[0])
+        return Decimal(str(self._vector[0]))
     def y(self):
-        return Decimal(self._vector[1])
+        return Decimal(str(self._vector[1]))
     def dimension(self):
         return 2
     def cartesian(self,i):
