@@ -122,6 +122,11 @@ def getVisualPoints():
     return points
     
 def getPolygon():
+    """
+    Function for getting a polygon from the user.
+    In order to stop inserting points the user must 
+    hit the backspace button
+    """
     points =[]
     segments =[]
     while True:
@@ -141,6 +146,9 @@ def getPolygon():
     return points,segments
             
 def movePoints():
+    """
+    Function for moving points from the plane.
+    """
     pick = None # no object picked out of the scene yet
     global VisualSegments
     if VisualSegments:
@@ -168,9 +176,13 @@ def movePoints():
                 # offset for where the ball was clicked:
                 pick.pos += new_pos - drag_pos
                 drag_pos = new_pos # update drag position
+                #run()  #run the function.
 
 
 def prepareControls():
+    """
+        Preparing the buttons for controling the schene.
+    """
     w = 380
     global control
     global VisualPoints
@@ -198,6 +210,9 @@ def is_permute(l1,l2):
     return False
 
 def isgood(x):
+    """
+        Returns if the instance x is good for inserting as value for coordinates
+    """
     return (isinstance(x,float) or isinstance(x,int) or isinstance(x,str) or isinstance(x,Decimal))
     
 
