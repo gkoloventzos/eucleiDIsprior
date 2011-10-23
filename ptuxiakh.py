@@ -280,7 +280,7 @@ class Point_2(object):#all clear
         return (self.x()==other.x()) and (self.y()==other.y())
     def __ne__(self,other):
         if other==None:
-            return False
+            return True
         return (self.x()!=other.x()) or (self.y()!=other.y())
     def __gt__(self,other):
         if self==None or other==None:
@@ -625,7 +625,7 @@ class Line_2(object):
         return isinstance(l,Line_2)
     def __ne__(self,other):
         if other == None:
-            return False
+            return True
         return not (self==other)
     def color(self,x=0,y=0,z=0):
         if(x==0 and y==0 and z==0):
@@ -1164,7 +1164,7 @@ def intersection(a,b,c=True):
         if isinstance(b,Triangle_2):
             ret = []
             for i in range(3):
-                lin = b.edge(i).supporting_line()
+                lin=b.edge(i)
                 retu = intersection(lin,a,False)
                 if retu != None:
                     retu.visual(c)
@@ -1263,7 +1263,7 @@ def intersection(a,b,c=True):
             if len(ret)>0:
                 return ret
             else:
-                return None
+                return None   
         return intersection(b,a,c)
                 
                 
@@ -1539,15 +1539,22 @@ prepareScene()
 #   print "NiCe"
 
 a = Point_2(1,1)
-b = Point_2(3,3)
-c = Point_2(3,8)
+b = Point_2(-3,3)
+c = Point_2(3,4)
+d = Point_2(2,6)
+e = Point_2()
+#s1 = Segment_2(a,d)
+s2 = Segment_2(b,c)
+t1 = Triangle_2(a,d,e)
+i1 = intersection(t1,s2)
+print i1
 """
 a.color()
 t = Triangle_2(a,b,c,color=color.red)
 t.poi_color()
 t.poi_color(color.green)
 t.poi_color()
-"""
+
 v2=Vector_2(a,b)
 print v2
 print v2.squared_length()
@@ -1560,7 +1567,7 @@ h=g
 print "a < b == %s" %str(a < b)
 print "a<=b == %s" %str(a<=b)
 print "b<c == %s" %str(b<c)
-"""
+
 #############Triangle_2#####################
 tr = Triangle_2(c,f,g)
 print tr.bounded_side(a)
@@ -1572,7 +1579,7 @@ print tr1.bounded_side(a)
 print tr1.bounded_side(b)
 print tr1.bounded_side(d)
 print tr1.bounded_side(e)
-"""
+
 s1 = Segment_2(b,c)
 s2 = Segment_2(a,d)
 s3 = Segment_2(a,b)
@@ -1595,7 +1602,7 @@ d6 = Direction_2(s2)
 
 
 #################Line_2##################
-"""
+
 l1 = Line_2(s2,color=(0,0,1))
 
 
@@ -1644,7 +1651,7 @@ a.color(color.red)
 b.color(color.red)
 c.color(color.red)
 d.color(color.red)
-"""
+
 ##################Ray_2#############################
 r1 = Ray_2(b,e,color=color.green)
 #sleep(5)
@@ -1667,7 +1674,7 @@ r3 = Ray_2(b,d1,color=(1,0,1))
 #sleep(5)
 re = Line_2(b,d1,color = (0,1,0))
 
-"""
+
 
 #l = Line_2(3,3,4,color = (1,0,0))
 #re = Line_2(3,3,9,color = (0,1,0))
