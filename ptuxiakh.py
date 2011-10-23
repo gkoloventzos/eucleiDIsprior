@@ -214,6 +214,12 @@ def isgood(x):
         Returns if the instance x is good for inserting as value for coordinates
     """
     return (isinstance(x,float) or isinstance(x,int) or isinstance(x,str) or isinstance(x,Decimal))
+
+def issame(x,y):
+    """
+        Return if the 2 objects are the same class
+    """
+    return type(x) == type(y)
     
 
 class Point_2(object):#all clear
@@ -277,31 +283,49 @@ class Point_2(object):#all clear
     def __eq__(self,other):
         if other == None:
             return False
-        return (self.x()==other.x()) and (self.y()==other.y())
+        elif issame(self,other):
+            return (self.x()==other.x()) and (self.y()==other.y())
+        else:
+            raise Wrong_Arguments([self,self,other])
     def __ne__(self,other):
         if other==None:
             return True
-        return (self.x()!=other.x()) or (self.y()!=other.y())
+        elif issame(self,other):
+            return (self.x()!=other.x()) or (self.y()!=other.y())
+        else:
+            raise Wrong_Arguments([self,self,other])
     def __gt__(self,other):
-        if self==None or other==None:
+        if other==None:
             return False
-        return self.x() > other.x() or ( self.x() == other.x() and self.y() > other.y() )
+        elif issame(self,other):
+            return self.x() > other.x() or ( self.x() == other.x() and self.y() > other.y() )
+        else:
+            raise Wrong_Arguments([self,self,other])
     def __lt__(self,other):
         if self==None or other==None:
             return False
-        return self.x() < other.x() or ( self.x() == other.x() and self.y() < other.y() )
+        elif issame(self,other):
+            return self.x() < other.x() or ( self.x() == other.x() and self.y() < other.y() )
+        else:
+            raise Wrong_Arguments([self,self,other])
     def __ge__(self,other):
-        if self==None or other==None:
+        if other==None:
             return False
-        if self == other:
-            return True
-        return self.x() > other.x() or ( self.x() == other.x() and self.y() > other.y() )
+        if issame(self,other):
+            if self == other:
+                return True
+            return self.x() > other.x() or ( self.x() == other.x() and self.y() > other.y() )
+        else:
+            raise Wrong_Arguments([self,self,other])
     def __le__(self,other):
-        if self==None or other==None:
+        if other==None:
             return False
-        if self == other:
-            return True
-        return self.x() < other.x() or ( self.x() == other.x() and self.y() < other.y() )       
+        if issame(self,other):
+            if self == other:
+                return True
+            return self.x() < other.x() or ( self.x() == other.x() and self.y() < other.y() )
+        else:
+            raise Wrong_Arguments([self,self,other])
     def __getitem__(self,i):
         if i>=0 and i<=1:
             return self._pos[i]
@@ -352,11 +376,17 @@ class Vector_2(object):
     def __eq__(self,other):
         if other == None:
             return False
-        return self._vector == other._vector
+        elif issame(self,other):
+            return self._vector == other._vector
+        else:
+            raise Wrong_Arguments([self,self,other])
     def __ne__(self,other):
         if other == None:
-            return False
-        return self._vector != other._vector
+            return True
+        elif issame(self,other):
+            return self._vector != other._vector
+        else:
+            raise Wrong_Arguments([self,self,other])
     def __getitem__(self,i):
         if i>=0 and i<=1:
             return self._vector[i]
@@ -367,9 +397,11 @@ class Vector_2(object):
     def __mul__(self,other):
         if isinstance(other,Vector_2):
             return dot(self,other)
-        else:
+        elif isinstance(other,Point_2):
             return Vector_2(other*self.x(),other*self.y())
-    def __div__(self,other):
+        else:
+            raise Wrong_Arguments([self,self,other])
+    def __div__(self,other): #if want exception
         return Vector_2(self.x()/other,self.y()/other)
     def __add__(self,other):
         return Vector_2(self.x()+other.x(),self.y()+other.y())
@@ -460,7 +492,7 @@ class Direction_2(object):#all clear
         return False
     def __ne__(self,other):
         if other == None:
-            return False
+            return True
         return self.vector() != other.vector()
     def __gt__(self,other):
         s = self.vector()
@@ -621,12 +653,18 @@ class Line_2(object):
     def __eq__(self,other):
         if other == None:
             return False
+        elif issame(self,other):
             l = intersection(self,other,False)
-        return isinstance(l,Line_2)
+            return isinstance(l,Line_2)
+        else:
+            raise Wrong_Arguments([self,self,other])
     def __ne__(self,other):
         if other == None:
             return True
-        return not (self==other)
+        elif issame(self,other):
+            return not (self==other)
+        else:
+            raise Wrong_Arguments([self,self,other])
     def color(self,x=0,y=0,z=0):
         if(x==0 and y==0 and z==0):
             print self._line.color
@@ -690,11 +728,17 @@ class Ray_2(object):
     def __eq__(self,other):
         if other == None:
             return False
-        return self._source == other.source() and self._direction == other.direction()
+        elif issame(self,other):
+            return self._source == other.source() and self._direction == other.direction()
+        else:
+            raise Wrong_Arguments([self,self,other])
     def __ne__(self,other):
         if other == None:
-            return False
-        return self._source != other.source() or self._direction != other.direction()
+            return True
+        elif issame(self,other):
+            return self._source != other.source() or self._direction != other.direction()
+        else:
+            raise Wrong_Arguments([self,self,other])
     def direction(self):
         return self._direction
     def supporting_line(self):
@@ -784,11 +828,17 @@ class Segment_2(object):#all clear
     def __eq__(self,other):
         if other == None:
             return False
-        return (self.source() == other.source()) and (self.target() == other.target())
+        elif issame(self,other):
+            return (self.source() == other.source()) and (self.target() == other.target())
+        else:
+            raise Wrong_Arguments([self,self,other])
     def __ne__(self,other):
         if other == None:
-            return False
-        return (self.source() != other.source()) or (self.target() != other.target())
+            return True
+        elif (self,other):
+            return (self.source() != other.source()) or (self.target() != other.target())
+        else:
+            raise Wrong_Arguments([self,self,other])
     def vertex(self,i):
         if i>=0 and i<=1:
             return self._segment[i]
@@ -851,11 +901,17 @@ class Triangle_2(object):
     def __eq__(self,other):
         if other == None:
             return False
-        return is_permute(self._vertex,other.vertexs()) and self._orientation == other.orientation()
+        elif issame(self,other):
+            return is_permute(self._vertex,other.vertexs()) and self._orientation == other.orientation()
+        else:
+            raise Wrong_Arguments([self,self,other])
     def __ne__(self,other):
         if other == None:
-            return False
-        return not is_permute(self._vertex,other.vertexs()) or self._orientation != other.orientation()
+            return True
+        elif (self,other):
+            return not is_permute(self._vertex,other.vertexs()) or self._orientation != other.orientation()
+        else:
+            raise Wrong_Arguments([self,self,other])
     def vertex(self,i):
         return self._vertex[i%3]
     def edge(self,i):
@@ -968,6 +1024,20 @@ class Circle_2(object):
         self._circle = ring(pos = (float(self._center.x()),float(self._center.y()),0), axis=(0,0,1),thickness=0.02,radius = sqrt(self._sqradius),color=color,visible=visible)
     def center(self):
         return self._center
+    def __eq__(self,other):
+        if other == None:
+            return False
+        elif isinstance(other,Circle_2):
+            return self.center()==other.center() and self.squared_radius() == other.squared_radius() and other.orientaion() == self.orientation()
+        else:
+            raise Wrong_Arguments([self,self,other])
+    def __ne__(self,other):
+        if other == None:
+            return True
+        elif issame(self,other):
+            return not (self==other)
+        else:
+            raise Wrong_Arguments([self,self,other])
     def squared_radius(self):
         return self._sqradius
     def orientation(self):
@@ -1545,6 +1615,8 @@ d = Point_2(2,6)
 e = Point_2()
 #s1 = Segment_2(a,d)
 s2 = Segment_2(b,c)
+if a == s2:
+    print "lalalala"
 t1 = Triangle_2(a,d,e)
 i1 = intersection(t1,s2)
 print i1
