@@ -561,7 +561,7 @@ class Line_2(object):
                 else:
                     self._c=0
             if isinstance(a,Point_2) and isinstance(b,Point_2):
-                p=Segment_2(a,b)
+                p=Segment_2(a,b,color)
                 x=p.source()
                 y=p.target()
                 if p.is_degenerate():
@@ -804,6 +804,7 @@ class Segment_2(object):#all clear
             return
         self._segment.color=(x,y,z)
         self._color=(x,y,z)
+        print self._segment.color
         
     def source(self):
         return self._point_start
@@ -865,7 +866,7 @@ class Segment_2(object):#all clear
             if ((self._point_start.x()-other.x())*(self._point_end.y()-other.y()))-((self._point_start.y()-other.y())*(self._point_end.x()-other.x())) == 0:
                 return self.min() <= other <= self.max()
     def supporting_line(self):
-        return Line_2(self._point_start,self._point_end,visible=False)
+        return Line_2(self._point_start,self._point_end,color=self._segment.color,visible=False)
     def visual(self,visible=None): #argue how will work
         if visible == None:
             self._segment.visible = not self._segment.visible
@@ -1089,7 +1090,9 @@ def intersection(a,b,c=True):
     """
     if isinstance(a,Line_2): #If it is Line
         if isinstance(b,Line_2):
-            if (a.a() == b.a() and a.b() == b.b() and a.c() == b.c()) or (a.a() == -b.a() and a.b() == -b.b() and a.c() == -b.c()): # If it is the same line(not with == because will fail in direction)
+            time.sleep(5)
+            print a.direction(),b.direction()
+            if ((a.direction().direction() == b.direction().direction() or a.direction().direction() == -b.direction().direction()) and a.c()==b.c()): # If it is the same line(not with == because will fail in direction)
                 a.visual(c)#return a line
                 return a
             p = (a.a()*b.b()) - (a.b()*b.a())
@@ -1173,6 +1176,7 @@ def intersection(a,b,c=True):
             max2 = b.max()
             min2 = b.min()
             r = intersection(a.supporting_line(),b.supporting_line(),False)
+            print r
             if r == None:
                 return None
             if isinstance(r,Point_2):
@@ -1190,7 +1194,10 @@ def intersection(a,b,c=True):
                     max = max1
                 else:
                     max = max2
-                return Segment_2(min,max,visible=c)
+                if min != max:
+                    return Segment_2(min,max,visible=c)
+                else:
+                    return Point_2(min.x(),min.y(),visible=c)
         if isinstance(b,Ray_2):
             r = intersection(a.supporting_line(),b.supporting_line(),False)
             if r == None:
@@ -1608,18 +1615,22 @@ prepareScene()
 #if orientation(Point_2(1,1),Point_2(2,2),Point_2(3,3)) == COLLINEAR:
 #   print "NiCe"
 
-a = Point_2(1,1)
+a = Point_2(0,1)
 b = Point_2(-3,3)
 c = Point_2(3,4)
 d = Point_2(2,6)
 e = Point_2()
-#s1 = Segment_2(a,d)
-s2 = Segment_2(b,c)
-if a == s2:
-    print "lalalala"
-t1 = Triangle_2(a,d,e)
-i1 = intersection(t1,s2)
-print i1
+f = Point_2(0,2)
+g = Point_2(0,4)
+s1 = Segment_2(e,f)
+s2 = Segment_2(f,g)
+s1.color(0,255,0)
+s2.color(255,0,0)
+#t1 = Triangle_2(a,d,e)
+i1 = intersection(s1,s2)
+#if i1 != None:
+#	i1.color(color.yellow)
+#	print i1
 """
 a.color()
 t = Triangle_2(a,b,c,color=color.red)
