@@ -804,7 +804,6 @@ class Segment_2(object):#all clear
             return
         self._segment.color=(x,y,z)
         self._color=(x,y,z)
-        print self._segment.color
         
     def source(self):
         return self._point_start
@@ -1090,8 +1089,6 @@ def intersection(a,b,c=True):
     """
     if isinstance(a,Line_2): #If it is Line
         if isinstance(b,Line_2):
-            time.sleep(5)
-            print a.direction(),b.direction()
             if ((a.direction().direction() == b.direction().direction() or a.direction().direction() == -b.direction().direction()) and a.c()==b.c()): # If it is the same line(not with == because will fail in direction)
                 a.visual(c)#return a line
                 return a
@@ -1176,7 +1173,6 @@ def intersection(a,b,c=True):
             max2 = b.max()
             min2 = b.min()
             r = intersection(a.supporting_line(),b.supporting_line(),False)
-            print r
             if r == None:
                 return None
             if isinstance(r,Point_2):
@@ -1628,8 +1624,8 @@ s1.color(0,255,0)
 s2.color(255,0,0)
 #t1 = Triangle_2(a,d,e)
 i1 = intersection(s1,s2)
-#if i1 != None:
-#	i1.color(color.yellow)
+if i1 != None:
+	i1.color(color.yellow)
 #	print i1
 """
 a.color()
