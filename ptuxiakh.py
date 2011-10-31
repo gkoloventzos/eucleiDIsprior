@@ -561,14 +561,14 @@ class Line_2(object):
                 else:
                     self._c=0
             if isinstance(a,Point_2) and isinstance(b,Point_2):
-                p=Segment_2(a,b,color)
+                p=Segment_2(a,b,visible=visible)
                 x=p.source()
                 y=p.target()
                 if p.is_degenerate():
                     raise Degenetate_Segment
                 self._b=(y.x() - x.x())
                 self._a=-(y.y() - x.y())
-                self._c=-(self._b*y.y()+self._a*y.x())              
+                self._c=-(self._b*y.y()+self._a*y.x())
         elif (isgood(a)) and (isgood(b)) and (isgood(c)):
                 self._b=Decimal(str(b))
                 self._c=Decimal(str(c))
