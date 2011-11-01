@@ -25,3 +25,9 @@ and with little effort to Windows) library to take the simple objects it needs (
 Trying to have backward compatibility with the VPython the only mouse button we use is the right one.
 In the newer versions of VPython the other buttons are used for altering the scene (zoom in -out, spin)
 </p>
+<p>
+EucleiDIs uses the Decimal library of python in order to have better precision than CGAL. This will give
+the opportunity to have better results in high precision examples. Thus the coordinates of Points_2
+( the basic class of all the others) are stored as Decimal numbers. The library offers every mathematical
+function so we do not have to implement anything different for running EucleiDIs.
+</p>

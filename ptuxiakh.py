@@ -468,6 +468,8 @@ class Direction_2(object):#all clear
     def dy(self):
         return self._d[1]
     def __neg__(self):
+        if self._direction==None:
+            return self
         if self._d[0]!= 0:
             return Direction_2(-self._d[0],self._d[1])
         return Direction_2(self._d[0],-self._d[1])
@@ -477,6 +479,7 @@ class Direction_2(object):#all clear
         if isinstance(other,int) or isinstance(other,float):
             return self._direction == other
         if isinstance(other,Direction_2) and isinstance(self,Direction_2):
+            print "here"
             if (self._d[0] == other._d[0] == 0):
                 if (self._d[1] < 0 and other._d[1]<0) or (self._d[1] > 0 and other._d[1] > 0):
                     return True
@@ -561,7 +564,7 @@ class Line_2(object):
                 else:
                     self._c=0
             if isinstance(a,Point_2) and isinstance(b,Point_2):
-                p=Segment_2(a,b,visible=visible)
+                p=Segment_2(a,b,visible=False)
                 x=p.source()
                 y=p.target()
                 if p.is_degenerate():
@@ -569,6 +572,7 @@ class Line_2(object):
                 self._b=(y.x() - x.x())
                 self._a=-(y.y() - x.y())
                 self._c=-(self._b*y.y()+self._a*y.x())
+                del p
         elif (isgood(a)) and (isgood(b)) and (isgood(c)):
                 self._b=Decimal(str(b))
                 self._c=Decimal(str(c))
@@ -623,6 +627,7 @@ class Line_2(object):
         a = Point_2(x1,1,visible=False)
         b = Point_2(x1+1,y1,visible=False)
         orie = ((a.x()-c.x())*(b.y()-c.y()))-((a.y()-c.y())*(b.x()-c.x()))
+        del a,b
         if orie == 0:
             return rsides[0]
         elif orie < 0:
@@ -630,9 +635,11 @@ class Line_2(object):
         else:
             return rsides[1]
     def point(self,i):
-        print "in point"
+        if self.is_horizontal():
+            return Point_2(i,self.c(),visible=False)
+        if self.is_vertical():
+            return Point_2(self.c(),i,visible=False)
         x=1+self._b*i
-        print x
         y=self.y_at_x(x)
         return Point_2(x,y,visible=False)
     def perpendicular(self,p):
@@ -685,13 +692,13 @@ class Ray_2(object):
         if isinstance(y,Point_2):
             #y.visual()
             self._direction = Direction_2(Segment_2(x,y,visible=False))
-        if isinstance(y,Direction_2):
+        elif isinstance(y,Direction_2):
             self._direction = y
-        if isinstance(y,Vector_2):
+        elif isinstance(y,Vector_2):
             self._direction = y.direction()
-        if isinstance(y,Line_2):
+        elif isinstance(y,Line_2):
             self._direction = y.direction()
-        if self._direction == None:
+        else :
             raise No_Constructor([self,x,y])
         d = self._direction
         l = Line_2(x,d,visible=False)
@@ -715,6 +722,7 @@ class Ray_2(object):
                 p = Point_2(EP,x.x(),visible=False)
         self._source=x
         self._ray=curve(pos=[(float(x.x()), float(x.y())),(float(p.x()), float(p.y()))],color=color,visible=visible)
+        del l
     def color(self,x=0,y=0,z=0):
         if(x==0 and y==0 and z==0):
             print self._ray.color
@@ -752,7 +760,7 @@ class Ray_2(object):
     def point(self,i):
         if i>0:
             l=self.supporting_line()
-            l.point(i)
+            return l.point(i)
         if i==0:
             return self._source
     def is_degenerate(self):
@@ -1004,12 +1012,14 @@ class Circle_2(object):
             self._center = intersection(l1.perpendicular(),l2.perpendicular())
             s = Segment_2(self._center,x,visible=False)
             self._sqradius = s.squared_length()
+            del l1,l2,s
         elif isinstance(x,Point_2) and isinstance(y,Point_2) and isinstance(z,str):
             if z != "COLLINEAR":
                 self._orientation = orien[z]
-                s = Segment_2(p,q)
+                s = Segment_2(p,q,visible=False)
                 self._center = s.middle()
                 self._sqradius = s.squared_length()/2
+                del s
         elif isinstance(x,Point_2) and isinstance(y,str):
             if y != "COLLINEAR":
                 self._center =x
@@ -1050,6 +1060,7 @@ class Circle_2(object):
     def oriented_side(self,p):
         s = Segment_2(self._center,p,visible=False)
         ori = s.squared_length() - self._sqradious
+        del s
         if ori == 0:
             return ori
         if ori < 0:
@@ -1059,6 +1070,7 @@ class Circle_2(object):
     def bounded_side(self,p):
         s = Segment_2(self._center,p,visible=False)
         ori = s.squared_length() - self._sqradious
+        del s
         if ori == 0:
             return ori
         if ori < 0:
@@ -1106,8 +1118,10 @@ def intersection(a,b,c=True):
                     seg = Segment_2(b.source(),ret,visible=False)   #create a segment with the source an the inter point
                     if seg.direction() == b.direction() : #check if segment and ray has same direction
                         ret.visual(c)
+                        del seg
                         return ret
                     else:
+                        del seg
                         return None
                 if isinstance(b,Segment_2):
                     if b.has_on(ret):   #check if the point is inside segment
@@ -1149,22 +1163,27 @@ def intersection(a,b,c=True):
             seq = Segment_2(f,b.center(),visible=False)
             if seq.squared_length() == b.squared_radius():
                 f.visual()
+                del seq
                 return f
             if seq.squared_length() < b.squared_radius():
                 g = b.center()
                 if a.is_vertical():
                     x = -a.c()/a.a()
                     y1,y2 = quadratic(1,(-2*g.y()),((g.y()**2)+((x-g.x())**2)),(-b.squared_radius()))
+                    del seq
                     return [Point_2(x,y1),Point_2(x,y2)]
                 if a.is_horizontal():
                     y = -a.b()/a.a()
                     x1,x2 = quadratic(1,(-2*g.x()),((g.x()**2)+((y-g.y())**2)),(-b.squared_radius()))
+                    del seq
                     return [Point_2(x1,y),Point_2(x2,y)]
                 aaa = (((a.b()**2)/a.a()**2)+1)
                 bbb = ((2*a.b()/(a.a()**2))+(2*a.b()*g.x()/a.a()) -2)
                 ccc = (((a.c()**2)+a.c())/(a.a()**2)) + (g.x()**2) + (2*a.c()*g.x()/a.a()) + (g.y()**2) - g.squared_radius()
                 y1,y2 = quadratic(aaa,bbb,ccc)  #function to solve quadratic equatations
+                del seq
                 return [Point_2(a.x_at_y(y1),y1),Point_2(a.x_at_y(y2),y2)]
+            del seq
             return None
     if isinstance(a,Segment_2):
         if isinstance(b,Segment_2):
@@ -1206,11 +1225,11 @@ def intersection(a,b,c=True):
                     return None
             if  isinstance(r,Line_2):
                 s = b.point(300)
-                if b.source > a.min() and b.source() < a.max():
+                if b.source() > a.min() and b.source() < a.max():
                     if s < a.min():
-                        return Segment_2(b.source(),a.min())
+                        return Segment_2(b.source(),a.min(),visible=c)
                     else:
-                        return Segment_2(b.source(),a.max())
+                        return Segment_2(b.source(),a.max(),visible=c)
                 if b.source() > a.max():
                     if s > a.max():
                         return None
@@ -1231,7 +1250,6 @@ def intersection(a,b,c=True):
                         return a.max()
                     else:
                         return a
-                print "WTF!!!!!"
         if isinstance(b,Line_2):
             return intersection(b,a,c)
         if isinstance(b,Triangle_2):
@@ -1272,7 +1290,7 @@ def intersection(a,b,c=True):
     if isinstance(a,Ray_2):
         ret = []
         s = a.point(300)
-        seg = Segment_2(a.source(),s)
+        seg = Segment_2(a.source(),s,visible=False)
         if isinstance(b,Triangle_2):
             for i in range(3):
                 lin = b.edge(i)
@@ -1281,8 +1299,10 @@ def intersection(a,b,c=True):
                     retu.visual(c)
                     ret.append(retu)
             if len(ret)>0:
+                del seg
                 return ret
             else:
+                del seg
                 return None
         if isinstance(b,Circle_2):
             return intersection(seg,b,c)
@@ -1294,12 +1314,15 @@ def intersection(a,b,c=True):
             seq=Segment_2(a.center(),b.center(),visible=False)
             dis_square = a.squared_radius() + b.squared_radius()
             if a.center() == b.center() and a.squared_radius == b.squared_radius():
+                del seq
                 return a
             if seq.squared_length() > dis_square.squared_length():
+                del seq
                 return None
             if seq.squared_length() == dis_square.squared_length():
                 l = intersection(a,seq.supporting_line(),False)
                 l1 = intersection(b,seq.supporting_line(),False)
+                del seq
                 for t in l:
                     if t in l1:
                         t.visual(c)
@@ -1310,6 +1333,8 @@ def intersection(a,b,c=True):
                 p2 = a.center() + ca*(b.center() - a.center())/sqrt(dis_square)
                 c1 = Point_2(p2.x()+h*(b.center().y()-a.center().y()),p2.y()-h*(b.center().x()-a.center().x()))
                 c2 = Point_2(p2.x()-h*(b.center().y()-a.center().y()),p2.y()+h*(b.center().x()-a.center().x()))
+                del seq
+                return c1,c2
         if isinstance(b,Triangle_2):
             ret = []
             for i in range(3):
@@ -1618,15 +1643,15 @@ d = Point_2(2,6)
 e = Point_2()
 f = Point_2(0,2)
 g = Point_2(0,4)
-s1 = Segment_2(e,f)
-s2 = Segment_2(f,g)
-s1.color(0,255,0)
-s2.color(255,0,0)
+s1 = Ray_2(e,f)
+s2 = Segment_2(b,c)
+#s1.color(0,255,0)
+#s2.color(255,0,0)
 #t1 = Triangle_2(a,d,e)
 i1 = intersection(s1,s2)
 if i1 != None:
-	i1.color(color.yellow)
-#	print i1
+    i1.color(color.yellow)
+    print i1
 """
 a.color()
 t = Triangle_2(a,b,c,color=color.red)
@@ -1817,7 +1842,8 @@ print -r
 #segment
 print rod
 print rod.min()
-print rod.max()
+
+ rod.max()
 f=rod.middle()
 print rod.has_on(f)
 print rod.has_on(dd)
