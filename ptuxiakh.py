@@ -1101,12 +1101,20 @@ def intersection(a,b,c=True):
     """
     if isinstance(a,Line_2): #If it is Line
         if isinstance(b,Line_2):
-            if ((a.direction().direction() == b.direction().direction() or a.direction().direction() == -b.direction().direction()) and a.c()==b.c()): # If it is the same line(not with == because will fail in direction)
-                a.visual(c)#return a line
-                return a
-            p = (a.a()*b.b()) - (a.b()*b.a())
-            if p != 0:
-                return Point_2((-a.c()*b.b()+a.b()*b.c())/p,(-(a.a()*b.c())+a.c()*b.a())/p,visible=c)
+            if a.direction().direction() != None and b.direction().direction() != None:
+                if ((a.direction().direction() == b.direction().direction() or a.direction().direction() == -b.direction().direction()) and a.c()==b.c()): # If it is the same line(not with == because will fail in direction)
+                    a.visual(c)#return a line
+                    return a
+                p = (a.a()*b.b()) - (a.b()*b.a())
+                if p != 0:
+                    return Point_2((-a.c()*b.b()+a.b()*b.c())/p,(-(a.a()*b.c())+a.c()*b.a())/p,visible=c)
+            else:
+                if (a.direction().direction() == b.direction().direction() and a.c()==b.c()): # If it is the same line(not with == because will fail in direction)
+                    a.visual(c)#return a line
+                    return a
+                p = (a.a()*b.b()) - (a.b()*b.a())
+                if p != 0:
+                    return Point_2((-a.c()*b.b()+a.b()*b.c())/p,(-(a.a()*b.c())+a.c()*b.a())/p,visible=c)                
             return None
         if isinstance(b,Ray_2) or isinstance(b,Segment_2): #if it is ray or segment
             lin = b.supporting_line()
@@ -1651,6 +1659,7 @@ s2 = Segment_2(b,c)
 i1 = intersection(s1,s2)
 if i1 != None:
     i1.color(color.yellow)
+    print "lalala"
     print i1
 """
 a.color()
