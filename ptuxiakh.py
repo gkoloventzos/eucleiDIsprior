@@ -712,9 +712,9 @@ class Ray_2(object):
             p = Point_2(-EP,l.y_at_x(-EP),visible=False)
         if d.dx() == 0:
             if d.dy() <0:
-                p = Point_2(x.y(),-EP,visible=False)
+                p = Point_2(x.x(),-EP,visible=False)
             elif d.dy()>0:
-                p = Point_2(x.y(),EP,visible=False)
+                p = Point_2(x.x(),EP,visible=False)
         if d.dy() == 0:
             if d.dx()<0:
                 p = Point_2(-EP,x.x(),visible=False)
@@ -1227,6 +1227,7 @@ def intersection(a,b,c=True):
                 return None
             if isinstance(r,Point_2):
                 if r >= a.min() and r <= a.max():
+                    if
                     r.visual(c)
                     return r
                 else:
@@ -1650,8 +1651,10 @@ c = Point_2(3,4)
 d = Point_2(2,6)
 e = Point_2()
 f = Point_2(0,2)
+f.color(0,255,0)
+e.color(0,0,255)
 g = Point_2(0,4)
-s1 = Ray_2(e,f)
+s1 = Ray_2(f,e)
 s2 = Segment_2(b,c)
 #s1.color(0,255,0)
 #s2.color(255,0,0)
