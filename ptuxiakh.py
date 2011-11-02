@@ -622,10 +622,17 @@ class Line_2(object):
             self._line.visible = visible
         return self._line.visible
     def oriented_side(self,c):
-        x1 = self.x_at_y(1)
-        y1 = self.y_at_x(x1+1)
-        a = Point_2(x1,1,visible=False)
-        b = Point_2(x1+1,y1,visible=False)
+        if self.is_vertical():
+            a = Point_2(-self.c(),0,visible=False)
+            b = Point_2(-self.c(),1,visible=False)
+        elif self.is_horizontal():
+            a = Point_2(0,-self.c(),visible=False)
+            b = Point_2(1,-self.c(),visible=False)
+        else:
+            x1 = self.x_at_y(1)
+            y1 = self.y_at_x(x1+1)
+            a = Point_2(x1,1,visible=False)
+            b = Point_2(x1+1,y1,visible=False)
         orie = ((a.x()-c.x())*(b.y()-c.y()))-((a.y()-c.y())*(b.x()-c.x()))
         del a,b
         if orie == 0:
@@ -1226,8 +1233,7 @@ def intersection(a,b,c=True):
             if r == None:
                 return None
             if isinstance(r,Point_2):
-                if r >= a.min() and r <= a.max():
-                    if
+                if r >= a.min() and r <= a.max() and b.has_on(r):
                     r.visual(c)
                     return r
                 else:
