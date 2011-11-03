@@ -9,7 +9,6 @@ VisualPoints = None
 VisualSegments = None
 control = None
 
-
 orien = {"CLOCKWISE":-1,"COLLINEAR":0,"COUNTERCLOCKWISE":1}
 rorien = {-1:"CLOCKWISE",0:"COLLINEAR",1:"COUNTERCLOCKWISE"}
 sides = {"ON_NEGATIVE_SIDE":-1,"ON_ORIENTED_BOUNDARY":0,"ON_POSITIVE_SIDE":1}
@@ -633,7 +632,12 @@ class Line_2(object):
             y1 = self.y_at_x(x1+1)
             a = Point_2(x1,1,visible=False)
             b = Point_2(x1+1,y1,visible=False)
+            print a,b
+        print c
+        print (a.x()-c.x())*(b.y()-c.y()),(a.y()-c.y())*(b.x()-c.x())
         orie = ((a.x()-c.x())*(b.y()-c.y()))-((a.y()-c.y())*(b.x()-c.x()))
+        print self
+        print orie
         del a,b
         if orie == 0:
             return rsides[0]
@@ -659,11 +663,11 @@ class Line_2(object):
             d1=Direction_2(y,-x)
         return Line_2(p,d1,visible=False)
     def has_on(self,p):
-        return self.oriented_side(p) == 0
+        return sides[self.oriented_side(p)] == 0
     def has_on_positive_side(self,p):
-        return self.oriented_side(p) == 1
+        return sides[self.oriented_side(p)] == 1
     def has_on_negative_side(self,p):
-        return self.oriented_side(p) == -1
+        return sides[self.oriented_side(p)] == -1
     def __eq__(self,other):
         if other == None:
             return False
@@ -724,9 +728,9 @@ class Ray_2(object):
                 p = Point_2(x.x(),EP,visible=False)
         if d.dy() == 0:
             if d.dx()<0:
-                p = Point_2(-EP,x.x(),visible=False)
+                p = Point_2(-EP,x.y(),visible=False)
             elif d.dx()>0:
-                p = Point_2(EP,x.x(),visible=False)
+                p = Point_2(EP,x.y(),visible=False)
         self._source=x
         self._ray=curve(pos=[(float(x.x()), float(x.y())),(float(p.x()), float(p.y()))],color=color,visible=visible)
         del l
@@ -1657,10 +1661,11 @@ c = Point_2(3,4)
 d = Point_2(2,6)
 e = Point_2()
 f = Point_2(0,2)
+h = Point_2(1,1)
 f.color(0,255,0)
 e.color(0,0,255)
 g = Point_2(0,4)
-s1 = Ray_2(f,e)
+s1 = Ray_2(e,d)
 s2 = Segment_2(b,c)
 #s1.color(0,255,0)
 #s2.color(255,0,0)
