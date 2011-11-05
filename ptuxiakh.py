@@ -478,7 +478,6 @@ class Direction_2(object):#all clear
         if isinstance(other,int) or isinstance(other,float):
             return self._direction == other
         if isinstance(other,Direction_2) and isinstance(self,Direction_2):
-            print "here"
             if (self._d[0] == other._d[0] == 0):
                 if (self._d[1] < 0 and other._d[1]<0) or (self._d[1] > 0 and other._d[1] > 0):
                     return True
@@ -632,12 +631,11 @@ class Line_2(object):
             y1 = self.y_at_x(x1+1)
             a = Point_2(x1,1,visible=False)
             b = Point_2(x1+1,y1,visible=False)
-            print a,b
-        print c
-        print (a.x()-c.x())*(b.y()-c.y()),(a.y()-c.y())*(b.x()-c.x())
-        orie = ((a.x()-c.x())*(b.y()-c.y()))-((a.y()-c.y())*(b.x()-c.x()))
-        print self
-        print orie
+        s1 = Decimal(a.x()-c.x())*(b.y()-c.y())
+        s2 = Decimal(a.y()-c.y())*(b.x()-c.x())
+        s1 = s1.quantize(Decimal('1.00000000000000000000000000'))
+        s2 = s2.quantize(Decimal('1.00000000000000000000000000'))
+        orie = s1-s2
         del a,b
         if orie == 0:
             return rsides[0]
@@ -732,6 +730,7 @@ class Ray_2(object):
             elif d.dx()>0:
                 p = Point_2(EP,x.y(),visible=False)
         self._source=x
+        self._out=p
         self._ray=curve(pos=[(float(x.x()), float(x.y())),(float(p.x()), float(p.y()))],color=color,visible=visible)
         del l
     def color(self,x=0,y=0,z=0):
@@ -744,6 +743,8 @@ class Ray_2(object):
         self._ray.color=(x,y,z)
     def source(self):
         return self._source
+    def out(self):
+		return self._out
     def __eq__(self,other):
         if other == None:
             return False
@@ -783,13 +784,18 @@ class Ray_2(object):
         l = sel.supporting_line()
         return l.is_vertical()
     def has_on(self,point):
-        l = self.supporting_line()
-        if l.has_on(point):
-            p = self.source()
-            s = Segment_2(p,point,visible=False)
-            return s.direction() == self.direction()
-        else:
-            return False
+		s1 = Segment_2(self.source(),self.out(),visible=False)
+		return s1.has_on(point)
+#        l = self.supporting_line()
+#        if l.has_on(point):
+#            print "here"
+#            p = self.source()
+#            s = Segment_2(p,point,visible=False)
+#            print s.direction()
+#            print self.direction()
+#            return s.direction() == self.direction()
+#        else:
+#            return False
         
         
 
@@ -823,7 +829,6 @@ class Segment_2(object):#all clear
             return
         self._segment.color=(x,y,z)
         self._color=(x,y,z)
-        
     def source(self):
         return self._point_start
     def target(self):
@@ -991,12 +996,11 @@ class Triangle_2(object):
             self._segments[i].color(x,y,z)          
     def poi_color(self,x=0,y=0,z=0): #strange None output
         if(x==0 and y==0 and z==0):
-            for i in range(3):
+            for i in xrange(3):
                 print "Vertex" ,self._vertex[i], "color",self._vertex[i].color()
-                print i
             return
         if type(x).__name__=='tuple':
-            for i in range(3):
+            for i in xrange(3):
                 self._vertex[i].color(x)
             return
         for i in range(3):
@@ -1324,8 +1328,6 @@ def intersection(a,b,c=True):
                 del seg
                 return None
         if isinstance(b,Circle_2):
-            return intersection(seg,b,c)
-        if isinstance(b,Ray_2):
             return intersection(seg,b,c)
         return intersection(b,a,c)
     if isinstance(a,Circle_2):
@@ -1665,15 +1667,14 @@ h = Point_2(1,1)
 f.color(0,255,0)
 e.color(0,0,255)
 g = Point_2(0,4)
-s1 = Ray_2(e,d)
-s2 = Segment_2(b,c)
+s1 = Ray_2(h,a)
+s2 = Segment_2(c,e)
 #s1.color(0,255,0)
 #s2.color(255,0,0)
 #t1 = Triangle_2(a,d,e)
 i1 = intersection(s1,s2)
 if i1 != None:
     i1.color(color.yellow)
-    print "lalala"
     print i1
 """
 a.color()
