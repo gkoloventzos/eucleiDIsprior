@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/local/bin/python
 from __future__ import division
 from visual import *
 from visual.controls import *
@@ -28,7 +28,7 @@ class No_Constructor(Exception):
         self.parameters = value[1:]
     def repr(self):
         print '{self.name} has no constructor with this arguments' .format(self=self),
-        for i in range(self.parameters):
+        for i in xrange(self.parameters):
             if self.parameters[i] != None:
                 print '{self.parameters[i]}' .format(self=self),
             
@@ -50,7 +50,7 @@ class Wrong_Arguments(Exception):
         self.name = type(value).__name__
     def repr(self):
         print '{self.name} cannot take this arguments' .format(self=self),
-        for i in range(self.parameters):
+        for i in xrange(self.parameters):
             if self.parameters[i] != None:
                 print '{self.parameters[i]}' .format(self=self),
         
@@ -200,7 +200,7 @@ def is_permute(l1,l2):
     """
     if l1 == l2:
         return true
-    for i in range(0,len(l1)-1):
+    for i in xrange(0,len(l1)-1):
         list1 = l1[1:len(l1)]
         list1.append(l1[0])
         if list1 == l2:
@@ -265,7 +265,7 @@ class Point_2(object):#all clear
         return 2
 #generator in order to emulate th iterators of CGAL
     def iter(self):
-        for index in range(2):
+        for index in xrange(2):
             yield self._pos[index]
     def __add__(self,other):
         if isinstance(other,Vector_2):
@@ -744,7 +744,7 @@ class Ray_2(object):
     def source(self):
         return self._source
     def out(self):
-		return self._out
+        return self._out
     def __eq__(self,other):
         if other == None:
             return False
@@ -784,8 +784,10 @@ class Ray_2(object):
         l = sel.supporting_line()
         return l.is_vertical()
     def has_on(self,point):
-		s1 = Segment_2(self.source(),self.out(),visible=False)
-		return s1.has_on(point)
+                s1 = Segment_2(self.source(),self.out(),visible=False)
+                ret = s1.has_on(point)
+                del s1
+                return ret
 #        l = self.supporting_line()
 #        if l.has_on(point):
 #            print "here"
@@ -950,7 +952,7 @@ class Triangle_2(object):
         if self.is_degenerate():
             raise Is_Degenerate(self)
         x =[]
-        for i in range(3):
+        for i in xrange(3):
             x.append(orientation(self._segments[i].source(),self._segments[i].target(),p))
             if x[-1] == "COLLINEAR":
                 return 0
@@ -989,10 +991,10 @@ class Triangle_2(object):
             print "\n"
             return
         if type(x).__name__=='tuple':
-            for i in range(3):
+            for i in xrange(3):
                 self._segments[i].color(x)
             return
-        for i in range(3):
+        for i in xrange(3):
             self._segments[i].color(x,y,z)          
     def poi_color(self,x=0,y=0,z=0): #strange None output
         if(x==0 and y==0 and z==0):
@@ -1003,7 +1005,7 @@ class Triangle_2(object):
             for i in xrange(3):
                 self._vertex[i].color(x)
             return
-        for i in range(3):
+        for i in xrange(3):
             self._vertex[i].color(x,y,z)
     def fill(self,x=0,y=0,z=0):
         if(x==0 and y==0 and z==0):
@@ -1155,7 +1157,7 @@ def intersection(a,b,c=True):
             return b
         if isinstance(b,Triangle_2): #if it is triangle
             ret = []
-            for i in range(3): #for every edge find interseciont point(s), line
+            for i in xrange(3): #for every edge find interseciont point(s), line
                 lin = b.edge(i).supporting_line()
                 retu = intersection(a,lin,False)
                 if retu != None:
@@ -1277,7 +1279,7 @@ def intersection(a,b,c=True):
             return intersection(b,a,c)
         if isinstance(b,Triangle_2):
             ret = []
-            for i in range(3):
+            for i in xrange(3):
                 lin=b.edge(i)
                 retu = intersection(lin,a,False)
                 if retu != None:
@@ -1315,7 +1317,7 @@ def intersection(a,b,c=True):
         s = a.point(300)
         seg = Segment_2(a.source(),s,visible=False)
         if isinstance(b,Triangle_2):
-            for i in range(3):
+            for i in xrange(3):
                 lin = b.edge(i)
                 retu = intersection(lin,seg,False)
                 if retu != None:
@@ -1358,7 +1360,7 @@ def intersection(a,b,c=True):
                 return c1,c2
         if isinstance(b,Triangle_2):
             ret = []
-            for i in range(3):
+            for i in xrange(3):
                 lin = b.edge(i)
                 retu = intersection(lin,a)
                 if retu != None:
@@ -1372,8 +1374,8 @@ def intersection(a,b,c=True):
     if isinstance(a,Triangle_2):
         if isinstance(b,Triangle_2):
             ret = []
-            for i in range(3):
-                for j in range(3):
+            for i in xrange(3):
+                for j in xrange(3):
                     lin = b.edge(i)
                     lin1 = a.edge(j)
                     retu = intersection(lin,lin1,c)
@@ -1410,7 +1412,7 @@ def run(Vpoints):
                 points.remove(r)
                 hull.append(r)
                 remainingPoints.remove(r)
-      for t in range(len(hull)):
+      for t in xrange(len(hull)):
        if t != len(hull)-1:
         Segment_2(hull[t],hull[t+1])
        else:
@@ -1425,7 +1427,7 @@ class Polygon_2(object):
             self._segments=segments
         else:
             if len(points)>1:
-                for i in range(len(points)-1):
+                for i in xrange(len(points)-1):
                     segment = Segment_2(points[i],points[i+1],color=color,visible=visible)
                     self._segments.append(segment)
                 segment = Segment_2(points[-1],points[0],color=color,visible=visible)
@@ -1438,7 +1440,7 @@ class Polygon_2(object):
             s.visual()
         self._segments=[]
         if len(self._points)>1:
-                for i in range(len(self._points)-1):
+                for i in xrange(len(self._points)-1):
                     segment = Segment_2(self._points[i],self._points[i+1])
                     self._segments.append(segment)
                 segment = Segment_2(self._points[-1],self._points[0],visible=True)
@@ -1484,7 +1486,7 @@ class Polygon_2(object):
     def is_simple(self):
         if self._simple != 2:
             return self._simple
-        for i in range(len(self._segments)-1):
+        for i in xrange(len(self._segments)-1):
             if intersection(self._segments[i],self._segments[i+1]) != None:
                 self._simple = 0
                 return self._simple
@@ -1494,7 +1496,7 @@ class Polygon_2(object):
         if self._convex != 2:
             return self._convex
         n = len(self._segments)
-        for i in range(n):
+        for i in xrange(n):
             j = (i+2)%n
             i1 = (i+1)%n
             in1 = (i+n-1)%n
@@ -1525,7 +1527,7 @@ class Polygon_2(object):
     def area(self):
         n = len(self._points)
         sum =0
-        for i in range(n+1):
+        for i in xrange(n+1):
             x=i%n
             y=(i+1)%n
             sum += (self._points[x].x()*self._points[y].y() - self._points[x].y()*self._points[y].x())
@@ -1560,25 +1562,25 @@ class Polygon_2(object):
         return s[0]
     def seg_color(self,x=0,y=0,z=0): #strange None output
         if(x==0 and y==0 and z==0):
-            for i in range(len(self._segments)):
+            for i in xrange(len(self._segments)):
                 print "Segment" ,self._segments[i], "color",self._segments[i].color()
             return
         if type(x).__name__=='tuple':
-            for i in range(len(self._segments)):
+            for i in xrange(len(self._segments)):
                 self._segments[i].color(x)
             return
-        for i in range(len(self._segments)):
+        for i in xrange(len(self._segments)):
                 self._segments[i].color(x,y,z)      
     def poi_color(self,x=0,y=0,z=0): #strange None output
         if(x==0 and y==0 and z==0):
-            for i in range(len(self._points)):
+            for i in xrange(len(self._points)):
                 print "Vertex" ,self._points[i], "color",self._points[i].color()
             return
         if type(x).__name__=='tuple':
-            for i in range(len(self._points)):
+            for i in xrange(len(self._points)):
                 self._points[i].color(x)
             return
-        for i in range(len(self._points)):
+        for i in xrange(len(self._points)):
                 self._points[i].color(x,y,z)
     def bounded_side(self,other):
         if not (isinstance(other,Point_2)) and not self.is_simple():
