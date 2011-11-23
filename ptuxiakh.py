@@ -6,6 +6,7 @@ import time,operator
 from decimal import *
 
 VisualPoints = None
+VVPoint = []
 VisualSegments = None
 control = None
 
@@ -62,7 +63,7 @@ def prepareScene():
     scene.width = 800
     scene.height = 700
     scene.title = "eukleiDIs"
-    scene.exit=-1
+    scene.exit=0
 
 def quadratic(a, b, c=None):
     """
@@ -114,10 +115,20 @@ def getVisualPoints():
                 break
         if scene.mouse.clicked:
             click = scene.mouse.getclick()
-            point = Point_2(click.pos.x,click.pos.y)
+            point = Point_2(str(click.pos.x),str(click.pos.y))
 #           stri = str(click.pos.x) + "," + str(click.pos.y)
 #           point.label(stri)
             points.append(point)
+            global VisualPoints
+            if VisualPoints is not None:
+                VisualPoints[point]=point
+            else:
+                VisualPoints = {}
+                VisualPoints[point]=point
+            global VVPoint
+            if point not in VVPoint:
+                VVPoint.append(point)
+#    print VVPoint
     return points
     
 def getPolygon():
@@ -135,7 +146,7 @@ def getPolygon():
                 break
         if scene.mouse.clicked:
             click = scene.mouse.getclick()
-            point = Point_2(click.pos.x,click.pos.y)
+            point = Point_2(str(click.pos.x),str(click.pos.y))
             points.append(point)
             if len(points)>1:
                 segment = Segment_2(points[-2],points[-1])
@@ -164,9 +175,15 @@ def movePoints():
             global VisualPoints
             for poin in VisualPoints:
                 if m1.drag and m1.pick == poin.pos(): # if touched ball
+                    global VVPoint
+                    ind = VVPoint.index(poin)
+                    VVPoint.pop(ind)
                     drag_pos = m1.pickpos # where on the ball
                     pick = m1.pick # pick now true (not None)
                 elif m1.drop: # released at end of drag
+                    point = Point_2(str(m1.pos.x),str(m1.pos.y))
+                    if point not in VVPoint:
+                        VVPoint.insert(ind,point)
                     pick = None # end dragging (None is false)
         if pick:
             # project onto xy plane, even if scene rotated:
@@ -176,6 +193,9 @@ def movePoints():
                 pick.pos += new_pos - drag_pos
                 drag_pos = new_pos # update drag position
                 #run()  #run the function.
+#    print VVPoint
+    return VVPoint
+        
 
 
 def prepareControls():
@@ -190,7 +210,7 @@ def prepareControls():
     gp = button(pos=(30,40), height=20, width=50, text='Insert Points', action=lambda: getVisualPoints())
     dap = button(pos=(-30,10), height=20, width=50, text='Del Points', action=lambda: getVisualPoints())
     das = button(pos=(30,10), height=20, width=50, text='Del Segments', action=lambda: getVisualPoints())
-    ru = button(pos=(0,-20), height=20, width=50, color = (1,0,0), text='Run', action=lambda: run(VisualPoints))
+    ru = button(pos=(0,-20), height=20, width=50, color = (1,0,0), text='Run', action=lambda: run(VVPoint))
     while 1:
         control.interact()
 
@@ -220,28 +240,52 @@ def issame(x,y):
     """
     return type(x) == type(y)
     
+def incone(i, j, P):
+    n = len(P)
+    i1 = (i+1)%n					# i+1
+    in1 = (i+n-1)%n					# i-1
+    cc = orien[orientation(P[in1], P[i], P[i1])]
+    if cc >= 0 :			# CCW or collinear
+        if orien[orientation(P[in1], P[i], P[j])] == 1 and orien[orientation(P[i], P[j], P[i1])] == -1:
+            return True
+    else:						# CW
+        if orien[orientation(P[in1], P[i], P[j])] == 1 or orien[orientation(P[i], P[i1], P[j])] ==1:
+            return True
+    return False
 
+def diagonalie(i, j, P):
+	n = len(P)
+	s = Segment_2(P[i], P[j],visible=False)
+	for k in range(n):				# intersection of two segments
+		p = intersection(s, Segment_2(P[k], P[(k+1)%n]))
+		if isinstance(p,Point_2) and p not in P:	# exlude Points i, j
+			return False
+	return True
+    
+#########################################################################################
 class Point_2(object):#all clear
     """
     Point in 2d
     """
-    def __init__(self,x=0,y=0,color=(1,1,1),visible=True): #using visible not opacity for older versions
+    def __init__(self,x='0.000000000000000000000000000',y='0.000000000000000000000000000',color=(1,1,1),visible=True): #using visible not opacity for older versions
         if (not isgood(x)) and (not isgood(y)):
             raise No_Constructor([self,x,y])
         self._pos=[]
         self._pos.append(x)
         self._pos.append(y)
-        self._x = Decimal(str(x))
-        self._y = Decimal(str(y))
+        self._x = Decimal(str(x)) + Decimal('0.000000000000000000000000000')
+        self._y = Decimal(str(y)) + Decimal('0.000000000000000000000000000')
         self._point=sphere(pos=(float(x),float(y),0),radius=0.1,color=color,visible=visible) 
-        global VisualPoints
-        if VisualPoints is not None:
-            VisualPoints[self]=self
-        else:
-            VisualPoints = {}
-            VisualPoints[self]=self
+#        global VisualPoints
+#        if VisualPoints is not None:
+#            VisualPoints[self]=self
+#        else:
+#            VisualPoints = {}
+#            VisualPoints[self]=self
+#        global VVPoint
+#        VVPoint.append(self)
     def __repr__(self):
-        return 'Point_2({self._pos[0]},{self._pos[1]})' .format(self=self)
+        return "Point_2 (%s,%s)" % (self._x, self._y)
     def x(self):
         return self._x
     def y(self):
@@ -253,10 +297,10 @@ class Point_2(object):#all clear
     def color(self,x=0,y=0,z=0):
         if(x==0 and y==0 and z==0):
             print self._point.color
-            return
+            return 0
         if isinstance(x,tuple):
             self._point.color=x
-            return
+            return 0
         self._point.color=(x,y,z)
     def cartesian(self,i):
         if i>=0 and i<=1:
@@ -891,7 +935,7 @@ class Segment_2(object):#all clear
             if ((self._point_start.x()-other.x())*(self._point_end.y()-other.y()))-((self._point_start.y()-other.y())*(self._point_end.x()-other.x())) == 0:
                 return self.min() <= other <= self.max()
     def supporting_line(self):
-        return Line_2(self._point_start,self._point_end,color=self._segment.color,visible=False)
+        return Line_2(self,color=self._segment.color,visible=False)
     def visual(self,visible=None): #argue how will work
         if visible == None:
             self._segment.visible = not self._segment.visible
@@ -1392,7 +1436,7 @@ def run(Vpoints):
       """
       Jarvis Convex Hull algorithm.
       points is a list of Point_2 points
-      """
+      
       points = Vpoints.values()
       import random
       r0 = min(points)
@@ -1418,13 +1462,24 @@ def run(Vpoints):
        else:
         Segment_2(hull[-1],hull[0])
       return hull
- 
+      """
+      print Vpoints
+      p = Polygon_2(Vpoints)
+      t= p.is_simple()
+      print t 
+      print "The polygon is",
+      if not t:
+          print "not",
+      print "simple"
+      
 class Polygon_2(object):
     def __init__(self,points,segments=None,color=(1,1,1),visible=True):
         self._simple=self._convex=self._orientation =2
+        self._points=[]
+        self._segments=[]
         if segments !=None:
-            self._points=points
-            self._segments=segments
+            self._points=points[:]
+            self._segments=segments[:]
         else:
             if len(points)>1:
                 for i in xrange(len(points)-1):
@@ -1432,7 +1487,7 @@ class Polygon_2(object):
                     self._segments.append(segment)
                 segment = Segment_2(points[-1],points[0],color=color,visible=visible)
                 self._segments.append(segment)
-                self._points=points
+                self._points=points[:]
             else:
                 raise No_Constructor([self,points,segments])
     def create(self):
@@ -1487,33 +1542,37 @@ class Polygon_2(object):
         if self._simple != 2:
             return self._simple
         for i in xrange(len(self._segments)-1):
-            if intersection(self._segments[i],self._segments[i+1]) != None:
-                self._simple = 0
-                return self._simple
+            for j in xrange(i+2,len(self._segments)):
+                if i == 0 and j == len(self._segments)-1: #for not find intersection between the first and the last segment
+                    continue
+                p = intersection(self._segments[i],self._segments[j])
+                if isinstance(p,Point_2):
+#                    print self._segments[i],self._segments[j]
+#                    if not (p == self._segments[i].source() and p == self._segments[j].target()) and not (p == self._segments[j].source() and p == self._segments[i].target()):
+                        print i,j
+                        print p
+                        self._simple = 0
+                        return self._simple
         self._simple = 1
         return self._simple
     def is_convex(self): #Find if the diagon is inside the polygon.(exercise 1 2008-09)
         if self._convex != 2:
             return self._convex
-        n = len(self._segments)
-        for i in xrange(n):
-            j = (i+2)%n
-            i1 = (i+1)%n
-            in1 = (i+n-1)%n
-            or1 = orientation(self._segments[in1],self._segments[i],self._segments[i1])
-            or2 = orientation(self._segments[in1],self._segments[i],self._segments[j])
-            or3 = orientation(self._segments[i],self._segments[j],self._segments[i1])
-            or4 = orientation(self._segments[i],self._segments[i1],self._segments[j])
-            if or1 >=1:
-                if or2 == 1 and or3 ==-1:
-                    continue
-            else:
-                if or2 == 1 or or4 ==1:
-                    continue
-            self._convex = 0
-            return self._convex
-        self._convex = 1
-        return self._convex
+        conv = self._points[:]
+        n = len(conv)
+        i = conv.index(max(conv))
+        if orien[orientation(conv[(i+n-1)%n],conv[i],conv[(i+1)%n])] == -1:
+            conv.reverse()
+        while len(conv) > 3:
+           n = len(conv)
+           for i in range(n):
+               i1 = (i+1)%n
+               i2 = (i+2)%n
+               if not incone(i, i2, conv) and diagonalie(i, i2, conv):
+                   self._convex = 0
+                   return self._convex   
+           self._convex = 1
+           return self._convex    
     def orientation(self):
         if self._orientation != 2:
             return self._orientation
@@ -1639,11 +1698,12 @@ class Polygon_2(object):
             
 
 prepareScene()
-
+#getcontext().prec = 21
 #controls
-#prepareControls()
+prepareControls()
 #/controls
 
+#m,s = getPolygon()
 #m=[]
 #m=getVisualPoints()
 #print m
@@ -1658,6 +1718,35 @@ prepareScene()
 #if orientation(VisualPoints[m[0]],VisualPoints[m[1]],VisualPoints[m[2]]) == CLOCKWISE:
 #if orientation(Point_2(1,1),Point_2(2,2),Point_2(3,3)) == COLLINEAR:
 #   print "NiCe"
+"""
+problem on floating point arithmetics
+
+a=Point_2('-6.12163446856','5.85814348872',color=(0,0,1))
+b=Point_2('4.09376340605','5.68062339084',color=(0,1,0))
+c=Point_2('5.74140812056','-5.45238405818',color=(1,0,0))
+d=Point_2('-1.73636404529','-2.02879406816',color=(1,1,0))
+
+time.sleep(5)
+m = [a,b,c,d]
+print m
+p=Polygon_2(m)
+print p.is_simple()
+print p.is_convex()
+
+
+"""
+"""
+d = Point_2('2.3245235','6.4685768')
+c = Point_2('-3.257347','4.236526')
+f = Point_2('0.1542667','6.6375367')
+g = Point_2('1.386425376','2.97843')
+
+s1 = Segment_2(c,d)
+s2 = Segment_2(f,g)
+i1 = intersection(s1,s2)
+if i1 != None:
+    i1.color(color.yellow)
+    print i1
 
 a = Point_2(0,1)
 b = Point_2(-3,3)
@@ -1678,6 +1767,7 @@ i1 = intersection(s1,s2)
 if i1 != None:
     i1.color(color.yellow)
     print i1
+"""
 """
 a.color()
 t = Triangle_2(a,b,c,color=color.red)
