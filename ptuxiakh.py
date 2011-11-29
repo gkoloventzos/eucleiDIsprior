@@ -176,14 +176,10 @@ def movePoints():
             for poin in VisualPoints:
                 if m1.drag and m1.pick == poin.pos(): # if touched ball
                     global VVPoint
-                    ind = VVPoint.index(poin)
-                    VVPoint.pop(ind)
                     drag_pos = m1.pickpos # where on the ball
                     pick = m1.pick # pick now true (not None)
                 elif m1.drop: # released at end of drag
-                    point = Point_2(str(m1.pos.x),str(m1.pos.y))
-                    if point not in VVPoint:
-                        VVPoint.insert(ind,point)
+                    poin.set_xy(str(m1.pos.x),str(m1.pos.y))
                     pick = None # end dragging (None is false)
         if pick:
             # project onto xy plane, even if scene rotated:
@@ -271,11 +267,13 @@ class Point_2(object):#all clear
         if (not isgood(x)) and (not isgood(y)):
             raise No_Constructor([self,x,y])
         self._pos=[]
-        self._pos.append(x)
-        self._pos.append(y)
         self._x = Decimal(str(x)) + Decimal('0.000000000000000000000000000')
         self._y = Decimal(str(y)) + Decimal('0.000000000000000000000000000')
-        self._point=sphere(pos=(float(x),float(y),0),radius=0.1,color=color,visible=visible) 
+        self._pos.append(self._x)
+        self._pos.append(self._y)
+        self._point=sphere(pos=(float(x),float(y),0),radius=0.1,color=color,visible=visible)
+        self._color=color
+        self._visible=visible
 #        global VisualPoints
 #        if VisualPoints is not None:
 #            VisualPoints[self]=self
@@ -286,6 +284,29 @@ class Point_2(object):#all clear
 #        VVPoint.append(self)
     def __repr__(self):
         return "Point_2 (%s,%s)" % (self._x, self._y)
+    def set_x(self,x):
+        self._x = Decimal(str(x)) + Decimal('0.000000000000000000000000000')
+        self._pos[0]=self._x
+        self._color=self._point.color
+        self._visible=self._point.visible
+        self._point.visible =False # deleteing the point
+        self._point=sphere(pos=(float(self._x),float(self._y),0),radius=0.1,color=self._color,visible=self._visible)
+    def set_y(self,y):
+        self._y = Decimal(str(y)) + Decimal('0.000000000000000000000000000')
+        self._pos[1]=self._y
+        self._color=self._point.color
+        self._visible=self._point.visible
+        self._point.visible=False # deleteing the point
+        self._point=sphere(pos=(float(self._x),float(self._y),0),radius=0.1,color=self._color,visible=self._visible)
+    def set_xy(self,x,y):
+        self._x = Decimal(str(x)) + Decimal('0.000000000000000000000000000')
+        self._y = Decimal(str(y)) + Decimal('0.000000000000000000000000000')
+        self._pos[0]=self._x
+        self._pos[1]=self._y
+        self._color=self._point.color
+        self._visible=self._point.visible
+        self._point.visible=False # deleteing the point
+        self._point=sphere(pos=(float(self._x),float(self._y),0),radius=0.1,color=self._color,visible=self._visible)
     def x(self):
         return self._x
     def y(self):
@@ -1718,6 +1739,10 @@ prepareControls()
 #if orientation(VisualPoints[m[0]],VisualPoints[m[1]],VisualPoints[m[2]]) == CLOCKWISE:
 #if orientation(Point_2(1,1),Point_2(2,2),Point_2(3,3)) == COLLINEAR:
 #   print "NiCe"
+#a = Point_2()
+#time.sleep(2)
+
+#a.set_x(3)
 """
 problem on floating point arithmetics
 
