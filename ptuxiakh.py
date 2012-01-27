@@ -4,7 +4,9 @@ from visual import *
 from visual.controls import *
 import time,operator
 from decimal import *
+from math import pow,fabs,sqrt
 
+PrepareScene = False
 VisualPoints = None
 VVPoint = []
 VisualSegments = None
@@ -59,6 +61,8 @@ def prepareScene():
     """
     Creates the scene with some default values
     """
+    global PrepareScene
+    PrepareScene = True
     scene.range = 10
     scene.width = 800
     scene.height = 700
@@ -107,6 +111,9 @@ class mouseClick(object):
         return "%s button pressed at position %s" % (self.button, self.pos)
         
 def getVisualPoints():
+    global PrepareScene
+    if (not PrepareScene):
+        prepareScene()
     points =[]
     while True:
         if scene.kb.keys:
@@ -118,16 +125,8 @@ def getVisualPoints():
             point = Point_2(str(click.pos.x),str(click.pos.y))
 #           stri = str(click.pos.x) + "," + str(click.pos.y)
 #           point.label(stri)
-            points.append(point)
-            global VisualPoints
-            if VisualPoints is not None:
-                VisualPoints[point]=point
-            else:
-                VisualPoints = {}
-                VisualPoints[point]=point
-            global VVPoint
-            if point not in VVPoint:
-                VVPoint.append(point)
+            if point not in points:
+                points.append(point)
 #    print VVPoint
     return points
     
@@ -137,6 +136,9 @@ def getPolygon():
     In order to stop inserting points the user must 
     hit the backspace button
     """
+    global PrepareScene
+    if not PrepareScene:
+        prepareScene()
     points =[]
     segments =[]
     while True:
@@ -263,12 +265,17 @@ class Point_2(object):#all clear
     """
     Point in 2d
     """
-    def __init__(self,x='0.000000000000000000000000000',y='0.000000000000000000000000000',color=(1,1,1),visible=True): #using visible not opacity for older versions
+    def __init__(self,x=0,y=0,color=(1,1,1),visible=True): #using visible not opacity for older versions
+        global PrepareScene
+        if (not PrepareScene):
+            prepareScene()
         if (not isgood(x)) and (not isgood(y)):
             raise No_Constructor([self,x,y])
         self._pos=[]
-        self._x = Decimal(str(x)) + Decimal('0.000000000000000000000000000')
-        self._y = Decimal(str(y)) + Decimal('0.000000000000000000000000000')
+        add_string = "0."
+        add_string += "0" * getcontext().prec
+        self._x = Decimal(str(x)) + Decimal(add_string) # http://docs.python.org/release/2.5.2/lib/node130.html
+        self._y = Decimal(str(y)) + Decimal(add_string)
         self._pos.append(self._x)
         self._pos.append(self._y)
         self._point=sphere(pos=(float(x),float(y),0),radius=0.1,color=color,visible=visible)
@@ -284,6 +291,7 @@ class Point_2(object):#all clear
 #        VVPoint.append(self)
     def __repr__(self):
         return "Point_2 (%s,%s)" % (self._x, self._y)
+    """
     def set_x(self,x):
         self._x = Decimal(str(x)) + Decimal('0.000000000000000000000000000')
         self._pos[0]=self._x
@@ -307,6 +315,7 @@ class Point_2(object):#all clear
         self._visible=self._point.visible
         self._point.visible=False # deleteing the point
         self._point=sphere(pos=(float(self._x),float(self._y),0),radius=0.1,color=self._color,visible=self._visible)
+    """
     def x(self):
         return self._x
     def y(self):
@@ -318,10 +327,10 @@ class Point_2(object):#all clear
     def color(self,x=0,y=0,z=0):
         if(x==0 and y==0 and z==0):
             print self._point.color
-            return 0
+            return
         if isinstance(x,tuple):
             self._point.color=x
-            return 0
+            return
         self._point.color=(x,y,z)
     def cartesian(self,i):
         if i>=0 and i<=1:
@@ -853,6 +862,12 @@ class Ray_2(object):
                 ret = s1.has_on(point)
                 del s1
                 return ret
+    def visual(self,visible=None): #argue how will work
+        if visible == None:
+            self._ray.visible = not self._ray.visible
+        else:
+            self._ray.visible = visible
+        return self._ray.visible
 #        l = self.supporting_line()
 #        if l.has_on(point):
 #            print "here"
@@ -909,6 +924,8 @@ class Segment_2(object):#all clear
             self._middle = Point_2((self._point_start.x()+self._point_end.x())/2,(self._point_start.y()+self._point_end.y())/2,visible=False)
         return self._middle
     def label(self,string):
+        if self._middle == None:
+            self.middle()
         self._label=label(pos=self._middle._point.pos,text=string,xoffset=0,yoffset=-6,space=3,height=10,border=1,font='sans')        
     def is_degenerate(self):
         return self.source() == self.target()
@@ -1045,11 +1062,11 @@ class Triangle_2(object):
         """
         From Heron formula
         """
-        a = self._vertex[0].squared_length()
-        b = self._vertex[1].squared_length()
-        c = self._vertex[2].squared_length()
+        a = self._segments[0].squared_length()
+        b = self._segments[1].squared_length()
+        c = self._segments[2].squared_length()
         s = (a+b+c)/2
-        return sqrt(s*(s-a)*(s-b)*(s-c))
+        return sqrt(fabs(s*(s-a)*(s-b)*(s-c)))
     def seg_color(self,x=0,y=0,z=0):
         if(x==0 and y==0 and z==0):
             print "Segment {self._segments[0]} {self._segments[0]._color} Segment {self._segments[1]} {self._segments[1]._color} Segment {self._segments[2]} {self._segments[2]._color}" .format(self=self)
@@ -1513,7 +1530,7 @@ class Polygon_2(object):
                 raise No_Constructor([self,points,segments])
     def create(self):
         for s in self._segments:
-            s.visual()
+            del s
         self._segments=[]
         if len(self._points)>1:
                 for i in xrange(len(self._points)-1):
@@ -1523,10 +1540,10 @@ class Polygon_2(object):
                 self._segments.append(segment)      
     def clear(self):
         for s in self._segments:
-            s.visual()
+            del s
         self._segments=[]
         for t in self._points:
-            t.visual()
+            del t
         self._points=[]
     def size(self):
         return len(self._points)
@@ -1718,10 +1735,10 @@ class Polygon_2(object):
     
             
 
-prepareScene()
+#prepareScene()
 #getcontext().prec = 21
 #controls
-prepareControls()
+#prepareControls()
 #/controls
 
 #m,s = getPolygon()
