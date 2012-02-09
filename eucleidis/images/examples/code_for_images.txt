@@ -1,0 +1,108 @@
+point2d
+from eucleidis import *
+a = Point_2()
+b = Point_2(2,1)
+b.color(1,0,0)
+c = Point_2(1,2)
+c.color(color.red)
+c.color(color.green)
+d = Point_2(-1,2)
+c.color(visual.color.red)
+c.color(color.green)
+d.color(color.cyan)
+d.label("d")
+-
+segment2d
+from eucleidis import *
+a = Point_2()
+b = Point_2(5,1)
+s1 = Segment_2(a,b)
+s1.color(1,0,0)
+c = Point_2(-1,2)
+d = Point_2(-1,5)
+s2 = Segment_2(c,d)
+s2.color(color.blue)
+s2.label("s2")
+-
+line2d
+from eucleidis import *
+p1 = Point_2()
+p2 = Point_2(3,4)
+l1 = Line_2(p1,p2)
+l1.color(0,1,0)
+p3 = Point_2(-1,5)
+l2 = l1.perpendicular(p3)
+l2.visual()
+True
+l2.color(1,1,0)
+l3 = Line_2(p3,p1)
+-
+ray2d
+from eucleidis import *
+p1 = Point_2()
+p2 = Point_2(-1,-2)
+r1 = Ray_2(p1,p2)
+r1.color(0,1,1)
+r1.source().color(1,0,1)
+p3 = Point_2(6,2)
+r2 = Ray_2(p2,p3)
+r2.color(1,0,0)
+r3 = r2.opposite()
+r3.visual()
+True
+r3.color(color.orange)
+-
+triangle2d
+from eucleidis import *
+p1 = Point_2()
+p2 = Point_2(1,-2)
+p3 = Point_2(3,5)
+t1 = Triangle_2(p1,p2,p3)
+t1.area()
+398.02512483510384
+t1.orientation()
+1
+rorien[t1.orientation()]
+'COUNTERCLOCKWISE'
+t1.seg_color(color.cyan)
+t1.poi_color(1,0.7,0.2)
+t1.fill(color.red)
+-
+circle2d
+from eucleidis import *
+p1 = Point_2()
+p2 = Point_2(4,5)
+c1 = Circle_2(p1,p2)
+c1.center().visual()
+True
+c1.center_color(1,0,0)
+c1.ring_color(0.5,0.7,0.2)
+c2 = Circle_2(c1.center(),p1)
+c2.ring_color(0,0,1)
+-
+polygon2d
+from eucleidis import *
+p1 =Point_2()
+p2 = Point_2(4,5)
+p3 = Point_2(0,5)
+p4 = Point_2(7,0)
+p5 = Point_2(2,-2)
+poly = Polygon_2([p1,p3,p2,p4,p5])
+poly.poi_color(color.yellow)
+poly.seg_color(color.cyan)
+-
+intersection
+inter_line_seg.png
+from eucleidis import *
+l = Line_2(3,4,6)
+s = Segment_2(Point_2(0,-7),Point_2(0,5))
+inter = intersection(l,s)
+inter.color(0.2,0.2,0.5)
+inter_line_circle.png
+from eucleidis import *
+l = Line_2(3,4,6)
+c = Circle_2(Point_2(),4)
+inter = intersection(l,c)
+inter[0].color(color.cyan)
+inter[1].color(color.red)
+

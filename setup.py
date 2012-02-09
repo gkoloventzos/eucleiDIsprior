@@ -5,5 +5,6 @@ setup(name='eucleidis',
       description='Python Geometric Library',
       author='Georgios Koloventzos',
       author_email='georgios.koloventzos@cern.ch',
+      license = "AFL",
       url='http://test-georgios-koloventzos.web.cern.ch/test-georgios-koloventzos/',
       )
