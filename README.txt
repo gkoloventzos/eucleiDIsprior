@@ -22,7 +22,7 @@
 
 INSTALL
 
-The only dependency of the library is th VPython.
+The only dependency of the library is VPython.
 You can download it form here: 
 Windows: http://vpython.org/contents/download_windows.html
 Mac OS: http://vpython.org/contents/download_mac.html
@@ -30,6 +30,6 @@ Linux: http://vpython.org/contents/download_linux.html
 
 ALL Operating Systems Installation:
 Open a terminal - cmd and run this in the directory
-the unpacking created.
+that is created.
 
 python setup.py install
