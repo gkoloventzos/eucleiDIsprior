@@ -4,7 +4,7 @@ setup(name='eucleidis',
       py_modules=['eucleidis'],
       description='Python Geometric Library',
       author='Georgios Koloventzos',
-      author_email='georgios.koloventzos@cern.ch',
+      author_email='gkoloventzos@gmail.com',
       license = "AFL",
       url='http://test-georgios-koloventzos.web.cern.ch/test-georgios-koloventzos/',
       )
